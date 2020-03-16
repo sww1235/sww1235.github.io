@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <meta name="author" content="Stephen Walker-Weinshenker">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="styles/main.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<title>openbsd-notes</title>
+</head>
+<body>
+<div id="top">
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</div>
+<div id="topnavbar">
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="stuff.html">Stuff</a>
+            <ul>
+                <li><a href="https://github.com/sww1235">Github</a></li>
+                <li><a href="wiki/index.html">Wiki</a></li>
+
+            </ul>
+        </li>
+        <li><a href="blog-contents">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+
+    </ul>
+</div>
+<h1 id="top">
+OpenBSD Notes
+</h1>
+<h2 id="doas">
+Doas Configuration
+</h2>
+<p>see doas.conf(5) for more details.</p>
+<p>This is a base configuration for all openBSD systems I use.</p>
+<p>rules work in a <strong>last match</strong> manner.</p>
+<pre><code>permit persist :wheel
+permit nopass keepenv root # allow root to do whatever
+permit :wheel cmd reboot # relist command to ensure password is needed.
+permit :wheel cmd halt
+permit :wheel cmd poweroff</code></pre>
+<p>this can be further customized based on need.</p>
+<p>sourced from openbsd doas mastery.</p>
+<h2 id="power">
+Power Management
+</h2>
+<p>poweroff/shutdown gracefully shutdown system</p>
+<p>reboot/halt kill system immediately</p>
+<h2 id="ports">
+Ports Usage
+</h2>
+<p>most systems will be running release versions of openBSD</p>
+<p>use packages unless ports are needed. If ports are needed use <code>-stable</code> in order to get security fixes from <code>-current</code> tree.</p>
+<p>add the following to <code>/etc/mk.conf</code></p>
+<pre class="sh"><code>PORTS_PRIVSEP=YES
+WRKOBJDIR=/usr/obj/ports
+DISTDIR=/usr/distfiles
+PACKAGE_REPOSITORY=/usr/packages</code></pre>
+<p>create the directories above then change ownership to local user and group, make sure they are world readable.</p>
+<p>also following commands:</p>
+<pre class="sh"><code>mkdir -p ports src
+cngrp wsrc ports src
+chmod 775 ports src</code></pre>
+<p>add the following lines to <code>doas.conf</code> and add <code>SUDO=doas</code> to <code>/etc/mk.conf</code></p>
+<pre><code>permit keepenv nopass toxic as _pbuild
+permit keepenv nopass toxic as _pfetch</code></pre>
+<p>add user to <code>wsrc</code> group: <code>doas usermod -G wsrc toxic</code>.</p>
+<p>Also add</p>
+<p>download stable ports branch from anonCVS:</p>
+<pre class="sh"><code>cd /usr
+cvs -qd anoncvs@anoncvs3.usa.openbsd.org:/cvs checkout -rOPENBSD_6_4 -P ports</code></pre>
+<p>to update after initial clone:</p>
+<pre class="sh"><code>cd /usr/ports
+cvs -q up -Pd -rOPENBSD_6_4</code></pre>
+<p>default shell is <code>ksh</code>. Configuration goes in <code>.profile</code></p>
+<pre class="tags"><code>OpenBSD, Homelab, Setup</code></pre>
+</body>
+</html>

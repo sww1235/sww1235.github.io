@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <meta name="author" content="Stephen Walker-Weinshenker">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="styles/main.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<title>fpga-notes</title>
+</head>
+<body>
+<div id="top">
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</div>
+<div id="topnavbar">
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="stuff.html">Stuff</a>
+            <ul>
+                <li><a href="https://github.com/sww1235">Github</a></li>
+                <li><a href="wiki/index.html">Wiki</a></li>
+
+            </ul>
+        </li>
+        <li><a href="blog-contents">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+
+    </ul>
+</div>
+<h1 id="top">
+FPGA Notes
+</h1>
+<h2 id="lattice-fpgas">
+Lattice Ice40 FPGAs
+</h2>
+<p>Using internal libraries in VHDL need to look at actual contents of files in install directory, located at <code>./lscc/iCEcube2.2016.02/vhdl/sb_ice_syn_vital.vhd</code>. This contains the compiler prototypes.</p>
+<p>might need to add:</p>
+<div class="sourceCode"><pre class="sourceCode vhdl"><code class="sourceCode vhdl"><span class="kw">library</span> sb_ice40_components_syn;
+<span class="kw">use</span> sb_ice40_components_syn<span class="ot">.</span>components<span class="ot">.</span>all;</code></pre></div>
+<p>in order to get things to work.</p>
+<p>Also might need to declare components manually.</p>
+<p>Code from <a href="http://we.easyelectronics.ru/teplofizik/podklyuchenie-vstroennogo-modulya-tokovogo-drayvera-fpga-serii-ice5-ice40-ultra.html" class="uri">http://we.easyelectronics.ru/teplofizik/podklyuchenie-vstroennogo-modulya-tokovogo-drayvera-fpga-serii-ice5-ice40-ultra.html</a></p>
+<p>Verilog Library description:</p>
+<div class="sourceCode"><pre class="sourceCode verilog"><code class="sourceCode verilog">SB_RGB_DRV RGB_DRIVER (
+.RGBLEDEN(ENABLE_LED),
+.RGB0PWM(RGB0),
+.RGB1PWM(RGB1),
+.RGB2PWM(RGB2),
+.RGBPU(led_power_up),
+.RGB0(LED0),
+.RGB1(LED1),
+.RGB2(LED2)
+);
+<span class="kw">defparam</span> RGB_DRIVER.RGB0_CURRENT = <span class="st">&quot;0b111111&quot;</span>;
+<span class="kw">defparam</span> RGB_DRIVER.RGB1_CURRENT = <span class="st">&quot;0b111111&quot;</span>;
+<span class="kw">defparam</span> RGB_DRIVER.RGB2_CURRENT = <span class="st">&quot;0b111111&quot;</span>;</code></pre></div>
+<p>VHDL component:</p>
+<div class="sourceCode"><pre class="sourceCode vhdl"><code class="sourceCode vhdl">component SB_RGB_DRV is
+        generic (
+                RGB0_CURRENT <span class="ot">:</span> string <span class="ot">:=</span> <span class="st">&quot;0b000000&quot;</span>;
+                RGB1_CURRENT <span class="ot">:</span> string <span class="ot">:=</span> <span class="st">&quot;0b000000&quot;</span>;
+                RGB2_CURRENT <span class="ot">:</span> string <span class="ot">:=</span> <span class="st">&quot;0b000000&quot;</span>);
+        port (RGBLEDEN<span class="ot">,</span> RGBPU<span class="ot">,</span> RGB0PWM<span class="ot">,</span> RGB1PWM<span class="ot">,</span> RGB2PWM<span class="ot">:</span> in std_logic;
+                RGB0<span class="ot">,</span> RGB1<span class="ot">,</span> RGB2<span class="ot">:</span> out std_logic);
+end component;</code></pre></div>
+<pre class="tags"><code>Contributing, info</code></pre>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <meta name="author" content="Stephen Walker-Weinshenker">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="styles/main.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<title>pcb-design</title>
+</head>
+<body>
+<div id="top">
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</div>
+<div id="topnavbar">
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="stuff.html">Stuff</a>
+            <ul>
+                <li><a href="https://github.com/sww1235">Github</a></li>
+                <li><a href="wiki/index.html">Wiki</a></li>
+
+            </ul>
+        </li>
+        <li><a href="blog-contents">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+
+    </ul>
+</div>
+<h1 id="top">
+PCB Design
+</h1>
+<p>In general, try to keep surface mounted components on the top layer as it makes pick and place opperations easier.</p>
+<h2 id="two-layer">
+Two Layer PCBs
+</h2>
+<p>Top layer should be used to route signal and power traces while the bottom layer should be used for a ground plane. This should be kept as unbroken as possible, and used only for short jumper traces.</p>
+<h2 id="four-layer">
+Four Layer PCBs
+</h2>
+<p>Top layer is used for signal routing, along with bottom layer for jumper traces or longer signal routing. The inner two layers are for power and ground. One layer should be kept as uninterrupted as possible for the ground plane and the other inner layer should be used primarily for routing of power traces and only sparingly used for signal routing.</p>
+<pre class="tags"><code>PCB, design, electronics</code></pre>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <meta name="author" content="Stephen Walker-Weinshenker">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="styles/main.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<title>homelab-setup-notes</title>
+</head>
+<body>
+<div id="top">
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</div>
+<div id="topnavbar">
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="stuff.html">Stuff</a>
+            <ul>
+                <li><a href="https://github.com/sww1235">Github</a></li>
+                <li><a href="wiki/index.html">Wiki</a></li>
+
+            </ul>
+        </li>
+        <li><a href="blog-contents">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+
+    </ul>
+</div>
+<h1 id="top">
+Homelab Setup Notes
+</h1>
+<h2 id="overview">
+Overview
+</h2>
+<p>Currently, my homelab consists of the following systems:</p>
+<ul>
+<li><a href="#brian">Brian</a></li>
+<li><a href="#stephenpi">Stephenpi</a></li>
+<li><a href="#ws-host">Main Workstation Host</a></li>
+<li><a href="#vm-win10">Windows 10 VM</a></li>
+<li><a href="#pffirewall">PfFirewall</a></li>
+<li><a href="#den1">Den1</a></li>
+</ul>
+<p>My website and DNS are hosted through NearlyFreeSpeech.net</p>
+<h2 id="future-plans">
+Future Plans
+</h2>
+<ul>
+<li>Move fileserver duties from main workstation to dedicated FreeNAS file server with ZFS</li>
+<li>Migrate to 10Gb networking</li>
+<li>Add UPS</li>
+<li>Upgrade brian</li>
+<li>Setup pfsense box at parents house</li>
+<li>Setup reciprocal offsite backups at parents house.</li>
+</ul>
+<h2 id="far-future-plans">
+Far Future Plans
+</h2>
+<ul>
+<li>All servers either run OpenBSD or FreeBSD unless specific exception is needed.</li>
+<li>Package caching servers used for all 3rd party binary packaging systems in use in homelab</li>
+<li>All computers run custom linux image, probably a modified version of void linux</li>
+<li>All linux software (including kernel) is compiled from source, targeting different architectures as necessary.</li>
+<li>All source code for compiled software is kept in an archive as long as that version is installed in a production or testing environment, and minimally for a period of 1 year if it has been installed.
+<ul>
+<li>If software is not updated, then keep most complete version. clone git repo if possible.</li>
+</ul></li>
+<li>As much as possible, all images use musl libc or derivative.</li>
+<li>Use automated continuous integration process for new software versions
+<ul>
+<li>For all software, try to automatically pull down new releases of software and build in testing environment. Send weekly email of successes and failures.</li>
+<li>Software is manually pushed into production using automation similar to Ansible.</li>
+</ul></li>
+<li>Ideally I would be able to take a stock OpenBSD image, clone some setup scripts, and be able to build images for the rest of the server infrastructure, then install them using a network boot server. This would have a temporary DHCP and DNS server, along with a firewall and router config based on pf, to allow the network to exist without any other infrastructure. This would be easily disabled during the initial script options, as well as after the fact.</li>
+</ul>
+<h2 id="hosts">
+Hosts
+</h2>
+<h3 id="brian">
+Brian
+</h3>
+<p>Brian, (name subject to change), is currently intended to be my main authentication server, running a combination of Kerberos and openLDAP.</p>
+<p><strong>Hardware:</strong> Ancient Mac Mini</p>
+<p><strong>Software:</strong> stock OpenBSD without any x11 crap</p>
+<h3 id="stephenpi">
+Stephenpi
+</h3>
+<p>This currently only runs an IRC client in tmux. It might do some automation type stuff later.</p>
+<p><strong>Hardware:</strong> Raspberry Pi 2B V1.1</p>
+<p><strong>Software:</strong> Musl Void Linux for ARM</p>
+<h3 id="ws-host">
+Main Workstation Host
+</h3>
+<p>This acts a both a vm host using kvm/qemu, and a file server with a btrfs pool shared over SAMBA.</p>
+<p><strong>Hardware:</strong></p>
+<p><a href="https://pcpartpicker.com/list/zpwFbX">PCPartPicker part list</a> / <a href="https://pcpartpicker.com/list/zpwFbX/by_merchant/">Price breakdown by merchant</a></p>
+<table>
+<colgroup>
+<col width="12%" />
+<col width="87%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Type</th>
+<th align="left">Item</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><strong>CPU</strong></td>
+<td align="left">Intel - Core i3-8350K 4 GHz Quad-Core Processor</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>CPU Cooler</strong></td>
+<td align="left">Noctua - NH-D9L 46.44 CFM CPU Cooler</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>Motherboard</strong></td>
+<td align="left">ASRock - Fatal1ty Z370 Gaming K6 ATX LGA1151 Motherboard</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>Memory</strong></td>
+<td align="left">Corsair - Vengeance LPX 16 GB (2 x 8 GB) DDR4-2133 Memory</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>Storage</strong></td>
+<td align="left">Samsung - 970 Pro 512 GB M.2-2280 Solid State Drive</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>Storage</strong></td>
+<td align="left">Western Digital - Red Pro 2 TB 3.5&quot; 7200RPM Internal Hard Drive</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>Storage</strong></td>
+<td align="left">Western Digital - Gold 2 TB 3.5&quot; 7200RPM Internal Hard Drive</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>Storage</strong></td>
+<td align="left">Western Digital - Gold 4 TB 3.5&quot; 7200RPM Internal Hard Drive</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>Video Card</strong></td>
+<td align="left">EVGA - GeForce GTX 1060 6GB 6 GB SC GAMING Video Card</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>Power Supply</strong></td>
+<td align="left">Corsair - HX Platinum 750 W 80+ Platinum Certified Fully-Modular ATX Power Supply</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>Case Fan</strong></td>
+<td align="left">Noctua - NF-A8 PWM 32.66 CFM 80mm Fan</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>Case Fan</strong></td>
+<td align="left">Noctua - NF-A12x25 PWM 60.1 CFM 120mm Fan</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>Other</strong></td>
+<td align="left">Old Rackmount Case</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Software:</strong> Musl Void Linux for x86_64</p>
+<h4 id="vm-win10">
+Primary Windows 10 VM
+</h4>
+<p>Runs windows 10 for gaming and windows only applications.</p>
+<h3 id="pffirewall">
+PfFirewall
+</h3>
+<p>Primary firewall and router for local network. Runs OpenVPN client connected to the server running on <a href="#den1">Den1</a>.</p>
+<p><strong>Hardware:</strong> SG-2220 pfSense appliance from Netgate</p>
+<p><strong>Software:</strong> pfSense</p>
+<h3 id="den1">
+Den1
+</h3>
+<p>OpenVPN server and jump box. VPS from Mean Servers in Denver</p>
+<p><strong>Hardware:</strong> Mean Servers VPS</p>
+<p><strong>Software:</strong> pfSense Community Edition</p>
+<pre class="tags"><code>Homelab, Documentation</code></pre>
+</body>
+</html>

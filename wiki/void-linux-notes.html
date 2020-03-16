@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <meta name="author" content="Stephen Walker-Weinshenker">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="styles/main.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<title>void-linux-notes</title>
+</head>
+<body>
+<div id="top">
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</div>
+<div id="topnavbar">
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="stuff.html">Stuff</a>
+            <ul>
+                <li><a href="https://github.com/sww1235">Github</a></li>
+                <li><a href="wiki/index.html">Wiki</a></li>
+
+            </ul>
+        </li>
+        <li><a href="blog-contents">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+
+    </ul>
+</div>
+<h1 id="top">
+Void Linux Notes
+</h1>
+<h2 id="after-install">
+After Installation Configuration
+</h2>
+<p>check contents of /var/service and remove uncessary ones. If running with static IP (<a href="#network-static">Static Networking</a>) then remove dhcpcd.</p>
+<p>uncomment wheel line in <code>/etc/sudoers</code> using <code>visudo</code> to enable</p>
+<p><strong>NOTE:</strong> Locale does not exist on Musl libc editions of void.</p>
+<h3 id="timezone-clock">
+Timezone and Clock Configuration
+</h3>
+<p>edit <code>/etc/rc.conf</code> as root (sudo doesn't work) and change the following lines:</p>
+<pre><code>HARDWARECLOCK=&quot;UTC&quot;
+TIMEZONE=&quot;America/Denver&quot; # or appropriate timezone
+KEYMAP=&quot;us&quot;</code></pre>
+<p>enable NTP:</p>
+<pre class="sh"><code>sudo ln -s /etc/sv/ntpd /var/service/</code></pre>
+<h3 id="network">
+Network Configuration
+</h3>
+<h4 id="network-static">
+Static Networking
+</h4>
+<p>edit <code>/etc/rc.local</code> and add following commands. Verify interface names are correct from ip link.</p>
+<pre class="sh"><code>ip link set dev eth0 up
+ip addr add 10.0.1.12/24 brd + dev eth0
+ip route add default via 10.0.1.1</code></pre>
+<h4 id="network-dhcp">
+DHCP
+</h4>
+<p>enable dhcpcd with</p>
+<pre class="sh"><code>sudo ln -s /etc/sv/dhcpcd /var/service/</code></pre>
+<pre class="tags"><code>Void, Linux, Homelab, Setup</code></pre>
+</body>
+</html>
