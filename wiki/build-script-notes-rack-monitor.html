@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <meta name="author" content="Stephen Walker-Weinshenker">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="styles/main.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<title>build-script-notes-rack-monitor</title>
+</head>
+<body>
+<div id="top">
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</div>
+<div id="topnavbar">
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="stuff.html">Stuff</a>
+            <ul>
+                <li><a href="https://github.com/sww1235">Github</a></li>
+                <li><a href="wiki/index.html">Wiki</a></li>
+
+            </ul>
+        </li>
+        <li><a href="blog-contents">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+
+    </ul>
+</div>
+<h1 id="top">
+Rack Monitor Build Script and Notes
+</h1>
+<p>This is the build script and notes for the raspberry pi that monitors my Rack and</p>
+<h2 id="notes">
+Notes
+</h2>
+<ul>
+<li></li>
+</ul>
+<h2 id="build-script">
+Build Script
+</h2>
+<h3 id="initial-configuration">
+Initial Configuration
+</h3>
+<ol style="list-style-type: decimal">
+<li>Download the rpi2-musl image of void linux from reputable sources, currently <a href="https://alpha.de.repo.voidlinux.org/live/current/">here</a></li>
+<li>Burn image to MicroSD card using either <code>dd</code> or whatever windows tool is the popular thing and preferably doesn't use electron.</li>
+<li>Use <code>cfdisk</code> to expand main partition from 2GB to remaining size of MicroSD card.</li>
+<li>Login as root with default password of <code>void-linux</code></li>
+<li>Need to get correct time and network set up in order to update system and install packages (as root) Remember that the only available text editor is <code>vi</code>!
+<ol style="list-style-type: decimal">
+<li><p>Configure static IP address by editing <code>/etc/dhcpd.conf</code> with the following lines at the bottom of the file. Actual IP addresses are found in the network documentation. We use DHCP rather than manual <code>ip</code> commands in <code>/etc/rc.local</code> to take advantage of other aspects of DHCP including auto DNS server population and domain name.</p>
+<pre class="conf"><code>interface eth0
+static ip_address=$IPaddress
+static routers=$defaultgateway</code></pre></li>
+<li><p>edit <code>/etc/rc.conf</code> and change the following lines to set keymap and timezone</p>
+<pre class="conf"><code>TIMEZONE=&quot;America/Denver&quot; # or appropriate timezone
+KEYMAP=&quot;us&quot;</code></pre></li>
+<li><p>Enable NTP and DHCP services</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ln</span> -s /etc/sv/ntpd /var/service
+<span class="kw">ln</span> -s /etc/sv/dhcpcd /var/service</code></pre></div></li>
+<li><p>Create new non-root user, replacing $newusername with the actual name of the user. This command adds the user to the wheel group, which allows <code>sudo</code> access</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">useradd</span> -m -s /bin/bash -U -G wheel,users,audio,video,cdrom,input <span class="ot">$newusername</span></code></pre></div></li>
+<li>Set system hostname by editing <code>/etc/hostname</code></li>
+</ol></li>
+<li>Reboot the system using <code>reboot</code> command. This should allow DHCP and NTP to do their thing and allow us to update the system and install new packages.</li>
+<li>Log in as the new user you created</li>
+<li><p>Update the system by running the following command until there is no output.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install -Svu</code></pre></div></li>
+<li><p>Install and remove the following packages. Want to use simpler NTP implementation.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install nano network-ups-tools openntpd rng-tools thefuck
+<span class="kw">sudo</span> xbps-remove chrony</code></pre></div></li>
+</ol>
+<h3 id="nut-config">
+NUT Configuration
+</h3>
+<p>Config files for Network UPS Tool (NUT) are found at <code>/etc/ups/</code></p>
+<p><code>nut.conf</code> has a few global config options, which are not important on void.</p>
+<p><code>ups.conf</code> is where you configure what UPSes the system will be interacting with</p>
+<p>Configuration steps as follows:</p>
+<ol style="list-style-type: decimal">
+<li>Edit <code>/etc/ups/nut.conf</code> and set <code>MODE=netserver</code>. This is not strictly required on void, but still better to set.</li>
+<li>Run <code>nut-scanner</code> to generate config options for attached UPSes</li>
+<li>Edit <code>/etc/ups/ups.conf</code> and add the results of <code>nut-scanner</code> to the begining of the file.</li>
+</ol>
+<pre class="tags"><code>build-script, rack-monitor, notes</code></pre>
+</body>
+</html>

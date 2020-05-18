@@ -40,7 +40,7 @@ Overview
 <p>Currently, my homelab consists of the following systems:</p>
 <ul>
 <li><a href="#brian">Brian</a></li>
-<li><a href="#stephenpi">Stephenpi</a></li>
+<li><a href="#rack-monitor">Rack Monitor</a></li>
 <li><a href="#ws-host">Main Workstation Host</a></li>
 <li><a href="#vm-win10">Windows 10 VM</a></li>
 <li><a href="#pffirewall">PfFirewall</a></li>
@@ -53,7 +53,7 @@ Future Plans
 <ul>
 <li>Move fileserver duties from main workstation to dedicated FreeNAS file server with ZFS</li>
 <li>Migrate to 10Gb networking</li>
-<li>Add UPS</li>
+<li><s>Add UPS</s></li>
 <li>Upgrade brian</li>
 <li>Setup pfsense box at parents house</li>
 <li>Setup reciprocal offsite backups at parents house.</li>
@@ -85,18 +85,23 @@ Hosts
 Brian
 </h3>
 <p>Brian, (name subject to change), is currently intended to be my main authentication server, running a combination of Kerberos and openLDAP.</p>
+<p>See <a href="">the buildscript</a> for more details</p>
 <p><strong>Hardware:</strong> Ancient Mac Mini</p>
 <p><strong>Software:</strong> stock OpenBSD without any x11 crap</p>
-<h3 id="stephenpi">
-Stephenpi
+<h3 id="rack-monitor">
+Rack Monitor
 </h3>
-<p>This currently only runs an IRC client in tmux. It might do some automation type stuff later.</p>
-<p><strong>Hardware:</strong> Raspberry Pi 2B V1.1</p>
+<p>Runs Network UPS tools to monitor cyberpower UPS and tell other systems to shutdown</p>
+<p>Removes the need for the built in cyberpower $159 network card which also runs an ancient version of TLS</p>
+<p>This will also perform temperature monitoring of the rack and fan speed control eventually</p>
+<p>See <a href="">the buildscript</a> for more details</p>
+<p><strong>Hardware:</strong> Raspberry Pi 2B V1.1 with 64GB microSD card</p>
 <p><strong>Software:</strong> Musl Void Linux for ARM</p>
 <h3 id="ws-host">
 Main Workstation Host
 </h3>
-<p>This acts a both a vm host using kvm/qemu, and a file server with a btrfs pool shared over SAMBA.</p>
+<p>This acts as both a vm host using kvm/qemu, and a file server with a btrfs pool shared over SAMBA.</p>
+<p>See <a href="">the buildscript</a> for more details</p>
 <p><strong>Hardware:</strong></p>
 <p><a href="https://pcpartpicker.com/list/zpwFbX">PCPartPicker part list</a> / <a href="https://pcpartpicker.com/list/zpwFbX/by_merchant/">Price breakdown by merchant</a></p>
 <table>
@@ -170,6 +175,8 @@ Main Workstation Host
 Primary Windows 10 VM
 </h4>
 <p>Runs windows 10 for gaming and windows only applications.</p>
+<p>Uses VFIO to pass through the GTX1060</p>
+<p>See <a href="">the buildscript</a> for more details</p>
 <h3 id="pffirewall">
 PfFirewall
 </h3>
@@ -180,6 +187,7 @@ PfFirewall
 Den1
 </h3>
 <p>OpenVPN server and jump box. VPS from Mean Servers in Denver</p>
+<p>See <a href="">the buildscript</a> for more details</p>
 <p><strong>Hardware:</strong> Mean Servers VPS</p>
 <p><strong>Software:</strong> pfSense Community Edition</p>
 <pre class="tags"><code>Homelab, Documentation</code></pre>

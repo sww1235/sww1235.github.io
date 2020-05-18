@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <meta name="author" content="Stephen Walker-Weinshenker">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="styles/main.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<title>void-setup</title>
+</head>
+<body>
+<div id="top">
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</div>
+<div id="topnavbar">
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="stuff.html">Stuff</a>
+            <ul>
+                <li><a href="https://github.com/sww1235">Github</a></li>
+                <li><a href="wiki/index.html">Wiki</a></li>
+
+            </ul>
+        </li>
+        <li><a href="blog-contents">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+
+    </ul>
+</div>
+<h2 id="install-dwm">Install DWM</h2>
+<p>install from xbps:</p>
+<p>wget gz xrandr make thefuck clang libX11-devel xtools libxft libXft-devel libXinerama-devel xorg-minimal xorg-fonts xterm</p>
+<p>change x11 path in config.mk to /usr/include/X11</p>
+<h2 id="qemu-install">qemu install</h2>
+<p>sudo ln -s /etc/sv/libvirtd/ /var/service sudo ln -s /etc/sv/virtlogd/ /var/service/ sudo ln -s /etc/sv/virtlockd/ /var/service/ sudo usermod -a -G libvirt toxic</p>
+<p>sudo sv start libvirtd</p>
+<p>install from xbps: xz rpmextract</p>
+<h2 id="other-tools">other tools</h2>
+<p>smartmontools nano firefox</p>
+<p>start sshd sudo ln -s /etc/sv/sshd/ /var/service</p>
+<h2 id="nfs-server">nfs-server</h2>
+<p>install nfs-utils</p>
+<p>start nfs-server, rpcbind, statd services</p>
+<p>edit /etc/exports</p>
+</body>
+</html>
