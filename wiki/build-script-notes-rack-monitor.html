@@ -64,6 +64,7 @@ KEYMAP=&quot;us&quot;</code></pre></li>
 <li><p>Enable NTP and DHCP services</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ln</span> -s /etc/sv/ntpd /var/service
 <span class="kw">ln</span> -s /etc/sv/dhcpcd /var/service</code></pre></div></li>
+<li>Check <code>/etc/ntpd.conf</code> for constraints line, and comment out. This doesn't work on Raspi due to lack of HWCLK</li>
 <li><p>Create new non-root user, replacing $newusername with the actual name of the user. This command adds the user to the wheel group, which allows <code>sudo</code> access</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">useradd</span> -m -s /bin/bash -U -G wheel,users,audio,video,cdrom,input <span class="ot">$newusername</span></code></pre></div></li>
 <li>Set system hostname by editing <code>/etc/hostname</code></li>
@@ -73,7 +74,7 @@ KEYMAP=&quot;us&quot;</code></pre></li>
 <li><p>Update the system by running the following command until there is no output.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install -Svu</code></pre></div></li>
 <li><p>Install and remove the following packages. Want to use simpler NTP implementation.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install nano network-ups-tools openntpd rng-tools thefuck
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install nano network-ups-tools openntpd rng-tools thefuck vim htop
 <span class="kw">sudo</span> xbps-remove chrony</code></pre></div></li>
 </ol>
 <h3 id="nut-config">
@@ -82,12 +83,24 @@ NUT Configuration
 <p>Config files for Network UPS Tool (NUT) are found at <code>/etc/ups/</code></p>
 <p><code>nut.conf</code> has a few global config options, which are not important on void.</p>
 <p><code>ups.conf</code> is where you configure what UPSes the system will be interacting with</p>
+<p><code>upsd.conf</code> is the configuration for the UPS data server</p>
 <p>Configuration steps as follows:</p>
 <ol style="list-style-type: decimal">
 <li>Edit <code>/etc/ups/nut.conf</code> and set <code>MODE=netserver</code>. This is not strictly required on void, but still better to set.</li>
 <li>Run <code>nut-scanner</code> to generate config options for attached UPSes</li>
-<li>Edit <code>/etc/ups/ups.conf</code> and add the results of <code>nut-scanner</code> to the begining of the file.</li>
+<li>Edit <code>/etc/ups/ups.conf</code> and add the results of <code>nut-scanner</code> to the begining of the file, except the vendor line. Add <code>[cyberpower]</code> before. See syntax examples in config file.</li>
+<li>Edit <code>/etc/ups/upsd.conf</code> and update listen directive to the IP address of the local system.</li>
+<li>Edit <code>/etc/ups/upsd.users</code> and add an <code>admin</code> user, and <code>upsmon</code> users with passwords from password safe. One <code>upsmon</code> user per machine connected to UPS.
+<ul>
+<li>admin user has set actions and all instcmds</li>
+<li>upsmon user is set up per example in config file with slave attributes</li>
+</ul></li>
 </ol>
+<p>Need to change ownership of config files on void linux as the default is set up incorrectly</p>
+<p><code>sudo chown root:nut /etc/ups/*</code> <code>sudo chmod 640 /etc/ups/*</code></p>
+<p>start the following services:</p>
+<p><code>bash sudo ln -s /etc/sv/upsdrvctl/ /var/service sudo ln -s /etc/sv/upsd/ /var/service</code></p>
+<p>check status of ups with the following command to make sure it is detected properly</p>
 <pre class="tags"><code>build-script, rack-monitor, notes</code></pre>
 </body>
 </html>
