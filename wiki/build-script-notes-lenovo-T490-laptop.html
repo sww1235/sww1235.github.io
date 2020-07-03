@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <meta name="author" content="Stephen Walker-Weinshenker">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="styles/main.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<title>build-script-notes-lenovo-T490-laptop</title>
+</head>
+<body>
+<div id="top">
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</div>
+<div id="topnavbar">
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="stuff.html">Stuff</a>
+            <ul>
+                <li><a href="https://github.com/sww1235">Github</a></li>
+                <li><a href="wiki/index.html">Wiki</a></li>
+
+            </ul>
+        </li>
+        <li><a href="blog-contents">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+
+    </ul>
+</div>
+<h1 id="top">
+Rack Monitor Build Script and Notes
+</h1>
+<p>This is the build script and notes for the raspberry pi that monitors my Rack and</p>
+<h2 id="notes">
+Notes
+</h2>
+<ul>
+<li></li>
+</ul>
+<h2 id="build-script">
+Build Script
+</h2>
+<h3 id="initial-configuration">
+Initial Configuration
+</h3>
+<p>Laptop will start from factory with preinstalled Windows 10 Pro + bloatware. Reimage then setup dual booting.</p>
+<h4 id="windows-installation">
+Windows Installation
+</h4>
+<ol style="list-style-type: decimal">
+<li><p>Download a copy of Windows 10 Pro from Microsoft</p></li>
+<li><p>Create bootable USB stick using instructions on Microsoft website.</p></li>
+<li><p>Disable fast boot in preinstalled windows.</p>
+<ol style="list-style-type: decimal">
+<li>Go to Settings -&gt; System -&gt; Power &amp; Sleep -&gt; Additional Power Settings -&gt; Choose What Power Buttons Do -&gt; Change settings that are currently unavailable</li>
+<li>Uncheck &quot;Turn on Fast Startup&quot;. This prevents skipping the BIOS screen.</li>
+</ol></li>
+<li><p>Verify BIOS is set to allow booting from USB sticks. Also verify that BIOS is only set to UEFI mode</p></li>
+<li><p>Make sure laptop does not have an internet connection. This allows for the creation of a local user account without a Microsoft account.</p></li>
+<li><p>Insert USB stick and boot. Hit enter to interrupt startup, then select USB stick as boot drive.</p></li>
+<li><p>Start windows install process. Select Language, Time and Keyboard options then press next.</p></li>
+<li><p>Click Install Now.</p></li>
+<li><p>Accept Terms and Conditions</p></li>
+<li><p>Select Custom: Install Windows Only.</p></li>
+<li><p>Wipe out all existing partitions on the main SSD, then create the following:</p>
+<ul>
+<li>A main 120GB partition for windows</li>
+<li>A 500GB partition for passthrough between Windows and Linux OS installs.</li>
+</ul>
+<p>These will both be NTFS. Windowe will create additional partitions at the beginning of the partition list for recovery ETC.</p></li>
+<li><p>Select the 120GB partiton to install windows on.</p></li>
+<li><p>Wait for several reboots</p></li>
+<li><p>Select Customize Settings option on Express Settings Prompt.</p></li>
+<li><p>Turn off all Privacy and tracking options</p></li>
+<li><p>When prompted to create an account, click join a Domain and follow prompts to create a local account.</p></li>
+<li><p>After setup is finished, uninstall all apps that can be uninstalled, and clean up the start menu.</p></li>
+<li><p>Install Lenovo Vantage from Lenovo's website and make sure BIOS and drivers are installed and up to date. (Especially important for Thunderbolt devices)</p></li>
+</ol>
+<h4 id="refind-installation">
+rEFInd Installation
+</h4>
+<p>Install rEFInd boot manager. These steps are shamelessly reappropriated and modified from <a href="https://rodsbooks.com/refind/installing.html#windows" class="uri">https://rodsbooks.com/refind/installing.html#windows</a></p>
+<pre><code>1. Download rEFInd as a binary ZIP file from reputable sources, currently: &lt;https://rodsbooks.com/refind/getting.html&gt;
+2. Unzip the file in a place you can find it. Usually Desktop or Downloads is best.
+3. Open an Administrator Command Prompt.
+4. Type `mountvol S: /S` in the Administrator Command Prompt window. This makes the ESP accessible as drive S: from that window. (You can use a drive identifier other than S: if you like.)
+    5. Use `CD` command to change into the main rEFInd package directory, so that the refind subdirectory is visible when you type dir.
+    6. Type `xcopy /E refind S:\EFI\refind\` to copy the refind directory tree to the ESP&#39;s EFI directory. If you omit the trailing backslash from this command, xcopy will ask if you want to create the refind directory. Tell it to do so.
+    7. Type `S:` to change to the ESP. (This changes which drive is active in Command Prompt)
+    8. Type `cd EFI\refind` to change into the refind subdirectory
+    9. Delete the  drivers_ia32, refind_ia32.efi, tools_ia32, drivers_aa64, refind_aa64.efi and tools_aa64 files and directories using the `DEL` command. Unnecessary drivers will slow the rEFInd start process.
+    10. Type `rename refind.conf-sample refind.conf` to rename rEFInd&#39;s configuration file.
+    11. Type `bcdedit /set &quot;{bootmgr}&quot; path \EFI\refind\refind_x64.efi` to set rEFInd as the default EFI boot program. Note that &quot;{bootmgr}&quot; is entered as such, including both the quotes and braces ({}).
+    12. Type `bcdedit /set &quot;{bootmgr}&quot; description &quot;rEFInd description&quot;` to set a description (change rEFInd description as you see fit).</code></pre>
+<p>Now, when the laptop is rebooted, rEFInd should present itself with an option to boot into windows 10.</p>
+<h4 id="void-linux-installation">
+Void Linux Installation
+</h4>
+<ol style="list-style-type: decimal">
+<li>Download a copy of <code>void-live-x86_64-date.iso</code> from reputable sources, currently: <a href="https://alpha.de.repo.voidlinux.org/live/current/" class="uri">https://alpha.de.repo.voidlinux.org/live/current/</a></li>
+<li><p>Create bootable USB stick using <code>dd</code> or whatever windows tool is the popular thing and preferably doesn't use electron.</p></li>
+<li><p>Use <code>cfdisk</code> to expand main partition from 2GB to remaining size of MicroSD card.</p></li>
+<li><p>Login as root with default password of <code>void-linux</code></p></li>
+<li><p>Need to get correct time and network set up in order to update system and install packages (as root) Remember that the only available text editor is <code>vi</code>!</p>
+<ol style="list-style-type: decimal">
+<li><p>Configure static IP address by editing <code>/etc/dhcpd.conf</code> with the following lines at the bottom of the file. Actual IP addresses are found in the network documentation. We use DHCP rather than manual <code>ip</code> commands in <code>/etc/rc.local</code> to take advantage of other aspects of DHCP including auto DNS server population and domain name.</p>
+<pre class="conf"><code>interface eth0
+static ip_address=$IPaddress
+static routers=$defaultgateway</code></pre></li>
+<li><p>edit <code>/etc/rc.conf</code> and change the following lines to set keymap and timezone</p>
+<pre class="conf"><code>TIMEZONE=&quot;America/Denver&quot; # or appropriate timezone
+KEYMAP=&quot;us&quot;</code></pre></li>
+<li><p>Enable NTP and DHCP services</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ln</span> -s /etc/sv/ntpd /var/service
+<span class="kw">ln</span> -s /etc/sv/dhcpcd /var/service</code></pre></div></li>
+<li><p>Check <code>/etc/ntpd.conf</code> for constraints line, and comment out. This doesn't work on Raspi due to lack of HWCLK</p></li>
+<li><p>Create new non-root user, replacing $newusername with the actual name of the user. This command adds the user to the wheel group, which allows <code>sudo</code> access</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">useradd</span> -m -s /bin/bash -U -G wheel,users,audio,video,cdrom,input <span class="ot">$newusername</span></code></pre></div></li>
+<li><p>Set system hostname by editing <code>/etc/hostname</code></p></li>
+</ol></li>
+<li><p>Reboot the system using <code>reboot</code> command. This should allow DHCP and NTP to do their thing and allow us to update the system and install new packages.</p></li>
+<li><p>Log in as the new user you created</p></li>
+<li><p>Update the system by running the following command until there is no output.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install -Svu</code></pre></div></li>
+<li><p>Install and remove the following packages. Want to use simpler NTP implementation.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install nano network-ups-tools openntpd rng-tools thefuck vim htop
+<span class="kw">sudo</span> xbps-remove chrony</code></pre></div></li>
+</ol>
+<h3 id="nut-config">
+NUT Configuration
+</h3>
+<p>Config files for Network UPS Tool (NUT) are found at <code>/etc/ups/</code></p>
+<p><code>nut.conf</code> has a few global config options, which are not important on void.</p>
+<p><code>ups.conf</code> is where you configure what UPSes the system will be interacting with</p>
+<p><code>upsd.conf</code> is the configuration for the UPS data server</p>
+<p>Configuration steps as follows:</p>
+<ol style="list-style-type: decimal">
+<li><p>Edit <code>/etc/ups/nut.conf</code> and set <code>MODE=netserver</code>. This is not strictly required on void, but still better to set.</p></li>
+<li><p>Run <code>nut-scanner</code> to generate config options for attached UPSes</p></li>
+<li><p>Edit <code>/etc/ups/ups.conf</code> and add the results of <code>nut-scanner</code> to the begining of the file, except the vendor line. Add <code>[cyberpower]</code> before. See syntax examples in config file.</p></li>
+<li><p>Edit <code>/etc/ups/upsd.conf</code> and update listen directive to the IP address of the local system.</p></li>
+<li>Edit <code>/etc/ups/upsd.users</code> and add an <code>admin</code> user, and <code>upsmon</code> users with passwords from password safe. One <code>upsmon</code> user per machine connected to UPS.
+<ul>
+<li>admin user has set actions and all instcmds</li>
+<li>upsmon user is set up per example in config file with slave attributes</li>
+</ul></li>
+</ol>
+<p>Need to change ownership of config files on void linux as the default is set up incorrectly</p>
+<p><code>sudo chown root:nut /etc/ups/*</code> <code>sudo chmod 640 /etc/ups/*</code></p>
+<p>start the following services:</p>
+<p><code>bash sudo ln -s /etc/sv/upsdrvctl/ /var/service sudo ln -s /etc/sv/upsd/ /var/service</code></p>
+<p>check status of ups with the following command to make sure it is detected properly</p>
+<pre class="tags"><code>build-script, rack-monitor, notes</code></pre>
+</body>
+</html>

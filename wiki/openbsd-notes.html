@@ -68,7 +68,7 @@ PACKAGE_REPOSITORY=/usr/packages</code></pre>
 cngrp wsrc ports src
 chmod 775 ports src</code></pre>
 <p>add the following lines to <code>doas.conf</code> and add <code>SUDO=doas</code> to <code>/etc/mk.conf</code></p>
-<pre><code>permit keepenv nopass toxic as _pbuild
+<pre class="doas"><code>permit keepenv nopass toxic as _pbuild
 permit keepenv nopass toxic as _pfetch</code></pre>
 <p>add user to <code>wsrc</code> group: <code>doas usermod -G wsrc toxic</code>.</p>
 <p>Also add</p>
