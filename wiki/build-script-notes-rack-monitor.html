@@ -48,11 +48,11 @@ Build Script
 Initial Configuration
 </h3>
 <ol style="list-style-type: decimal">
-<li>Download the rpi2-musl image of void linux from reputable sources, currently <a href="https://alpha.de.repo.voidlinux.org/live/current/">here</a></li>
-<li>Burn image to MicroSD card using either <code>dd</code> or whatever windows tool is the popular thing and preferably doesn't use electron.</li>
-<li>Use <code>cfdisk</code> to expand main partition from 2GB to remaining size of MicroSD card.</li>
-<li>Login as root with default password of <code>void-linux</code></li>
-<li>Need to get correct time and network set up in order to update system and install packages (as root) Remember that the only available text editor is <code>vi</code>!
+<li><p>Download the rpi2-musl image of void linux from reputable sources, currently <a href="https://alpha.de.repo.voidlinux.org/live/current/">here</a></p></li>
+<li><p>Burn image to MicroSD card using either <code>dd</code> or whatever windows tool is the popular thing and preferably doesn't use electron.</p></li>
+<li><p>Use <code>cfdisk</code> to expand main partition from 2GB to remaining size of MicroSD card.</p></li>
+<li><p>Login as root with default password of <code>void-linux</code></p></li>
+<li><p>Need to get correct time and network set up in order to update system and install packages (as root) Remember that the only available text editor is <code>vi</code>!</p>
 <ol style="list-style-type: decimal">
 <li><p>Configure static IP address by editing <code>/etc/dhcpd.conf</code> with the following lines at the bottom of the file. Actual IP addresses are found in the network documentation. We use DHCP rather than manual <code>ip</code> commands in <code>/etc/rc.local</code> to take advantage of other aspects of DHCP including auto DNS server population and domain name.</p>
 <pre class="conf"><code>interface eth0
@@ -64,13 +64,13 @@ KEYMAP=&quot;us&quot;</code></pre></li>
 <li><p>Enable NTP and DHCP services</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ln</span> -s /etc/sv/ntpd /var/service
 <span class="kw">ln</span> -s /etc/sv/dhcpcd /var/service</code></pre></div></li>
-<li>Check <code>/etc/ntpd.conf</code> for constraints line, and comment out. This doesn't work on Raspi due to lack of HWCLK</li>
+<li><p>Check <code>/etc/ntpd.conf</code> for constraints line, and comment out. This doesn't work on Raspi due to lack of HWCLK</p></li>
 <li><p>Create new non-root user, replacing $newusername with the actual name of the user. This command adds the user to the wheel group, which allows <code>sudo</code> access</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">useradd</span> -m -s /bin/bash -U -G wheel,users,audio,video,cdrom,input <span class="ot">$newusername</span></code></pre></div></li>
-<li>Set system hostname by editing <code>/etc/hostname</code></li>
+<li><p>Set system hostname by editing <code>/etc/hostname</code></p></li>
 </ol></li>
-<li>Reboot the system using <code>reboot</code> command. This should allow DHCP and NTP to do their thing and allow us to update the system and install new packages.</li>
-<li>Log in as the new user you created</li>
+<li><p>Reboot the system using <code>reboot</code> command. This should allow DHCP and NTP to do their thing and allow us to update the system and install new packages.</p></li>
+<li><p>Log in as the new user you created</p></li>
 <li><p>Update the system by running the following command until there is no output.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install -Svu</code></pre></div></li>
 <li><p>Install and remove the following packages. Want to use simpler NTP implementation.</p>
@@ -86,10 +86,10 @@ NUT Configuration
 <p><code>upsd.conf</code> is the configuration for the UPS data server</p>
 <p>Configuration steps as follows:</p>
 <ol style="list-style-type: decimal">
-<li>Edit <code>/etc/ups/nut.conf</code> and set <code>MODE=netserver</code>. This is not strictly required on void, but still better to set.</li>
-<li>Run <code>nut-scanner</code> to generate config options for attached UPSes</li>
-<li>Edit <code>/etc/ups/ups.conf</code> and add the results of <code>nut-scanner</code> to the begining of the file, except the vendor line. Add <code>[cyberpower]</code> before. See syntax examples in config file.</li>
-<li>Edit <code>/etc/ups/upsd.conf</code> and update listen directive to the IP address of the local system.</li>
+<li><p>Edit <code>/etc/ups/nut.conf</code> and set <code>MODE=netserver</code>. This is not strictly required on void, but still better to set.</p></li>
+<li><p>Run <code>nut-scanner</code> to generate config options for attached UPSes</p></li>
+<li><p>Edit <code>/etc/ups/ups.conf</code> and add the results of <code>nut-scanner</code> to the begining of the file, except the vendor line. Add <code>[cyberpower]</code> before. See syntax examples in config file.</p></li>
+<li><p>Edit <code>/etc/ups/upsd.conf</code> and update listen directive to the IP address of the local system.</p></li>
 <li>Edit <code>/etc/ups/upsd.users</code> and add an <code>admin</code> user, and <code>upsmon</code> users with passwords from password safe. One <code>upsmon</code> user per machine connected to UPS.
 <ul>
 <li>admin user has set actions and all instcmds</li>

@@ -82,14 +82,13 @@ VFIO/KVM/QEMU Configuration
 </h3>
 <ol style="list-style-type: decimal">
 <li><code>xbps-install dbus qemu libvirtd virt-manager bridge-utils iptables2</code></li>
-<li></li>
 </ol>
 <p>ln -s /etc/sv/dbus /var/service ln -s /etc/sv/libvirtd /var/service ln -s /etc/sv/virtlockd /var/service ln -s /etc/sv/virtlogd /var/service</p>
 <p>it is not in xbps so need to manually download from <a href="https://www.kraxel.org/repos/jenkins/edk2/" class="uri">https://www.kraxel.org/repos/jenkins/edk2/</a> as of the writing of this build. Download the ovmf appropriate either 32 or 64 bit version then use</p>
 <p>install rpmextract package xbps</p>
-<pre><code>rpm2cpio &lt;file&gt;.rpm | xz -d | cpio -idmv</code></pre>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rpm2cpio</span> <span class="kw">&lt;</span>file<span class="kw">&gt;</span>.rpm <span class="kw">|</span> <span class="kw">xz</span> -d <span class="kw">|</span> <span class="kw">cpio</span> -idmv</code></pre></div>
 <p>otherwise you could try:</p>
-<pre><code>rpm2cpio &lt;file&gt;.rpm | lzma -d | cpio -idmv</code></pre>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rpm2cpio</span> <span class="kw">&lt;</span>file<span class="kw">&gt;</span>.rpm <span class="kw">|</span> <span class="kw">lzma</span> -d <span class="kw">|</span> <span class="kw">cpio</span> -idmv</code></pre></div>
 <p>to extract the files needed.</p>
 <p><code>./user/share</code> is inside the extracted filesystem</p>
 <p>copy files in <code>./usr/share/edk2.git/ovmf-x64</code> to <code>/usr/share/ovmf</code></p>

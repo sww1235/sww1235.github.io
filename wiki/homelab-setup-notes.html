@@ -51,32 +51,35 @@ Overview
 Future Plans
 </h2>
 <ul>
-<li>Move fileserver duties from main workstation to dedicated FreeNAS file server with ZFS</li>
-<li>Migrate to 10Gb networking</li>
-<li><s>Add UPS</s></li>
-<li>Upgrade brian</li>
-<li>Setup pfsense box at parents house</li>
-<li>Setup reciprocal offsite backups at parents house.</li>
+<li>Move fileserver duties from main workstation to dedicated FreeNAS file</li>
+</ul>
+<p>server with ZFS</p>
+<ul>
+<li><p>Migrate to 10Gb networking</p></li>
+<li><p><s>Add UPS</s></p></li>
+<li><p>Upgrade brian</p></li>
+<li><p>Setup pfsense box at parents house</p></li>
+<li><p>Setup reciprocal offsite backups at parents house.</p></li>
 </ul>
 <h2 id="far-future-plans">
 Far Future Plans
 </h2>
 <ul>
-<li>All servers either run OpenBSD or FreeBSD unless specific exception is needed.</li>
-<li>Package caching servers used for all 3rd party binary packaging systems in use in homelab</li>
-<li>All computers run custom linux image, probably a modified version of void linux</li>
-<li>All linux software (including kernel) is compiled from source, targeting different architectures as necessary.</li>
-<li>All source code for compiled software is kept in an archive as long as that version is installed in a production or testing environment, and minimally for a period of 1 year if it has been installed.
+<li><p>All servers either run OpenBSD or FreeBSD unless specific exception is needed.</p></li>
+<li><p>Package caching servers used for all 3rd party binary packaging systems in use in homelab</p></li>
+<li><p>All computers run custom linux image, probably a modified version of void linux</p></li>
+<li><p>All linux software (including kernel) is compiled from source, targeting different architectures as necessary.</p></li>
+<li><p>All source code for compiled software is kept in an archive as long as that version is installed in a production or testing environment, and minimally for a period of 1 year if it has been installed.</p>
 <ul>
 <li>If software is not updated, then keep most complete version. clone git repo if possible.</li>
 </ul></li>
-<li>As much as possible, all images use musl libc or derivative.</li>
-<li>Use automated continuous integration process for new software versions
+<li><p>As much as possible, all images use musl libc or derivative.</p></li>
+<li><p>Use automated continuous integration process for new software versions</p>
 <ul>
-<li>For all software, try to automatically pull down new releases of software and build in testing environment. Send weekly email of successes and failures.</li>
-<li>Software is manually pushed into production using automation similar to Ansible.</li>
+<li><p>For all software, try to automatically pull down new releases of software and build in testing environment. Send weekly email of successes and failures.</p></li>
+<li><p>Software is manually pushed into production using automation similar to Ansible.</p></li>
 </ul></li>
-<li>Ideally I would be able to take a stock OpenBSD image, clone some setup scripts, and be able to build images for the rest of the server infrastructure, then install them using a network boot server. This would have a temporary DHCP and DNS server, along with a firewall and router config based on pf, to allow the network to exist without any other infrastructure. This would be easily disabled during the initial script options, as well as after the fact.</li>
+<li><p>Ideally I would be able to take a stock OpenBSD image, clone some setup scripts, and be able to build images for the rest of the server infrastructure, then install them using a network boot server. This would have a temporary DHCP and DNS server, along with a firewall and router config based on pf, to allow the network to exist without any other infrastructure. This would be easily disabled during the initial script options, as well as after the fact.</p></li>
 </ul>
 <h2 id="hosts">
 Hosts
