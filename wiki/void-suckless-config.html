@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <meta name="author" content="Stephen Walker-Weinshenker">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="styles/main.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<title>void-suckless-config</title>
+</head>
+<body>
+<div id="top">
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</div>
+<div id="topnavbar">
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="stuff.html">Stuff</a>
+            <ul>
+                <li><a href="https://github.com/sww1235">Github</a></li>
+                <li><a href="wiki/index.html">Wiki</a></li>
+
+            </ul>
+        </li>
+        <li><a href="blog-contents">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+
+    </ul>
+</div>
+<h1 id="top">
+Contributing
+</h1>
+<p>How I setup suckless software such as st and dwm on void linux using <code>void-packages</code> and <code>xbps-src</code>.</p>
+<p>Note:</p>
+<p>If you use the <code>build-branch</code> branch of my fork of the <code>void-packages</code> repo, then all these changes should already be in place. Rebasing may be necessary if version bumps have happened.</p>
+<h2 id="prereqs">
+Prerequisites
+</h2>
+<p>Setup <code>void-packages</code> according to the instructions <a href="void-packages-setup">here</a></p>
+<h2 id="dwm">
+DWM install
+</h2>
+<p>First thing we want to do, is add patches.</p>
+<p>Create a <code>patches</code> directory in <code>srcpkgs/dwm/</code></p>
+<h2 id="slstatus">
+slstatus
+</h2>
+<p>Configure <code>config.h</code> in <code>srcpkgs/slstatus/files</code></p>
+<p>The format argument in the struct in <code>config.h</code> uses <code>sprintf</code> format string syntax. All variables are strings.</p>
+<pre class="tags"><code>Contributing, info</code></pre>
+</body>
+</html>
