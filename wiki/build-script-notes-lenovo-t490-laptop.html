@@ -142,29 +142,34 @@ Void Linux Configuration
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">xbps-install</span> ntfs-3g</code></pre></div></li>
 <li><p>Reboot system and login as normal user.</p></li>
 <li><p>Enable trim on SSD by editing <code>/ete/fstab</code> and adding <code>,discard</code> after the defaults line on the <code>/</code> and <code>/mnt/passthrough</code> mountpoints.</p></li>
-<li><p>Install and remove the following packages. Want to use simpler NTP implementation. <code>bash sudo xbps-install nano openntpd rng-tools thefuck vim htop socklog sudo xbps-remove chrony</code></p></li>
+<li><p>Install and remove the following packages. Want to use simpler NTP implementation.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install nano openntpd rng-tools thefuck vim htop socklog
+<span class="kw">sudo</span> xbps-remove chrony</code></pre></div></li>
 <li><p>Install commonly used applications.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install firefox freecad git glow kicad lynx netcat p7zip powertop
 <span class="kw">rsync</span> tmux unzip wget zip</code></pre></div></li>
-<li><p>Create Projects directory tree in <code>~</code> as follows: <code>~/Projects/src/github.com/sww1235</code>. This mirrors the structure of how golang wants to set things up.</p></li>
+<li><p>Create Projects directory tree in <code>~</code> as follows:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> -p ~/Projects/src/github.com/sww1235</code></pre></div>
+<p>This mirrors the structure of how golang wants to set things up.</p></li>
+<li><p>Clone dotfiles repo from GitHub and install vim and bash files using <code>install.sh</code> script.</p></li>
 <li><p>Clone projects from github into Projects tree as desired.</p></li>
 <li><p>Set up void-packages per the <a href="void-packages-setup.html">instructions</a> in this wiki.</p></li>
-<li><p>Make sure <code>build-branch</code> in fork of <code>void-packages</code> is checked out, and up to date with desired patches. See the <a href="void-suckless-config.html">suckless page</a> for more info.</p></li>
+<li><p>Make sure <code>build-branch-the-machine</code> in my fork of <code>void-packages</code> is checked out, and up to date with desired patches. See the <a href="void-suckless-config.html">suckless page</a> for more info.</p></li>
 <li><p>Build binary packages of <code>dwm</code>, <code>dmenu</code>, <code>st</code> and <code>slstatus</code> as follows:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> ~/Projects/src/github.com/sww1235/void-packages
-<span class="kw">./xbps-src</span> pkg slstatus
 <span class="kw">./xbps-src</span> pkg dwm
 <span class="kw">./xbps-src</span> pkg dmenu
-<span class="kw">./xbps-src</span> pkg st</code></pre></div></li>
+<span class="kw">./xbps-src</span> pkg st
+<span class="kw">./xbps-src</span> pkg slstatus</code></pre></div></li>
 <li><p>Install <code>dwm</code>, <code>dmenu</code>, <code>st</code> and <code>slstatus</code> with the command:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install --repository=hostdir/binpkgs/ slstatus dwm dmenu st</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install --repository=hostdir/binpkgs/build-branch-the-machine dwm dmenu st slstatus</code></pre></div></li>
 <li><p>Modify ~/.xinitrc to contain the following:</p>
 <pre class="xinitrc"><code>slstatus &amp;
 exec dwm</code></pre></li>
 <li><p>Install <code>tlp</code> for power management:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install tlp
 <span class="kw">sudo</span> ln -s /etc/sv/tlp /var/service</code></pre></div></li>
-<li><p>Need to set up bumblebee/optimus for graphics, set up dotfiles, set up ssh-agent, set up dropbox and 1password cli client.</p></li>
+<li><p>Need to set up bumblebee/optimus for graphics, set up ssh-agent, set up dropbox and 1password cli client.</p></li>
 </ol>
 <pre class="tags"><code>build-script, void-linux,laptop, lenovo, notes</code></pre>
 </body>

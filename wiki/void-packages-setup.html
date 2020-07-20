@@ -49,10 +49,11 @@ Building packages from source
 </h2>
 <ol style="list-style-type: decimal">
 <li><p><code>cd</code> into local git repo of <code>void-packages</code> and run <code>./xbps-src binary-bootstrap</code>. This will initialize the packages necessary for building software.</p></li>
-<li><p>To enable both custom contributions to void-packages, and building modified software with patches, use a separate git branch to actually build your custom packages from. I use a branch called <code>build-branch</code> created with <code>git checkout -b build-branch</code>. Whenever you want to build your custom software, checkout that branch first.</p></li>
+<li><p>To enable both custom contributions to void-packages, and building modified software with patches, use a separate git branch to actually build your custom packages from. I use a branch called <code>build-branch-$hostname</code> created with <code>git checkout -b build-branch-$hostname</code>. Whenever you want to build your custom software, checkout that branch first. I use a branch per hostname to enable unique changes per machine. This is especially important for suckless software such as dwm.</p></li>
 </ol>
-<p>A side effect of using a custom <code>build-branch</code> is that all custom changes will have full git history and can be easily applied without having to go through all the effort of rebuilding the patch files.</p>
+<p>A side effect of using a custom <code>build-branch-$hostname</code> is that all custom changes will have full git history and can be easily applied without having to go through all the effort of rebuilding the patch files.</p>
 <p>patches are stored in <code>srcpkgs/&lt;pkgname&gt;/patches</code></p>
+<p>To install custom software from a branch, need to use --repository=hostdir/binpkgs/$branch</p>
 <pre class="tags"><code>void-linux, void-packages, source, building</code></pre>
 </body>
 </html>
