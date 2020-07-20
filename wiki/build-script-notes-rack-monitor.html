@@ -34,13 +34,10 @@
 <h1 id="top">
 Rack Monitor Build Script and Notes
 </h1>
-<p>This is the build script and notes for the raspberry pi that monitors my Rack and</p>
+<p>This is the build script and notes for the raspberry pi that monitors my Rack and UPS.</p>
 <h2 id="notes">
 Notes
 </h2>
-<ul>
-<li></li>
-</ul>
 <h2 id="build-script">
 Build Script
 </h2>
@@ -58,10 +55,10 @@ Initial Configuration
 <pre class="conf"><code>interface eth0
 static ip_address=$IPaddress
 static routers=$defaultgateway</code></pre></li>
-<li><p>edit <code>/etc/rc.conf</code> and change the following lines to set keymap and timezone</p>
+<li><p>edit <code>/etc/rc.conf</code> and change the following lines to set keymap and timezone:</p>
 <pre class="conf"><code>TIMEZONE=&quot;America/Denver&quot; # or appropriate timezone
 KEYMAP=&quot;us&quot;</code></pre></li>
-<li><p>Enable NTP and DHCP services</p>
+<li><p>Enable NTP and DHCP services:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ln</span> -s /etc/sv/ntpd /var/service
 <span class="kw">ln</span> -s /etc/sv/dhcpcd /var/service</code></pre></div></li>
 <li><p>Check <code>/etc/ntpd.conf</code> for constraints line, and comment out. This doesn't work on Raspi due to lack of HWCLK</p></li>
@@ -90,14 +87,15 @@ NUT Configuration
 <li><p>Run <code>nut-scanner</code> to generate config options for attached UPSes</p></li>
 <li><p>Edit <code>/etc/ups/ups.conf</code> and add the results of <code>nut-scanner</code> to the begining of the file, except the vendor line. Add <code>[cyberpower]</code> before. See syntax examples in config file.</p></li>
 <li><p>Edit <code>/etc/ups/upsd.conf</code> and update listen directive to the IP address of the local system.</p></li>
-<li>Edit <code>/etc/ups/upsd.users</code> and add an <code>admin</code> user, and <code>upsmon</code> users with passwords from password safe. One <code>upsmon</code> user per machine connected to UPS.
+<li><p>Edit <code>/etc/ups/upsd.users</code> and add an <code>admin</code> user, and <code>upsmon</code> users with passwords from password safe. One <code>upsmon</code> user per machine connected to UPS.</p>
 <ul>
 <li>admin user has set actions and all instcmds</li>
 <li>upsmon user is set up per example in config file with slave attributes</li>
 </ul></li>
 </ol>
-<p>Need to change ownership of config files on void linux as the default is set up incorrectly</p>
-<p><code>sudo chown root:nut /etc/ups/*</code> <code>sudo chmod 640 /etc/ups/*</code></p>
+<p>Need to change ownership of config files on void linux as the default is set up incorrectly:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> chown root:nut /etc/ups/*
+<span class="kw">sudo</span> chmod 640 /etc/ups/*</code></pre></div>
 <p>start the following services:</p>
 <p><code>bash sudo ln -s /etc/sv/upsdrvctl/ /var/service sudo ln -s /etc/sv/upsd/ /var/service</code></p>
 <p>check status of ups with the following command to make sure it is detected properly</p>
