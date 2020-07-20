@@ -36,7 +36,7 @@ Contributing
 </h1>
 <p>How I setup suckless software such as st and dwm on void linux using <code>void-packages</code> and <code>xbps-src</code>.</p>
 <p>Note:</p>
-<p>If you use the <code>build-branch</code> branch of my fork of the <code>void-packages</code> repo, then all these changes should already be in place. Rebasing may be necessary if version bumps have happened.</p>
+<p>If you use the <code>build-branch-$hostname</code> branch of my fork of the <code>void-packages</code> repo, then all these changes should already be in place. Rebasing and debugging may be necessary if version bumps have happened.</p>
 <h2 id="prereqs">
 Prerequisites
 </h2>
@@ -45,12 +45,21 @@ Prerequisites
 DWM install
 </h2>
 <p>First thing we want to do, is add patches.</p>
-<p>Create a <code>patches</code> directory in <code>srcpkgs/dwm/</code></p>
+<p>Create a <code>patches</code> directory in <code>srcpkgs/dwm/</code> then add the following patches to the correct machine specific build-branch.</p>
+<h3 id="status2d">
+status2d
+</h3>
+<p>wget correct patch for dwm from suckless website</p>
+<h3 id="status2d-the-machine">
+Host: The Machine
+</h3>
+<p>add the following to config.h</p>
 <h2 id="slstatus">
 slstatus
 </h2>
 <p>Configure <code>config.h</code> in <code>srcpkgs/slstatus/files</code></p>
 <p>The format argument in the struct in <code>config.h</code> uses <code>sprintf</code> format string syntax. All variables are strings.</p>
+<p>this can use flags from <a href="#status2d">status2d</a> in its format strings if the status2d patch is included in dwm.</p>
 <pre class="tags"><code>Contributing, info</code></pre>
 </body>
 </html>
