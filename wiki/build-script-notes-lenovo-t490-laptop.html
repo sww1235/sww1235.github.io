@@ -148,6 +148,14 @@ Void Linux Configuration
 <li><p>Install commonly used applications.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install firefox freecad git glow kicad lynx netcat p7zip powertop
 <span class="kw">rsync</span> tmux unzip wget zip</code></pre></div></li>
+<li><p>Setup system logging using socklog</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install socklog-void
+<span class="co"># enable services</span>
+<span class="kw">sudo</span> ln -s /etc/sv/socklog-unix/ /var/service
+<span class="kw">sudo</span> ln -s /etc/sv/nanoklogd/ /var/service
+<span class="co"># add user to log group</span>
+<span class="kw">sudo</span> usermod -a -G socklog <span class="ot">$USER</span>
+<span class="co"># log out and log back in</span></code></pre></div></li>
 <li><p>Create Projects directory tree in <code>~</code> as follows:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> -p ~/Projects/src/github.com/sww1235</code></pre></div>
 <p>This mirrors the structure of how golang wants to set things up.</p></li>
