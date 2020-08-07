@@ -233,6 +233,17 @@ exec dwm</code></pre></li>
 <li><p>Install <code>tlp</code> for power management:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install tlp
 <span class="kw">sudo</span> ln -s /etc/sv/tlp /var/service</code></pre></div></li>
+<li><p>Setup CUPS for printing:</p>
+<ol style="list-style-type: decimal">
+<li>Install and enable the service:</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install cups
+<span class="kw">sudo</span> ln -s /etc/sv/cupsd/ /var/service</code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li><p>Edit /etc/cups/cupsd.conf, find line that starts with <code>&lt;Limit CUPS-Add-Modify-Printer</code> and add <code>toxicsauce</code> after <code>@SYSTEM</code></p></li>
+<li><p>Restart <code>cupsd</code> service</p></li>
+<li><p>go to <a href="http://localhost:631/" class="uri">http://localhost:631/</a> to configure</p></li>
+</ol></li>
 <li><p>Need to set up bumblebee/optimus for graphics, set up dropbox and 1password cli client.</p></li>
 </ol>
 <pre class="tags"><code>build-script, void-linux,laptop, lenovo, notes</code></pre>
