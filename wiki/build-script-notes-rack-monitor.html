@@ -52,9 +52,13 @@ Initial Configuration
 <li><p>Need to get correct time and network set up in order to update system and install packages (as root) Remember that the only available text editor is <code>vi</code>!</p>
 <ol style="list-style-type: decimal">
 <li><p>Configure static IP address by editing <code>/etc/dhcpd.conf</code> with the following lines at the bottom of the file. Actual IP addresses are found in the network documentation. We use DHCP rather than manual <code>ip</code> commands in <code>/etc/rc.local</code> to take advantage of other aspects of DHCP including auto DNS server population and domain name.</p>
+<p>also uncomment ntp_servers option</p>
+<p>dns server is usually pfsense default gateway</p>
 <pre class="conf"><code>interface eth0
+inform ip_address=$IPaddress
 static ip_address=$IPaddress
-static routers=$defaultgateway</code></pre></li>
+static routers=$defaultgateway
+static domain_name_servers=$dnsserver</code></pre></li>
 <li><p>edit <code>/etc/rc.conf</code> and change the following lines to set keymap and timezone:</p>
 <pre class="conf"><code>TIMEZONE=&quot;America/Denver&quot; # or appropriate timezone
 KEYMAP=&quot;us&quot;</code></pre></li>
@@ -62,6 +66,7 @@ KEYMAP=&quot;us&quot;</code></pre></li>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ln</span> -s /etc/sv/ntpd /var/service
 <span class="kw">ln</span> -s /etc/sv/dhcpcd /var/service</code></pre></div></li>
 <li><p>Check <code>/etc/ntpd.conf</code> for constraints line, and comment out. This doesn't work on Raspi due to lack of HWCLK</p></li>
+<li><p>Add <code>server $gateway</code> to <code>/etc/ntpd.conf</code> since it doesn't seem to pick it up from DHCP. NTP server will usually be the pfsense gateway, but use whatever machine is actually the NTP server</p></li>
 <li><p>Create new non-root user, replacing $newusername with the actual name of the user. This command adds the user to the wheel group, which allows <code>sudo</code> access</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">useradd</span> -m -s /bin/bash -U -G wheel,users,audio,video,cdrom,input <span class="ot">$newusername</span></code></pre></div></li>
 <li><p>Set system hostname by editing <code>/etc/hostname</code></p></li>
@@ -70,9 +75,16 @@ KEYMAP=&quot;us&quot;</code></pre></li>
 <li><p>Log in as the new user you created</p></li>
 <li><p>Update the system by running the following command until there is no output.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install -Svu</code></pre></div></li>
-<li><p>Install and remove the following packages. Want to use simpler NTP implementation.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install nano network-ups-tools openntpd rng-tools thefuck vim htop
-<span class="kw">sudo</span> xbps-remove chrony</code></pre></div></li>
+<li><p>Install the following packages.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install nano network-ups-tools rng-tools thefuck vim htop</code></pre></div></li>
+<li><p>Install terminfo package to fix issues with ssh</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install st-terminfo</code></pre></div></li>
+<li><p>Setup syslog daemon</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install socklog-void
+<span class="kw">sudo</span> ln -s /etc/sv/socklog-unix /var/service
+<span class="kw">sudo</span> ln -s /etc/sv/nanoklogd /var/service
+<span class="co"># so normal user can access logs</span>
+<span class="kw">sudo</span> usermod -a -G socklog <span class="ot">$USER</span></code></pre></div></li>
 </ol>
 <h3 id="nut-config">
 NUT Configuration
@@ -99,6 +111,7 @@ NUT Configuration
 <p>start the following services:</p>
 <p><code>bash sudo ln -s /etc/sv/upsdrvctl/ /var/service sudo ln -s /etc/sv/upsd/ /var/service</code></p>
 <p>check status of ups with the following command to make sure it is detected properly</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">upsc</span> cyberpower</code></pre></div>
 <pre class="tags"><code>build-script, rack-monitor, notes</code></pre>
 </body>
 </html>
