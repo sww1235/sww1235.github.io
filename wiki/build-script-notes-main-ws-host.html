@@ -34,7 +34,7 @@
 <h1 id="top">
 Main Workstation Build Script and Notes
 </h1>
-<p>This is the build script for my main workstation PC and associated VMs</p>
+<p>This is the build script for my main workstation PC and associated VMs.</p>
 <h2 id="notes">
 Notes
 </h2>
@@ -71,7 +71,7 @@ Initial Configuration
 <li><p>Log in as the new user you created</p></li>
 <li><p>Update the system by running the following command until there is no output.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install -Svu</code></pre></div></li>
-<li><p>Install the following packages. The st-terminfo install fixes <code>st-256color    unknown terminal type</code> issues as well as backspace and tab issues when sshing in from other computers using the <code>st</code> terminal emulator</p>
+<li><p>Install the following packages. The st-terminfo install fixes <code>st-256color unknown terminal type</code> issues as well as backspace and tab issues when sshing in from other computers using the <code>st</code> terminal emulator.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install nano thefuck vim st-terminfo</code></pre></div></li>
 <li><p>Setup system logging using socklog</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install socklog-void
@@ -194,7 +194,7 @@ VFIO/KVM/QEMU Configuration
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ip</span> link add name vmbridge type bridge
 <span class="kw">ip</span> link set vmbridge up</code></pre></div></li>
 <li><p>need to add interface to bridge</p></li>
-<li><p>create acl file at <code>/etc/qemu/bridge.conf</code></p></li>
+<li><p>create acl file at <code>/etc/qemu/bridge.conf</code> and set contents to <code>allow all</code></p></li>
 <li><p>since we are running as -user kvm, need to edit <code>/etc/security/limits.conf</code> and increase them for user kvm, as well as root and main user. This allows us to grant large amounts of memory to the guest.</p>
 <p>Add the following lines to the file.</p>
 <pre class="conf"><code>@kvm        soft    memlock unlimited
@@ -202,8 +202,39 @@ VFIO/KVM/QEMU Configuration
 toxicsauce  soft    memlock unlimited
 toxicsauce  hard    memlock unlimited
 root        soft    memlock unlimited
-root        hard    memlock unlimited</code></pre></li>
-<li></li>
+root        hard    memlock unlimited</code></pre>
+<p>From: <a href="https://stackoverflow.com/questions/39187619/vfio-dma-map-error-when-passthrough-gpu-using-libvirt" class="uri">https://stackoverflow.com/questions/39187619/vfio-dma-map-error-when-passthrough-gpu-using-libvirt</a></p></li>
+<li><p>Set up kernel drivers for PCIe passthrough.</p>
+<ol style="list-style-type: decimal">
+<li><p>Create file <code>blacklist.conf</code> in `/etc/modprobe.d/ and add the following to the contents. This prevents the nouveau driver from loading and taking over the nvidia card before the vfio-pci driver can load.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">blacklist</span> nouveau</code></pre></div></li>
+<li><p>Create file <code>vfio.conf</code> in <code>/etc/modprobe.d/ and then set contents to the following, changing pcie ids as needed to those found via</code>lspci`</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># 10de:1c03</span>
+<span class="co"># 10de:10f1</span>
+<span class="co"># 1912:0014 - usb3 pcie card</span>
+<span class="co"># 8086:15b8 - V219 ethernet card</span>
+<span class="kw">options</span> vfio-pci ids=10de:1c03,10de:10f1,1912:0014
+
+<span class="co"># load vfio-pci before xhci-hcd else the usb3 ports are claimed by xhci_hcd</span>
+<span class="kw">softdep</span> xhci_hcd pre: vfio_pci</code></pre></div>
+<p>This tells <code>vfio-pci</code> to attach to the specified PCIe devices. It also creates a soft dependancy of <code>vfio-pci</code> on <code>xhci_hcd</code> so <code>vfio-pci</code> will in theory load before <code>xhci_hcd</code> and attach to the usb controller before <code>xhci_hcd</code> does.</p></li>
+<li><p>Create file <code>vfio.conf</code> in /etc/modules-load.d` with the contents:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">vfio</span>
+<span class="kw">vfio-pci</span>
+<span class="kw">vfio-virqfd</span></code></pre></div>
+<p>This loads the specified kernel drivers for VFIO use.</p></li>
+<li><p>Create file <code>dracut.conf</code> in <code>/etc/dracut.conf.d/</code> with the contents:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ot">add_drivers+=</span><span class="st">&quot; vfio vfio-pci vfio_iommu_type1 vfio_virqfd &quot;</span>
+<span class="ot">add_dracutmodules+=</span><span class="st">&quot; kernel-modules &quot;</span>
+<span class="ot">omit_drivers+=</span><span class="st">&quot; nouveau &quot;</span>
+<span class="ot">hostonly=</span>yes</code></pre></div>
+<p>This adds the correct drivers into the initramfs and prevents the nouveau driver from being loaded.</p></li>
+<li><p>Now run regenerate initramfs and DKMS modules with:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-reconfigure --force linux</code></pre></div></li>
+<li><p>Reboot</p></li>
+</ol></li>
+<li><p>Check lscpi -v to make sure that <code>vfio-pci</code> has correctly bound to the graphics card and usb card.</p></li>
+<li><p>start VM to test using script in vm-manager repo.</p></li>
 </ol>
 <h2 id="resources">
 Resources
