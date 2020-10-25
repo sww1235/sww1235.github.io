@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <meta name="author" content="Stephen Walker-Weinshenker">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="styles/main.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<title>build-script-notes-void-vm</title>
+</head>
+<body>
+<div id="top">
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</div>
+<div id="topnavbar">
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="stuff.html">Stuff</a>
+            <ul>
+                <li><a href="https://github.com/sww1235">Github</a></li>
+                <li><a href="wiki/index.html">Wiki</a></li>
+
+            </ul>
+        </li>
+        <li><a href="blog-contents">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+
+    </ul>
+</div>
+<h1 id="top">
+Main Workstation Build Script and Notes
+</h1>
+<p>This is the build script for my main void linux virtual machine that I use as my main workstation.</p>
+<h2 id="notes">
+Notes
+</h2>
+<h2 id="build-script">
+Build Script
+</h2>
+<h3 id="initial-configuration">
+Initial Configuration
+</h3>
+<ol style="list-style-type: decimal">
+<li><p>Download the void-live-x86_64.iso of void linux from reputable sources, currently <a href="https://alpha.de.repo.voidlinux.org/live/current/">here</a></p></li>
+<li><p>Mount iso vm using <code>vm-manager.sh</code></p></li>
+<li><p>Login as root with default password of <code>void-linux</code> to live image.</p></li>
+<li><p>Make sure you are booted using UEFI by validating presence of <code>/sys/firmware/efi</code> directory</p></li>
+<li><p>Manually configure network in installer. Add the following lines to <code>/etc/dhcpcd.conf</code></p>
+<pre class="conf"><code>interface enp0s1
+inform ip_address=$ipaddress
+static ip_address=$ipaddress/subnet
+static routers=$gateway
+static domain_name_servers=$gateway</code></pre></li>
+<li><p>sv restart dhcpcd</p></li>
+<li><p>run <code>void-installer</code></p></li>
+<li><p>Proceed through installation wizard</p>
+<ol style="list-style-type: decimal">
+<li><p>Keyboard=us</p></li>
+<li><p>Select DHCP</p></li>
+<li><p>Source=network</p></li>
+<li><p>Hostname=void-vm</p></li>
+<li><p>System Locale=en_US.UTF-8</p></li>
+<li><p>Timezone=America/Denver or appropriate</p></li>
+<li><p>Root password from password manager - generated</p></li>
+<li><p>User account from password manager</p></li>
+<li><p>Select sda1, and no for graphical terminal. (We will blow grub away after the system boots)</p></li>
+<li><p>Partition main SSD using GPT scheme</p>
+<ol style="list-style-type: decimal">
+<li><p>Create a 500MiB partition of type <code>EFI system</code></p></li>
+<li><p>Create a second partition with the remaining space of type <code>linux-filesystem</code></p></li>
+<li><p>Select write to write partitions to disk</p></li>
+</ol></li>
+<li><p>Set filesystem</p>
+<ol style="list-style-type: decimal">
+<li><p>Set 500MiB partition <code>vfat</code> filesystem and mount it at <code>/boot/efi</code></p></li>
+<li><p>Set second partition to <code>ext4</code> and mount it at <code>/</code></p></li>
+</ol></li>
+<li><p>Review settings</p></li>
+<li><p>Install</p></li>
+<li><p>Wait</p></li>
+<li><p>Exit installer</p></li>
+<li><p>Shutdown system with <code>shutdown -h now</code></p></li>
+<li><p>Comment out cdrom directives in vm-manager script</p></li>
+<li><p>Start up VM again</p></li>
+</ol></li>
+<li><p>Log in as the new user you created.</p></li>
+<li><p>Update the system by running the following command until there is no output.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install -Svu</code></pre></div></li>
+<li><p>Install refind and wipe out grub.</p></li>
+<li><p>Install the following packages. The st-terminfo install fixes <code>st-256color unknown terminal type</code> issues as well as backspace and tab issues when sshing in from other computers using the <code>st</code> terminal emulator.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install nano thefuck vim st-terminfo</code></pre></div></li>
+<li><p>Setup system logging using socklog</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install socklog-void
+<span class="co"># enable services</span>
+<span class="kw">sudo</span> ln -s /etc/sv/socklog-unix/ /var/service
+<span class="kw">sudo</span> ln -s /etc/sv/nanoklogd/ /var/service
+<span class="co"># add user to log group</span>
+<span class="kw">sudo</span> usermod -a -G socklog <span class="ot">$USER</span>
+<span class="co"># log out and log back in</span></code></pre></div></li>
+<li><p>Set up ssh-agent using user specific services. Instructions taken from <a href="https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/" class="uri">https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/</a></p>
+<ol style="list-style-type: decimal">
+<li>Create user specific service directory:</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> mkdir /etc/sv/runit-user-toxicsauce</code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>Create run script for user specific service by adding the following into <code>/etc/sv/runit-user-toxicsauce/run</code></li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co">#!/bin/sh</span>
+<span class="kw">exec</span> <span class="kw">2&gt;&amp;1</span>
+<span class="kw">exec</span> chpst -u toxicsauce:toxicsauce runsvdir /home/toxicsauce/runit/service</code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li>Mark it as executable:</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> chmod +x /etc/sv/runit-user-toxicsauce/run</code></pre></div>
+<ol start="4" style="list-style-type: decimal">
+<li>Create necessary user specific service directories:</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> ~/runit
+<span class="kw">mkdir</span> ~/runit/sv
+<span class="kw">mkdir</span> ~/runit/service</code></pre></div>
+<ol start="5" style="list-style-type: decimal">
+<li>Start this service of services with:</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> ln -s /etc/sv/runit-user-toxicsauce /var/service</code></pre></div>
+<ol start="6" style="list-style-type: decimal">
+<li>Now set up <code>ssh-agent</code> service:</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> ~/runit/sv/ssh-agent</code></pre></div>
+<ol start="7" style="list-style-type: decimal">
+<li>Create run script for <code>ssh-agent</code> service by adding the following into <code>~/runit/sv/ssh-agent/run</code>.</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co">#!/usr/bin/env bash</span>
+<span class="co">#</span>
+<span class="co"># Start ssh-agent from runit</span>
+
+<span class="ot">file=</span>~/.ssh/ssh-agent-env
+
+<span class="kw">exec</span> <span class="kw">&gt;</span> <span class="st">&quot;</span><span class="ot">$file</span><span class="st">&quot;</span>
+
+<span class="kw">echo</span> <span class="st">&quot;# started </span><span class="ot">$(</span><span class="kw">date</span><span class="ot">)</span><span class="st">&quot;</span>
+
+<span class="co"># For some reason, this line doesn&#39;t get emitted by ssh-agent when it is run</span>
+<span class="co"># with -d or -D.  Since we are starting the program with exec we already know</span>
+<span class="co"># the pid ahead of time though so we can create this line manually</span>
+<span class="kw">echo</span> <span class="st">&quot;SSH_AGENT_PID=</span><span class="ot">$$</span><span class="st">; export SSH_AGENT_PID&quot;</span>
+
+<span class="kw">exec</span> ssh-agent -D</code></pre></div>
+<ol start="8" style="list-style-type: decimal">
+<li>Mark run file as executable with:</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">chmod</span> +x ~/runit/sv/ssh-agent/run</code></pre></div>
+<ol start="9" style="list-style-type: decimal">
+<li>Now start the service with:</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ln</span> -s ~/runit/sv/ssh-agent ~/runit/service</code></pre></div>
+<p><strong>NOTE</strong>: you need the following line in bashrc in order to get it working in new shells. This is already in my dotfiles bashrc</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># source ssh-agent file</span>
+
+<span class="kw">[</span> <span class="ot">-f</span> <span class="ot">$HOME</span>/.ssh/ssh-agent-env<span class="kw"> ]</span> <span class="kw">&amp;&amp;</span> <span class="kw">source</span> <span class="ot">$HOME</span>/.ssh/ssh-agent-env</code></pre></div></li>
+</ol>
+<p>TODO: add in instructions around btrfs and mounting separate file systems</p>
+<ol start="11" style="list-style-type: decimal">
+<li><p>Create Projects directory tree in <code>~</code> as follows:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> -p ~/projects/src/github.com/sww1235</code></pre></div>
+<p>This mirrors the structure of how golang wants to set things up.</p></li>
+<li><p>Make symlink in <code>~</code> as follows:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ln</span> -s ~/projects/src/github.com/sww1235 myprojects</code></pre></div></li>
+<li><p>Clone dotfiles repo from GitHub using ssh and install vim and bash files using <code>install.sh</code> script.</p></li>
+<li><p>Clone projects from github into Projects tree as desired.</p></li>
+<li><p>Set up void-packages per the <a href="void-packages-setup.html">instructions</a> in this wiki.</p></li>
+<li><p>Make sure <code>build-branch-the-machine</code> in my fork of <code>void-packages</code> is checked out, and up to date with desired patches. See the <a href="void-suckless-config.html">suckless page</a> for more info.</p></li>
+<li><p>Build binary packages of <code>dwm</code>, <code>dmenu</code>, <code>st</code> and <code>slstatus</code> as follows:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> ~/Projects/src/github.com/sww1235/void-packages
+<span class="kw">./xbps-src</span> pkg dwm
+<span class="kw">./xbps-src</span> pkg dmenu
+<span class="kw">./xbps-src</span> pkg st
+<span class="kw">./xbps-src</span> pkg slstatus</code></pre></div></li>
+<li><p>Install <code>dwm</code>, <code>dmenu</code>, <code>st</code> and <code>slstatus</code> with the command:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install --repository=hostdir/binpkgs/build-branch-the-machine dwm dmenu st slstatus</code></pre></div></li>
+<li><p>Modify ~/.xinitrc to contain the following:</p>
+<pre class="xinitrc"><code>slstatus &amp;
+exec dwm</code></pre></li>
+</ol>
+<h3 id="vfio-kvm-qemu-config">
+VFIO/KVM/QEMU Configuration
+</h3>
+<ol style="list-style-type: decimal">
+<li><p>install qemu and socat</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install qemu socat</code></pre></div></li>
+<li><p>Create QEMU directory</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> mkdir /etc/qemu</code></pre></div></li>
+<li><p>download ovmf. It is not in xbps so need to manually download from <a href="https://www.kraxel.org/repos/jenkins/edk2/" class="uri">https://www.kraxel.org/repos/jenkins/edk2/</a> as of the writing of this build. Download the ovmf appropriate either 32 or 64 bit version. This will be in RPM format, so need to:</p></li>
+<li><p>Install rpmextract.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install rpmextract</code></pre></div></li>
+<li><p>Then run either:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rpm2cpio</span> <span class="kw">&lt;</span>file<span class="kw">&gt;</span>.rpm <span class="kw">|</span> <span class="kw">xz</span> -d <span class="kw">|</span> <span class="kw">cpio</span> -idmv</code></pre></div>
+<p>or</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rpm2cpio</span> <span class="kw">&lt;</span>file<span class="kw">&gt;</span>.rpm <span class="kw">|</span> <span class="kw">lzma</span> -d <span class="kw">|</span> <span class="kw">cpio</span> -idmv</code></pre></div>
+<p>to extract the files needed.</p></li>
+<li><p>Copy the files inside the <code>./usr/share/edk2.git/ovmf-x64</code> directory inside the extracted files, to <code>/usr/share/ovmf/</code>. This path is hardcoded in the <code>vm-manager.sh</code> script and will need to be changed if ovmf is installed in another location.</p>
+<p>smm varients include secure boot code, csm varients include legacy compat modules. code and vars are separate files that are both contained in OVMF base.</p></li>
+<li><p>create/reuse existing qcow2 win10 image</p>
+<ol style="list-style-type: decimal">
+<li><p>To create a new qcow2 image, use the below commands.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">qemu-img</span> create -f qcow2 -o preallocation=metadata filename.qcow2 size</code></pre></div></li>
+</ol></li>
+<li><p>Create kvm:kvm user/group as system group</p></li>
+<li><p>Clone vm-manager repo into projects directory, and symlink to good location for executable scripts in path</p></li>
+<li><p>Create vmbridge interface using iproute2 package</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ip</span> link add name vmbridge type bridge
+<span class="kw">ip</span> link set vmbridge up</code></pre></div></li>
+<li><p>need to add interface to bridge</p></li>
+<li><p>create acl file at <code>/etc/qemu/bridge.conf</code> and set contents to <code>allow all</code></p></li>
+<li><p>since we are running as -user kvm, need to edit <code>/etc/security/limits.conf</code> and increase them for user kvm, as well as root and main user. This allows us to grant large amounts of memory to the guest.</p>
+<p>Add the following lines to the file.</p>
+<pre class="conf"><code>@kvm        soft    memlock unlimited
+@kvm        hard    memlock unlimited
+toxicsauce  soft    memlock unlimited
+toxicsauce  hard    memlock unlimited
+root        soft    memlock unlimited
+root        hard    memlock unlimited</code></pre>
+<p>From: <a href="https://stackoverflow.com/questions/39187619/vfio-dma-map-error-when-passthrough-gpu-using-libvirt" class="uri">https://stackoverflow.com/questions/39187619/vfio-dma-map-error-when-passthrough-gpu-using-libvirt</a></p></li>
+<li><p>Set up kernel drivers for PCIe passthrough.</p>
+<ol style="list-style-type: decimal">
+<li><p>Create file <code>blacklist.conf</code> in `/etc/modprobe.d/ and add the following to the contents. This prevents the nouveau driver from loading and taking over the nvidia card before the vfio-pci driver can load.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">blacklist</span> nouveau</code></pre></div></li>
+<li><p>Create file <code>vfio.conf</code> in <code>/etc/modprobe.d/ and then set contents to the following, changing pcie ids as needed to those found via</code>lspci`</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># 10de:1c03</span>
+<span class="co"># 10de:10f1</span>
+<span class="co"># 1912:0014 - usb3 pcie card</span>
+<span class="co"># 8086:15b8 - V219 ethernet card</span>
+<span class="kw">options</span> vfio-pci ids=10de:1c03,10de:10f1,1912:0014
+
+<span class="co"># load vfio-pci before xhci-hcd else the usb3 ports are claimed by xhci_hcd</span>
+<span class="kw">softdep</span> xhci_hcd pre: vfio_pci</code></pre></div>
+<p>This tells <code>vfio-pci</code> to attach to the specified PCIe devices. It also creates a soft dependancy of <code>vfio-pci</code> on <code>xhci_hcd</code> so <code>vfio-pci</code> will in theory load before <code>xhci_hcd</code> and attach to the usb controller before <code>xhci_hcd</code> does.</p></li>
+<li><p>Create file <code>vfio.conf</code> in /etc/modules-load.d` with the contents:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">vfio</span>
+<span class="kw">vfio-pci</span>
+<span class="kw">vfio-virqfd</span></code></pre></div>
+<p>This loads the specified kernel drivers for VFIO use.</p></li>
+<li><p>Create file <code>dracut.conf</code> in <code>/etc/dracut.conf.d/</code> with the contents:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ot">add_drivers+=</span><span class="st">&quot; vfio vfio-pci vfio_iommu_type1 vfio_virqfd &quot;</span>
+<span class="ot">add_dracutmodules+=</span><span class="st">&quot; kernel-modules &quot;</span>
+<span class="ot">omit_drivers+=</span><span class="st">&quot; nouveau &quot;</span>
+<span class="ot">hostonly=</span>yes</code></pre></div>
+<p>This adds the correct drivers into the initramfs and prevents the nouveau driver from being loaded.</p></li>
+<li><p>Now run regenerate initramfs and DKMS modules with:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-reconfigure --force linux</code></pre></div></li>
+<li><p>Reboot</p></li>
+</ol></li>
+<li><p>Check lscpi -v to make sure that <code>vfio-pci</code> has correctly bound to the graphics card and usb card.</p></li>
+<li><p>start VM to test using script in vm-manager repo.</p></li>
+</ol>
+<h2 id="resources">
+Resources
+</h2>
+<p><a href="https://www.reddit.com/r/voidlinux/comments/ghwvv5/guide_how_to_setup_qemukvm_emulation_on_void_linux/" class="uri">https://www.reddit.com/r/voidlinux/comments/ghwvv5/guide_how_to_setup_qemukvm_emulation_on_void_linux/</a></p>
+<pre class="tags"><code>build-script, main-ws-host, workstation, notes, QEMU, KVM, VFIO, Passthrough</code></pre>
+</body>
+</html>

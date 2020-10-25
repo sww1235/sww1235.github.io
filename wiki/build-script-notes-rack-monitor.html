@@ -51,7 +51,7 @@ Initial Configuration
 <li><p>Login as root with default password of <code>void-linux</code></p></li>
 <li><p>Need to get correct time and network set up in order to update system and install packages (as root) Remember that the only available text editor is <code>vi</code>!</p>
 <ol style="list-style-type: decimal">
-<li><p>Configure static IP address by editing <code>/etc/dhcpd.conf</code> with the following lines at the bottom of the file. Actual IP addresses are found in the network documentation. We use DHCP rather than manual <code>ip</code> commands in <code>/etc/rc.local</code> to take advantage of other aspects of DHCP including auto DNS server population and domain name.</p>
+<li><p>Configure static IP address by editing <code>/etc/dhcpcd.conf</code> with the following lines at the bottom of the file. Actual IP addresses are found in the network documentation. We use DHCP rather than manual <code>ip</code> commands in <code>/etc/rc.local</code> to take advantage of other aspects of DHCP including auto DNS server population and domain name.</p>
 <p>also uncomment ntp_servers option</p>
 <p>dns server is usually pfsense default gateway</p>
 <pre class="conf"><code>interface eth0
