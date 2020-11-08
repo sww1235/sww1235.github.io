@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <meta name="author" content="Stephen Walker-Weinshenker">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="styles/main.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<title>build-script-notes-vault-mki</title>
+</head>
+<body>
+<div id="top">
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</div>
+<div id="topnavbar">
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="stuff.html">Stuff</a>
+            <ul>
+                <li><a href="https://github.com/sww1235">Github</a></li>
+                <li><a href="wiki/index.html">Wiki</a></li>
+
+            </ul>
+        </li>
+        <li><a href="blog-contents">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+
+    </ul>
+</div>
+<h1 id="top">
+Vault File Server Build Script
+</h1>
+<p>This is the build script for my main file server <strong>The Vault</strong>.</p>
+<h2 id="notes">
+Notes
+</h2>
+<p>F2 or Enter for BIOS, F11 for boot menu</p>
+<h2 id="build-script">
+Build Script
+</h2>
+&lt;h3 id=prereqs&quot;&gt;Prerequisites
+</h3>
+<ol style="list-style-type: decimal">
+<li>Connect to IPMI interface of the server by going to $ip in a web browser.</li>
+</ol>
+<h3 id="initial-configuration">
+Initial Configuration
+</h3>
+<ol style="list-style-type: decimal">
+<li><p>Download the bootonly ISO of the current release of FreeBSD from reputable sources. (12.2 as of 11/07/2020)</p></li>
+<li><p>Enable cd/dvd instance in IPMI under Settings -&gt; Media Redirection Settings -&gt; VMedia Instance Settings</p></li>
+<li><p>Open up HTML5 viewer for IPMI, and attach ISO to virtual CD rom.</p></li>
+<li><p>Start server, and boot to UEFI CD rom.</p></li>
+<li><p>Let FreeBSD boot to the install menu. Don't exit out of the autoboot menu.</p></li>
+<li><p>Press enter to start the instllation process.</p></li>
+<li><p>Proceed through installation wizard. Press space to select options.</p>
+<ol style="list-style-type: decimal">
+<li><p>Keymap = United States of America. Space will not work here, just scroll down and hit enter.</p></li>
+<li><p>Hostname = <code>the-vault</code></p></li>
+<li><p>Disable kernel-dbg system component, and add the ports tree.</p></li>
+<li><p>Hit Ok to configure network for installation.</p></li>
+<li><p>Select gigabit interface 0, or whatever is actually connected.</p></li>
+<li><p>Configure IPv4 and use DHCP for now. We will configure static networking later.</p></li>
+<li><p>Confirm resolver config. (Defaults picked up from DHCP should be good to go.)</p></li>
+<li><p>Select mirror</p></li>
+<li><p>Select Auto (UFS) and then Entire Disk.</p></li>
+<li><p>Select GPT for partition scheme</p></li>
+<li><p>Review autogen partition layout, which should be good for our usages then hit finish and Commit.</p></li>
+<li><p>Wait for download, verification and extraction.</p></li>
+<li><p>Enter root password from password manager.</p></li>
+<li><p>Choose no at CMOS clock prompt. TODO: fix this.</p></li>
+<li><p>Choose timezone.</p></li>
+<li><p>Skip time and date setup if it is correct.</p></li>
+<li><p>Enable <code>local_unbound</code>, <code>sshd</code>, <code>ntpd</code>, <code>powerd</code> and <code>dumpdev</code> services to be started at boot</p></li>
+<li><p>Enable all security options except <code>disable_syslogd</code> , <code>secure_console</code> and <code>disable_sendmail</code>. Sendmail will be replaced later.</p></li>
+<li><p>Add new admin user.</p>
+<ol style="list-style-type: decimal">
+<li>Username = <code>toxicsauce</code></li>
+<li>Full Name = <code>toxicsauce</code></li>
+<li>UID = (hit enter to accept default)</li>
+<li>Login group = (hit enter to accept default)</li>
+<li>Invite User to other groups = wheel</li>
+<li>Login class = (hit enter to accept default)</li>
+<li>Shell = sh (default)</li>
+<li>home directory = (hit enter to accept default)</li>
+<li>home directory permissions = (hit enter to accept defaults)</li>
+<li>password auth = yes</li>
+<li>empty password = no</li>
+<li>random password = no</li>
+<li>Enter password from password manager</li>
+<li>lock account = no</li>
+<li>check options and type in yes to confirm.</li>
+<li>add additional users = no.</li>
+</ol></li>
+<li><p>hit exit, and no to exit installer.</p></li>
+<li><p>Hit reboot.</p></li>
+<li><p>Stop CD media after system has rebooted.</p></li>
+</ol></li>
+<li><p>Log in as the new user you created</p></li>
+<li><p>Become root with <code>su -</code>. You will need root's password.</p></li>
+<li><p>Change root's shell to <code>sh</code>: <code>chsh -s sh</code></p></li>
+<li><p>Log out and su back in again</p></li>
+<li><p>Update system and install software</p>
+<pre class="sh"><code>freebsd-update fetch
+freebsd-update install
+
+pkg update
+# answer yes to install pkg system 
+pkg upgrade
+
+pkg install nano sudo</code></pre></li>
+<li><p>Configure sudo. <code>visudo</code> and uncomment line <code>%wheel ALL=(ALL) ALL</code></p></li>
+<li><p>Setup system logging</p></li>
+<li><p>Set up ssh-agent</p></li>
+<li><p>Create Projects directory tree in <code>~</code> as follows:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> -p ~/projects/src/github.com/sww1235</code></pre></div>
+<p>This mirrors the structure of how golang wants to set things up.</p></li>
+<li><p>Make symlink in <code>~</code> as follows:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ln</span> -s ~/projects/src/github.com/sww1235 myprojects</code></pre></div></li>
+<li><p>Clone dotfiles repo from GitHub using ssh and install vim and bash files using <code>install.sh</code> script.</p></li>
+<li><p>Clone projects from github into Projects tree as desired.</p></li>
+</ol>
+<h3 id="zfs-config">
+ZFS Configuration
+</h3>
+<h3 id="filesharing">
+Fileshare Configuration
+</h3>
+<h2 id="resources">
+Resources
+</h2>
+<pre class="tags"><code>build-script, main-ws-host, workstation, notes, QEMU, KVM, VFIO, Passthrough</code></pre>
+</body>
+</html>

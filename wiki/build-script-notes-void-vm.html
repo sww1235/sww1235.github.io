@@ -50,7 +50,7 @@ Initial Configuration
 <li><p>Login as root with default password of <code>void-linux</code> to live image.</p></li>
 <li><p>Make sure you are booted using UEFI by validating presence of <code>/sys/firmware/efi</code> directory</p></li>
 <li><p>Manually configure network in installer. Add the following lines to <code>/etc/dhcpcd.conf</code></p>
-<pre class="conf"><code>interface enp0s1
+<pre class="conf"><code>interface enp0s2
 inform ip_address=$ipaddress
 static ip_address=$ipaddress/subnet
 static routers=$gateway

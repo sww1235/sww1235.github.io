@@ -69,6 +69,12 @@ Initial Configuration
 <li>Reboot</li>
 </ol></li>
 <li><p>Log in as the new user you created</p></li>
+<li><p>Static IP address setup. Add the following to <code>/etc/dhcpcd.conf</code> and restart dhcpcd service <code>sudo sv restart dhcpcd</code>.</p>
+<pre class="conf"><code>interface eno1
+inform ip_address=$ipaddress
+static ip_address=$ipaddress/subnet
+static routers=$gateway
+static domain_name_servers=$gateway</code></pre></li>
 <li><p>Update the system by running the following command until there is no output.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install -Svu</code></pre></div></li>
 <li><p>Install the following packages. The st-terminfo install fixes <code>st-256color unknown terminal type</code> issues as well as backspace and tab issues when sshing in from other computers using the <code>st</code> terminal emulator.</p>
@@ -143,7 +149,7 @@ Initial Configuration
 <span class="kw">[</span> <span class="ot">-f</span> <span class="ot">$HOME</span>/.ssh/ssh-agent-env<span class="kw"> ]</span> <span class="kw">&amp;&amp;</span> <span class="kw">source</span> <span class="ot">$HOME</span>/.ssh/ssh-agent-env</code></pre></div></li>
 </ol>
 <p>TODO: add in instructions around btrfs and mounting separate file systems</p>
-<ol start="11" style="list-style-type: decimal">
+<ol start="13" style="list-style-type: decimal">
 <li><p>Create Projects directory tree in <code>~</code> as follows:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> -p ~/projects/src/github.com/sww1235</code></pre></div>
 <p>This mirrors the structure of how golang wants to set things up.</p></li>
@@ -152,18 +158,6 @@ Initial Configuration
 <li><p>Clone dotfiles repo from GitHub using ssh and install vim and bash files using <code>install.sh</code> script.</p></li>
 <li><p>Clone projects from github into Projects tree as desired.</p></li>
 <li><p>Set up void-packages per the <a href="void-packages-setup.html">instructions</a> in this wiki.</p></li>
-<li><p>Make sure <code>build-branch-the-machine</code> in my fork of <code>void-packages</code> is checked out, and up to date with desired patches. See the <a href="void-suckless-config.html">suckless page</a> for more info.</p></li>
-<li><p>Build binary packages of <code>dwm</code>, <code>dmenu</code>, <code>st</code> and <code>slstatus</code> as follows:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> ~/Projects/src/github.com/sww1235/void-packages
-<span class="kw">./xbps-src</span> pkg dwm
-<span class="kw">./xbps-src</span> pkg dmenu
-<span class="kw">./xbps-src</span> pkg st
-<span class="kw">./xbps-src</span> pkg slstatus</code></pre></div></li>
-<li><p>Install <code>dwm</code>, <code>dmenu</code>, <code>st</code> and <code>slstatus</code> with the command:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install --repository=hostdir/binpkgs/build-branch-the-machine dwm dmenu st slstatus</code></pre></div></li>
-<li><p>Modify ~/.xinitrc to contain the following:</p>
-<pre class="xinitrc"><code>slstatus &amp;
-exec dwm</code></pre></li>
 </ol>
 <h3 id="vfio-kvm-qemu-config">
 VFIO/KVM/QEMU Configuration
@@ -183,18 +177,8 @@ VFIO/KVM/QEMU Configuration
 <p>to extract the files needed.</p></li>
 <li><p>Copy the files inside the <code>./usr/share/edk2.git/ovmf-x64</code> directory inside the extracted files, to <code>/usr/share/ovmf/</code>. This path is hardcoded in the <code>vm-manager.sh</code> script and will need to be changed if ovmf is installed in another location.</p>
 <p>smm varients include secure boot code, csm varients include legacy compat modules. code and vars are separate files that are both contained in OVMF base.</p></li>
-<li><p>create/reuse existing qcow2 win10 image</p>
-<ol style="list-style-type: decimal">
-<li><p>To create a new qcow2 image, use the below commands.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">qemu-img</span> create -f qcow2 -o preallocation=metadata filename.qcow2 size</code></pre></div></li>
-</ol></li>
 <li><p>Create kvm:kvm user/group as system group</p></li>
 <li><p>Clone vm-manager repo into projects directory, and symlink to good location for executable scripts in path</p></li>
-<li><p>Create vmbridge interface using iproute2 package</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ip</span> link add name vmbridge type bridge
-<span class="kw">ip</span> link set vmbridge up</code></pre></div></li>
-<li><p>need to add interface to bridge</p></li>
-<li><p>create acl file at <code>/etc/qemu/bridge.conf</code> and set contents to <code>allow all</code></p></li>
 <li><p>since we are running as -user kvm, need to edit <code>/etc/security/limits.conf</code> and increase them for user kvm, as well as root and main user. This allows us to grant large amounts of memory to the guest.</p>
 <p>Add the following lines to the file.</p>
 <pre class="conf"><code>@kvm        soft    memlock unlimited
@@ -212,11 +196,14 @@ root        hard    memlock unlimited</code></pre>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># 10de:1c03</span>
 <span class="co"># 10de:10f1</span>
 <span class="co"># 1912:0014 - usb3 pcie card</span>
-<span class="co"># 8086:15b8 - V219 ethernet card</span>
-<span class="kw">options</span> vfio-pci ids=10de:1c03,10de:10f1,1912:0014
+<span class="co"># 8086:15b8 - 219V ethernet card</span>
+<span class="co"># 8086:1539 - I211 ethernet card</span>
+<span class="kw">options</span> vfio-pci ids=10de:1c03,10de:10f1,1912:0014,8086:1539
 
-<span class="co"># load vfio-pci before xhci-hcd else the usb3 ports are claimed by xhci_hcd</span>
-<span class="kw">softdep</span> xhci_hcd pre: vfio_pci</code></pre></div>
+<span class="co"># load vfio-pci before xhci-hcd and igb else the usb3 pcie card</span>
+<span class="co"># and intel nic are claimed by xhci_hcd</span>
+<span class="kw">softdep</span> xhci_hcd pre: vfio_pci
+<span class="kw">softdep</span> igb pre: vfio_pci</code></pre></div>
 <p>This tells <code>vfio-pci</code> to attach to the specified PCIe devices. It also creates a soft dependancy of <code>vfio-pci</code> on <code>xhci_hcd</code> so <code>vfio-pci</code> will in theory load before <code>xhci_hcd</code> and attach to the usb controller before <code>xhci_hcd</code> does.</p></li>
 <li><p>Create file <code>vfio.conf</code> in /etc/modules-load.d` with the contents:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">vfio</span>
@@ -230,12 +217,16 @@ root        hard    memlock unlimited</code></pre>
 <span class="ot">hostonly=</span>yes</code></pre></div>
 <p>This adds the correct drivers into the initramfs and prevents the nouveau driver from being loaded.</p></li>
 <li><p>Now run regenerate initramfs and DKMS modules with:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-reconfigure --force linux</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-reconfigure --force <span class="ot">$linux</span>-kernel-package</code></pre></div></li>
 <li><p>Reboot</p></li>
 </ol></li>
-<li><p>Check lscpi -v to make sure that <code>vfio-pci</code> has correctly bound to the graphics card and usb card.</p></li>
+<li><p>Check lscpi -v to make sure that <code>vfio-pci</code> has correctly bound to the graphics card, usb card and nic.</p></li>
 <li><p>start VM to test using script in vm-manager repo.</p></li>
 </ol>
+<h3 id="vm-specifics">
+VM Specific Setup
+</h3>
+<p><a href="build-script-notes-void-vm.html">Void VM</a> <a href="build-script-notes-win10-vm.html">Win10 VM</a></p>
 <h2 id="resources">
 Resources
 </h2>
