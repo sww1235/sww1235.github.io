@@ -99,17 +99,24 @@ NUT Configuration
 <li><p>Run <code>nut-scanner</code> to generate config options for attached UPSes</p></li>
 <li><p>Edit <code>/etc/ups/ups.conf</code> and add the results of <code>nut-scanner</code> to the begining of the file, except the vendor line. Add <code>[cyberpower]</code> before. See syntax examples in config file.</p></li>
 <li><p>Edit <code>/etc/ups/upsd.conf</code> and update listen directive to the IP address of the local system.</p></li>
-<li><p>Edit <code>/etc/ups/upsd.users</code> and add an <code>admin</code> user, and <code>upsmon</code> users with passwords from password safe. One <code>upsmon</code> user per machine connected to UPS.</p>
+<li><p>Edit <code>/etc/ups/upsd.users</code> and add an <code>admin</code> user, <code>upsmonMaster</code> and <code>upsmonSlave</code> users with passwords from password safe.</p>
 <ul>
-<li>admin user has set actions and all instcmds</li>
-<li>upsmon user is set up per example in config file with slave attributes</li>
+<li><p><code>admin</code> user has set actions and all instcmds</p></li>
+<li><p><code>upsmonMaster</code> user is set up per example in config file with master attributes for local monitoring by the raspi.</p></li>
+<li><p><code>upsmonSlave</code> user is set up per example in config file with slave attributes for remote monitoring by other clients.</p></li>
 </ul></li>
+<li><p>Edit <code>/etc/ups/upsmon.conf</code> to set up local UPS monitoring. Add the following lines to the config file.</p>
+<pre class="conf"><code># raspi has 1 power supply connected to this UPS. It is master
+# because it is the monitoring system for the ups.
+# other systems will be listed as slaves
+MONITOR cyberpower@localhost 1 upsmonMaster $password master
+# all other values can be left as defaults for now</code></pre></li>
 </ol>
 <p>Need to change ownership of config files on void linux as the default is set up incorrectly:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> chown root:nut /etc/ups/*
 <span class="kw">sudo</span> chmod 640 /etc/ups/*</code></pre></div>
 <p>start the following services:</p>
-<p><code>bash sudo ln -s /etc/sv/upsdrvctl/ /var/service sudo ln -s /etc/sv/upsd/ /var/service</code></p>
+<p><code>bash sudo ln -s /etc/sv/upsdrvctl/ /var/service sudo ln -s /etc/sv/upsd/ /var/service sudo ln -s /etc/sv/upsmon/ /var/service</code></p>
 <p>check status of ups with the following command to make sure it is detected properly</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">upsc</span> cyberpower</code></pre></div>
 <pre class="tags"><code>build-script, rack-monitor, notes</code></pre>
