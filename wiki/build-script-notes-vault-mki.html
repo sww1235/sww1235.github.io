@@ -45,7 +45,10 @@ Build Script
 &lt;h3 id=prereqs&quot;&gt;Prerequisites
 </h3>
 <ol style="list-style-type: decimal">
-<li>Connect to IPMI interface of the server by going to $ip in a web browser.</li>
+<li><p>Connect to IPMI interface of the server by going to $ip in a web browser.</p>
+<ul>
+<li>If this is first startup of system, then configure static IP for IPMI, and admin user and password.</li>
+</ul></li>
 </ol>
 <h3 id="initial-configuration">
 Initial Configuration
@@ -109,11 +112,16 @@ Initial Configuration
 freebsd-update install
 
 pkg update
-# answer yes to install pkg system 
+# answer yes to install pkg system
 pkg upgrade
 
 pkg install nano sudo</code></pre></li>
 <li><p>Configure sudo. <code>visudo</code> and uncomment line <code>%wheel ALL=(ALL) ALL</code></p></li>
+<li><p>Configure static IP addressing. First, run <code>ifconfig</code> to see what interface is actually connected, then add the following lines to <code>/etc/rc.conf</code> and modify existing lines so they read as follows.</p>
+<pre class="conf"><code>ifconfig_igb0=&quot;inet $ipaddress netmask $netmask&quot;
+defaultrouter=&quot;$gateway&quot;</code></pre>
+<p>Also, add the following line to <code>/etc/resolv.conf</code></p>
+<pre class="conf"><code>nameserver $gateway</code></pre></li>
 <li><p>Setup system logging</p></li>
 <li><p>Set up ssh-agent</p></li>
 <li><p>Create Projects directory tree in <code>~</code> as follows:</p>
@@ -124,6 +132,24 @@ pkg install nano sudo</code></pre></li>
 <li><p>Clone dotfiles repo from GitHub using ssh and install vim and bash files using <code>install.sh</code> script.</p></li>
 <li><p>Clone projects from github into Projects tree as desired.</p></li>
 </ol>
+<h3 id="ups-config">
+UPS Configuration
+</h3>
+<ol style="list-style-type: decimal">
+<li><p>Install Network UPS Tools from packages. <code>sudo pkg install nut</code></p></li>
+<li><p>Edit <code>/usr/local/etc/nut/upsmon.conf</code> and add in the following lines:</p>
+<pre class="conf"><code>MONITOR cyberpower@$ipaddress 1 upsmonSlave $password slave</code></pre></li>
+<li><p>Edit <code>/etc/rc.conf</code> and add the following line:</p>
+<pre class="conf"><code>nut_upsmon_enable=&quot;YES&quot;</code></pre></li>
+<li><p>Start <code>nut_upsmon</code> service with <code>sudo service nut_upsmon start</code> and make sure it doesn't error out.</p></li>
+<li><p>Reboot system to make sure everything comes up normally.</p></li>
+<li><p>Run a shutdown test to make sure nut is working properly.</p>
+<ol style="list-style-type: decimal">
+<li><p>Login to <code>rack-monitor</code> system and run <code>upsdrvctl -t shutdown</code>. This will show you what will happen during a shutdown without actually shutting the systems down.</p></li>
+<li><p>Now run the command <code>upsmon -c fsd</code>. This will simulate a power failure and send the shutdown signal to all connected machines before shutting down itself.</p></li>
+<li><p>This should have worked, so now you need to manually remove power and apply power from all machines connected to the UPS to get them to come back up.</p></li>
+</ol></li>
+</ol>
 <h3 id="zfs-config">
 ZFS Configuration
 </h3>
@@ -133,6 +159,9 @@ Fileshare Configuration
 <h2 id="resources">
 Resources
 </h2>
+<ul>
+<li><a href="https://people.freebsd.org/~thierry/nut_FreeBSD_HowTo.txt" class="uri">https://people.freebsd.org/~thierry/nut_FreeBSD_HowTo.txt</a></li>
+</ul>
 <pre class="tags"><code>build-script, main-ws-host, workstation, notes, QEMU, KVM, VFIO, Passthrough</code></pre>
 </body>
 </html>

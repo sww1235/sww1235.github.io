@@ -223,10 +223,23 @@ root        hard    memlock unlimited</code></pre>
 <li><p>Check lscpi -v to make sure that <code>vfio-pci</code> has correctly bound to the graphics card, usb card and nic.</p></li>
 <li><p>start VM to test using script in vm-manager repo.</p></li>
 </ol>
+<h3 id="extra-host-config">
+Extra Host Configuration
+</h3>
+<ol style="list-style-type: decimal">
+<li><p>Install network-ups-tools.</p>
+<pre class="sh"><code>sudo xbps-install network-ups-tools</code></pre></li>
+<li><p>Edit <code>/etc/ups/upsmon.conf</code> and add the following lines:</p>
+<pre class="conf"><code>MONITOR cyberpower@$rackmonitorIP 1 upsmonSlave $password slave</code></pre></li>
+<li><p>Start <code>upsmon</code> service <code>ln -s /etc/sv/upsmon/ /var/service</code></p></li>
+</ol>
 <h3 id="vm-specifics">
 VM Specific Setup
 </h3>
-<p><a href="build-script-notes-void-vm.html">Void VM</a> <a href="build-script-notes-win10-vm.html">Win10 VM</a></p>
+<ul>
+<li><a href="build-script-notes-void-vm.html">Void VM</a></li>
+<li><a href="build-script-notes-win10-vm.html">Win10 VM</a></li>
+</ul>
 <h2 id="resources">
 Resources
 </h2>

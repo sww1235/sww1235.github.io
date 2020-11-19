@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <meta name="author" content="Stephen Walker-Weinshenker">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="styles/main.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<title>build-script-notes-win10-vm</title>
+</head>
+<body>
+<div id="top">
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</div>
+<div id="topnavbar">
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="stuff.html">Stuff</a>
+            <ul>
+                <li><a href="https://github.com/sww1235">Github</a></li>
+                <li><a href="wiki/index.html">Wiki</a></li>
+
+            </ul>
+        </li>
+        <li><a href="blog-contents">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+
+    </ul>
+</div>
+<h1 id="top">
+Windows 10 VM Build Script and Notes
+</h1>
+<p>This is the build script and notes for the Windows 10 VM.</p>
+<h2 id="notes">
+Notes
+</h2>
+<h2 id="build-script">
+Build Script
+</h2>
+<h3 id="initial-configuration">
+Initial Configuration
+</h3>
+<h4 id="windows-installation">
+Windows Installation
+</h4>
+<ol style="list-style-type: decimal">
+<li><p>Download a copy of Windows 10 Education from Microsoft</p></li>
+<li><p>Set win10 iso as CD drive in <code>vm-manager.sh</code> script.</p></li>
+<li><p>Comment out NIC declaration in script so the vm doesn't have an internet connection during windows installation.</p></li>
+<li><p>Create qcow2 disk image if not reusing an existing one.</p></li>
+<li><p>Start windows install process. Select Language, Time and Keyboard options then press next.</p></li>
+<li><p>Click Install Now.</p></li>
+<li><p>Accept Terms and Conditions</p></li>
+<li><p>Select Custom: Install Windows Only.</p></li>
+<li><p>Let windows autopartition drive.</p></li>
+<li><p>Wait for several reboots</p></li>
+<li><p>Select Customize Settings option on Express Settings Prompt.</p></li>
+<li><p>Turn off all Privacy and tracking options</p></li>
+<li><p>When prompted to create an account, click join a Domain and follow prompts to create a local account.</p></li>
+<li><p>After setup is finished, uninstall all apps that can be uninstalled, and clean up the start menu.</p></li>
+<li><p>Shutdown VM</p></li>
+<li><p>uncomment NIC declaration in script, and comment out CDROM declaration.</p></li>
+</ol>
+<pre class="tags"><code>build-script, void-linux,laptop, lenovo, notes</code></pre>
+</body>
+</html>
