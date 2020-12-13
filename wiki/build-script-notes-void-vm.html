@@ -82,52 +82,52 @@ Initial Configuration
 </ol></li>
 <li><p>Log in as the new user you created.</p></li>
 <li><p>Update the system by running the following command until there is no output.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install -Svu</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install -Svu</code></pre></div></li>
 <li><p>Install the following packages. The st-terminfo install fixes <code>st-256color unknown terminal type</code> issues as well as backspace and tab issues when sshing in from other computers using the <code>st</code> terminal emulator.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install nano thefuck vim st-terminfo git</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install nano thefuck vim st-terminfo git</code></pre></div></li>
 <li><p>Setup system logging using socklog</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install socklog-void
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install socklog-void
 <span class="co"># enable services</span>
-<span class="kw">sudo</span> ln -s /etc/sv/socklog-unix/ /var/service
-<span class="kw">sudo</span> ln -s /etc/sv/nanoklogd/ /var/service
+<span class="fu">sudo</span> ln -s /etc/sv/socklog-unix/ /var/service
+<span class="fu">sudo</span> ln -s /etc/sv/nanoklogd/ /var/service
 <span class="co"># add user to log group</span>
-<span class="kw">sudo</span> usermod -a -G socklog <span class="ot">$USER</span>
+<span class="fu">sudo</span> usermod -a -G socklog <span class="va">$USER</span>
 <span class="co"># log out and log back in</span></code></pre></div></li>
 <li><p>Start ssh service <code>sudo ln -s /etc/sv/sshd/ /var/service</code> so you can log in remotely.</p></li>
 <li><p>Generate ssh-keys <code>ssh-keygen -t ed25519</code> and enter passphrase from password manager</p></li>
 <li><p>Add public key to github.</p></li>
 <li><p>Set up git.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> config --global user.email <span class="st">&quot;sww1235@gmail.com&quot;</span>
-<span class="kw">git</span> config --global user.namer <span class="st">&quot;Stephen Walker-Weinshenker&quot;</span></code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">git</span> config --global user.email <span class="st">&quot;sww1235@gmail.com&quot;</span>
+<span class="fu">git</span> config --global user.namer <span class="st">&quot;Stephen Walker-Weinshenker&quot;</span></code></pre></div></li>
 <li><p>Set up ssh-agent using user specific services. Instructions taken from <a href="https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/" class="uri">https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/</a></p>
 <ol style="list-style-type: decimal">
 <li>Create user specific service directory:</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> mkdir /etc/sv/runit-user-toxicsauce</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> mkdir /etc/sv/runit-user-toxicsauce</code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Create run script for user specific service by adding the following into <code>/etc/sv/runit-user-toxicsauce/run</code></li>
 </ol>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co">#!/bin/sh</span>
-<span class="kw">exec</span> <span class="kw">2&gt;&amp;1</span>
-<span class="kw">exec</span> chpst -u toxicsauce:toxicsauce runsvdir /home/toxicsauce/runit/service</code></pre></div>
+<span class="bu">exec</span> <span class="op">2&gt;&amp;1</span>
+<span class="bu">exec</span> chpst -u toxicsauce:toxicsauce runsvdir /home/toxicsauce/runit/service</code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>Mark it as executable:</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> chmod +x /etc/sv/runit-user-toxicsauce/run</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> chmod +x /etc/sv/runit-user-toxicsauce/run</code></pre></div>
 <ol start="4" style="list-style-type: decimal">
 <li>Create necessary user specific service directories:</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> ~/runit
-<span class="kw">mkdir</span> ~/runit/sv
-<span class="kw">mkdir</span> ~/runit/service</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> ~/runit
+<span class="fu">mkdir</span> ~/runit/sv
+<span class="fu">mkdir</span> ~/runit/service</code></pre></div>
 <ol start="5" style="list-style-type: decimal">
 <li>Start this service of services with:</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> ln -s /etc/sv/runit-user-toxicsauce /var/service</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> ln -s /etc/sv/runit-user-toxicsauce /var/service</code></pre></div>
 <ol start="6" style="list-style-type: decimal">
 <li>Now set up <code>ssh-agent</code> service:</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> ~/runit/sv/ssh-agent</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> ~/runit/sv/ssh-agent</code></pre></div>
 <ol start="7" style="list-style-type: decimal">
 <li>Create run script for <code>ssh-agent</code> service by adding the following into <code>~/runit/sv/ssh-agent/run</code>.</li>
 </ol>
@@ -135,46 +135,46 @@ Initial Configuration
 <span class="co">#</span>
 <span class="co"># Start ssh-agent from runit</span>
 
-<span class="ot">file=</span>~/.ssh/ssh-agent-env
+<span class="va">file=</span>~/.ssh/ssh-agent-env
 
-<span class="kw">exec</span> <span class="kw">&gt;</span> <span class="st">&quot;</span><span class="ot">$file</span><span class="st">&quot;</span>
+<span class="bu">exec</span> <span class="op">&gt;</span> <span class="st">&quot;</span><span class="va">$file</span><span class="st">&quot;</span>
 
-<span class="kw">echo</span> <span class="st">&quot;# started </span><span class="ot">$(</span><span class="kw">date</span><span class="ot">)</span><span class="st">&quot;</span>
+<span class="bu">echo</span> <span class="st">&quot;# started </span><span class="va">$(</span><span class="fu">date</span><span class="va">)</span><span class="st">&quot;</span>
 
 <span class="co"># For some reason, this line doesn&#39;t get emitted by ssh-agent when it is run</span>
 <span class="co"># with -d or -D.  Since we are starting the program with exec we already know</span>
 <span class="co"># the pid ahead of time though so we can create this line manually</span>
-<span class="kw">echo</span> <span class="st">&quot;SSH_AGENT_PID=</span><span class="ot">$$</span><span class="st">; export SSH_AGENT_PID&quot;</span>
+<span class="bu">echo</span> <span class="st">&quot;SSH_AGENT_PID=</span><span class="va">$$</span><span class="st">; export SSH_AGENT_PID&quot;</span>
 
-<span class="kw">exec</span> ssh-agent -D</code></pre></div>
+<span class="bu">exec</span> ssh-agent -D</code></pre></div>
 <ol start="8" style="list-style-type: decimal">
 <li>Mark run file as executable with:</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">chmod</span> +x ~/runit/sv/ssh-agent/run</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">chmod</span> +x ~/runit/sv/ssh-agent/run</code></pre></div>
 <ol start="9" style="list-style-type: decimal">
 <li>Now start the service with:</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ln</span> -s ~/runit/sv/ssh-agent ~/runit/service</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">ln</span> -s ~/runit/sv/ssh-agent ~/runit/service</code></pre></div>
 <p><strong>NOTE</strong>: you need the following line in bashrc in order to get it working in new shells. This is already in my dotfiles bashrc</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># source ssh-agent file</span>
 
-<span class="kw">[</span> <span class="ot">-f</span> <span class="ot">$HOME</span>/.ssh/ssh-agent-env<span class="kw"> ]</span> <span class="kw">&amp;&amp;</span> <span class="kw">source</span> <span class="ot">$HOME</span>/.ssh/ssh-agent-env</code></pre></div></li>
+<span class="bu">[</span> <span class="ot">-f</span> <span class="va">$HOME</span>/.ssh/ssh-agent-env<span class="bu"> ]</span> <span class="kw">&amp;&amp;</span> <span class="bu">source</span> <span class="va">$HOME</span>/.ssh/ssh-agent-env</code></pre></div></li>
 <li><p>Create Projects directory tree in <code>~</code> as follows:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> -p ~/projects/src/github.com/sww1235</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> -p ~/projects/src/github.com/sww1235</code></pre></div>
 <p>This mirrors the structure of how golang wants to set things up.</p></li>
 <li><p>Make symlink in <code>~</code> as follows:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ln</span> -s ~/projects/src/github.com/sww1235 myprojects</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">ln</span> -s ~/projects/src/github.com/sww1235 myprojects</code></pre></div></li>
 <li><p>Clone dotfiles repo from GitHub using ssh and install vim and bash files using <code>install.sh</code> script.</p></li>
 <li><p>Clone projects from github into Projects tree as desired.</p></li>
 <li><p>Set up void-packages per the <a href="void-packages-setup.html">instructions</a> in this wiki.</p></li>
 <li><p>Make sure <code>build-branch-void-vm</code> in my fork of <code>void-packages</code> is checked out, and up to date with desired patches. See the <a href="void-suckless-config.html">suckless page</a> for more info.</p></li>
 <li><p>Build binary packages of <code>dwm</code>, <code>dmenu</code>, and <code>st</code> as follows:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> ~/Projects/src/github.com/sww1235/void-packages
-<span class="kw">./xbps-src</span> pkg dwm
-<span class="kw">./xbps-src</span> pkg dmenu
-<span class="kw">./xbps-src</span> pkg st</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="bu">cd</span> ~/Projects/src/github.com/sww1235/void-packages
+<span class="ex">./xbps-src</span> pkg dwm
+<span class="ex">./xbps-src</span> pkg dmenu
+<span class="ex">./xbps-src</span> pkg st</code></pre></div></li>
 <li><p>Install <code>dwm</code>, <code>dmenu</code>, and <code>st</code> with the command:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install --repository=hostdir/binpkgs/build-branch-void-vm dwm dmenu st</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install --repository=hostdir/binpkgs/build-branch-void-vm dwm dmenu st</code></pre></div></li>
 <li><p>Modify ~/.xinitrc to contain the following:</p>
 <pre class="xinitrc"><code>exec dwm</code></pre></li>
 </ol>

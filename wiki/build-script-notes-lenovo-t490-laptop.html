@@ -134,61 +134,61 @@ Void Linux Configuration
 <li><p>Configure <code>sudo</code> to allow full access to members of <code>wheel</code> group. Run <code>visudo</code> and uncomment the line</p>
 <pre class="sudo"><code>#%wheel ALL=(ALL) ALL</code></pre></li>
 <li><p>Enable NTP and DHCP services</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ln</span> -s /etc/sv/ntpd /var/service
-<span class="kw">ln</span> -s /etc/sv/dhcpcd /var/service</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">ln</span> -s /etc/sv/ntpd /var/service
+<span class="fu">ln</span> -s /etc/sv/dhcpcd /var/service</code></pre></div></li>
 <li><p>Create <code>passthrough</code> folder under <code>/mnt/</code> to allow passthrough partition to mount correctly.</p></li>
 <li><p>Update system by running command <code>xbps-install -Svu</code> until it shows no updates.</p></li>
 <li><p>Install ntfs driver.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">xbps-install</span> ntfs-3g</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">xbps-install</span> ntfs-3g</code></pre></div></li>
 <li><p>Reboot system and login as normal user.</p></li>
 <li><p>Enable trim on SSD by editing <code>/etc/fstab</code> and adding <code>,discard</code> after the defaults line on the <code>/</code> and <code>/mnt/passthrough</code> mountpoints.</p></li>
 <li><p>Install and remove the following packages. Want to use simpler NTP implementation.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install nano openntpd rng-tools thefuck vim htop socklog
-<span class="kw">sudo</span> xbps-remove chrony</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install nano openntpd rng-tools thefuck vim htop socklog
+<span class="fu">sudo</span> xbps-remove chrony</code></pre></div></li>
 <li><p>Install commonly used applications.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install firefox freecad git glow kicad lynx netcat p7zip powertop
-<span class="kw">rsync</span> tmux unzip wget zip</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install firefox freecad git glow kicad lynx netcat p7zip powertop
+<span class="fu">rsync</span> tmux unzip wget zip</code></pre></div></li>
 <li><p>Setup system logging using socklog</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install socklog-void
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install socklog-void
 <span class="co"># enable services</span>
-<span class="kw">sudo</span> ln -s /etc/sv/socklog-unix/ /var/service
-<span class="kw">sudo</span> ln -s /etc/sv/nanoklogd/ /var/service
+<span class="fu">sudo</span> ln -s /etc/sv/socklog-unix/ /var/service
+<span class="fu">sudo</span> ln -s /etc/sv/nanoklogd/ /var/service
 <span class="co"># add user to log group</span>
-<span class="kw">sudo</span> usermod -a -G socklog <span class="ot">$USER</span>
+<span class="fu">sudo</span> usermod -a -G socklog <span class="va">$USER</span>
 <span class="co"># log out and log back in</span></code></pre></div></li>
 <li><p>Create projects directory tree in <code>~</code> as follows:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> -p ~/projects/src/github.com/sww1235</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> -p ~/projects/src/github.com/sww1235</code></pre></div>
 <p>This mirrors the structure of how golang wants to set things up.</p></li>
 <li><p>Clone dotfiles repo from GitHub and install vim and bash files using <code>install.sh</code> script.</p></li>
 <li><p>Set up ssh-agent using user specific services. Instructions taken from <a href="https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/" class="uri">https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/</a></p>
 <ol style="list-style-type: decimal">
 <li>Create user specific service directory:</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> mkdir /etc/sv/runit-user-toxicsauce</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> mkdir /etc/sv/runit-user-toxicsauce</code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Create run script for user specific service by adding the following into <code>/etc/sv/runit-user-toxicsauce/run</code></li>
 </ol>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co">#!/bin/sh</span>
-<span class="kw">exec</span> <span class="kw">2&gt;&amp;1</span>
-<span class="kw">exec</span> chpst -u toxicsauce:toxicsauce runsvdir /home/toxicsauce/runit/service</code></pre></div>
+<span class="bu">exec</span> <span class="op">2&gt;&amp;1</span>
+<span class="bu">exec</span> chpst -u toxicsauce:toxicsauce runsvdir /home/toxicsauce/runit/service</code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>Mark it as executable:</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> chmod +x /etc/sv/runit-user-toxicsauce/run</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> chmod +x /etc/sv/runit-user-toxicsauce/run</code></pre></div>
 <ol start="4" style="list-style-type: decimal">
 <li>Create necessary user specific service directories:</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> ~/runit
-<span class="kw">mkdir</span> ~/runit/sv
-<span class="kw">mkdir</span> ~/runit/service</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> ~/runit
+<span class="fu">mkdir</span> ~/runit/sv
+<span class="fu">mkdir</span> ~/runit/service</code></pre></div>
 <ol start="5" style="list-style-type: decimal">
 <li>Start this service of services with:</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> ln -s /etc/sv/runit-user-toxicsauce /var/service</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> ln -s /etc/sv/runit-user-toxicsauce /var/service</code></pre></div>
 <ol start="6" style="list-style-type: decimal">
 <li>Now set up <code>ssh-agent</code> service:</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> ~/runit/sv/ssh-agent</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> ~/runit/sv/ssh-agent</code></pre></div>
 <ol start="7" style="list-style-type: decimal">
 <li>Create run script for <code>ssh-agent</code> service by adding the following into <code>~/runit/sv/ssh-agent/run</code>.</li>
 </ol>
@@ -196,49 +196,49 @@ Void Linux Configuration
 <span class="co">#</span>
 <span class="co"># Start ssh-agent from runit</span>
 
-<span class="ot">file=</span>~/.ssh/ssh-agent-env
+<span class="va">file=</span>~/.ssh/ssh-agent-env
 
-<span class="kw">exec</span> <span class="kw">&gt;</span> <span class="st">&quot;</span><span class="ot">$file</span><span class="st">&quot;</span>
+<span class="bu">exec</span> <span class="op">&gt;</span> <span class="st">&quot;</span><span class="va">$file</span><span class="st">&quot;</span>
 
-<span class="kw">echo</span> <span class="st">&quot;# started </span><span class="ot">$(</span><span class="kw">date</span><span class="ot">)</span><span class="st">&quot;</span>
+<span class="bu">echo</span> <span class="st">&quot;# started </span><span class="va">$(</span><span class="fu">date</span><span class="va">)</span><span class="st">&quot;</span>
 
 <span class="co"># For some reason, this line doesn&#39;t get emitted by ssh-agent when it is run</span>
 <span class="co"># with -d or -D.  Since we are starting the program with exec we already know</span>
 <span class="co"># the pid ahead of time though so we can create this line manually</span>
-<span class="kw">echo</span> <span class="st">&quot;SSH_AGENT_PID=</span><span class="ot">$$</span><span class="st">; export SSH_AGENT_PID&quot;</span>
+<span class="bu">echo</span> <span class="st">&quot;SSH_AGENT_PID=</span><span class="va">$$</span><span class="st">; export SSH_AGENT_PID&quot;</span>
 
-<span class="kw">exec</span> ssh-agent -D</code></pre></div>
+<span class="bu">exec</span> ssh-agent -D</code></pre></div>
 <ol start="8" style="list-style-type: decimal">
 <li>Mark run file as executable with:</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">chmod</span> +x ~/runit/sv/ssh-agent/run</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">chmod</span> +x ~/runit/sv/ssh-agent/run</code></pre></div>
 <ol start="9" style="list-style-type: decimal">
 <li>Now start the service with:</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ln</span> -s ~/runit/sv/ssh-agent ~/runit/service</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">ln</span> -s ~/runit/sv/ssh-agent ~/runit/service</code></pre></div></li>
 <li><p>Clone projects from github into Projects tree as desired.</p></li>
 <li><p>Set up void-packages per the <a href="void-packages-setup.html">instructions</a> in this wiki.</p></li>
 <li><p>Make sure <code>build-branch-the-machine</code> in my fork of <code>void-packages</code> is checked out, and up to date with desired patches. See the <a href="void-suckless-config.html">suckless page</a> for more info.</p></li>
 <li><p>Build binary packages of <code>dwm</code>, <code>dmenu</code>, <code>st</code> and <code>slstatus</code> as follows:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> ~/Projects/src/github.com/sww1235/void-packages
-<span class="kw">./xbps-src</span> pkg dwm
-<span class="kw">./xbps-src</span> pkg dmenu
-<span class="kw">./xbps-src</span> pkg st
-<span class="kw">./xbps-src</span> pkg slstatus</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="bu">cd</span> ~/Projects/src/github.com/sww1235/void-packages
+<span class="ex">./xbps-src</span> pkg dwm
+<span class="ex">./xbps-src</span> pkg dmenu
+<span class="ex">./xbps-src</span> pkg st
+<span class="ex">./xbps-src</span> pkg slstatus</code></pre></div></li>
 <li><p>Install <code>dwm</code>, <code>dmenu</code>, <code>st</code> and <code>slstatus</code> with the command:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install --repository=hostdir/binpkgs/build-branch-the-machine dwm dmenu st slstatus</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install --repository=hostdir/binpkgs/build-branch-the-machine dwm dmenu st slstatus</code></pre></div></li>
 <li><p>Modify ~/.xinitrc to contain the following:</p>
 <pre class="xinitrc"><code>slstatus &amp;
 exec dwm</code></pre></li>
 <li><p>Install <code>tlp</code> for power management:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install tlp
-<span class="kw">sudo</span> ln -s /etc/sv/tlp /var/service</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install tlp
+<span class="fu">sudo</span> ln -s /etc/sv/tlp /var/service</code></pre></div></li>
 <li><p>Setup CUPS for printing:</p>
 <ol style="list-style-type: decimal">
 <li>Install and enable the service:</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install cups
-<span class="kw">sudo</span> ln -s /etc/sv/cupsd/ /var/service</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install cups
+<span class="fu">sudo</span> ln -s /etc/sv/cupsd/ /var/service</code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li><p>Edit /etc/cups/cupsd.conf, find line that starts with <code>&lt;Limit CUPS-Add-Modify-Printer</code> and add <code>toxicsauce</code> after <code>@SYSTEM</code></p></li>
 <li><p>Restart <code>cupsd</code> service</p></li>

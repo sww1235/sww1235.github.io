@@ -40,11 +40,11 @@ For AMD CPUs (AMD-Vi) set amd_iommu=on</code></pre>
 <p><code>dmesg | grep -e DMAR -e IOMMU</code></p>
 <h2 id="iommu-group-check">iommu group check</h2>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co">#!/bin/bash</span>
-<span class="kw">shopt</span> -s nullglob
-<span class="kw">for</span> <span class="kw">d</span> in /sys/kernel/iommu_groups/*/devices/*<span class="kw">;</span> <span class="kw">do</span> 
-    <span class="ot">n=${d#</span>*/iommu_groups/*<span class="ot">}</span>; <span class="ot">n=${n%%</span>/*<span class="ot">}</span>
-    <span class="kw">printf</span> <span class="st">&#39;IOMMU Group %s &#39;</span> <span class="st">&quot;</span><span class="ot">$n</span><span class="st">&quot;</span>
-    <span class="kw">lspci</span> -nns <span class="st">&quot;</span><span class="ot">${d##</span>*/<span class="ot">}</span><span class="st">&quot;</span>
+<span class="bu">shopt</span> -s nullglob
+<span class="kw">for</span> <span class="ex">d</span> in /sys/kernel/iommu_groups/*/devices/*<span class="kw">;</span> <span class="kw">do</span> 
+    <span class="va">n=${d#</span>*/iommu_groups/*<span class="va">}</span>; <span class="va">n=${n%%</span>/*<span class="va">}</span>
+    <span class="bu">printf</span> <span class="st">&#39;IOMMU Group %s &#39;</span> <span class="st">&quot;</span><span class="va">$n</span><span class="st">&quot;</span>
+    <span class="ex">lspci</span> -nns <span class="st">&quot;</span><span class="va">${d##</span>*/<span class="va">}</span><span class="st">&quot;</span>
 <span class="kw">done</span>;</code></pre></div>
 <p>make sure only to add pci ids of graphics card and associated audio device, not the root if in the same group.</p>
 <h2 id="configure-vfio-pci">configure vfio-pci</h2>

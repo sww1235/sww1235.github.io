@@ -58,26 +58,26 @@ Ports Usage
 <p>most systems will be running release versions of openBSD</p>
 <p>use packages unless ports are needed. If ports are needed use <code>-stable</code> in order to get security fixes from <code>-current</code> tree.</p>
 <p>add the following to <code>/etc/mk.conf</code></p>
-<pre class="sh"><code>PORTS_PRIVSEP=YES
-WRKOBJDIR=/usr/obj/ports
-DISTDIR=/usr/distfiles
-PACKAGE_REPOSITORY=/usr/packages</code></pre>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="va">PORTS_PRIVSEP=</span>YES
+<span class="va">WRKOBJDIR=</span>/usr/obj/ports
+<span class="va">DISTDIR=</span>/usr/distfiles
+<span class="va">PACKAGE_REPOSITORY=</span>/usr/packages</code></pre></div>
 <p>create the directories above then change ownership to local user and group, make sure they are world readable.</p>
 <p>also following commands:</p>
-<pre class="sh"><code>mkdir -p ports src
-cngrp wsrc ports src
-chmod 775 ports src</code></pre>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">mkdir</span> -p ports src
+<span class="ex">cngrp</span> wsrc ports src
+<span class="fu">chmod</span> 775 ports src</code></pre></div>
 <p>add the following lines to <code>doas.conf</code> and add <code>SUDO=doas</code> to <code>/etc/mk.conf</code></p>
 <pre class="doas"><code>permit keepenv nopass toxic as _pbuild
 permit keepenv nopass toxic as _pfetch</code></pre>
 <p>add user to <code>wsrc</code> group: <code>doas usermod -G wsrc toxic</code>.</p>
 <p>Also add</p>
 <p>download stable ports branch from anonCVS:</p>
-<pre class="sh"><code>cd /usr
-cvs -qd anoncvs@anoncvs3.usa.openbsd.org:/cvs checkout -rOPENBSD_6_4 -P ports</code></pre>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="bu">cd</span> /usr
+<span class="ex">cvs</span> -qd anoncvs@anoncvs3.usa.openbsd.org:/cvs checkout -rOPENBSD_6_4 -P ports</code></pre></div>
 <p>to update after initial clone:</p>
-<pre class="sh"><code>cd /usr/ports
-cvs -q up -Pd -rOPENBSD_6_4</code></pre>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="bu">cd</span> /usr/ports
+<span class="ex">cvs</span> -q up -Pd -rOPENBSD_6_4</code></pre></div>
 <p>default shell is <code>ksh</code>. Configuration goes in <code>.profile</code></p>
 <pre class="tags"><code>OpenBSD, Homelab, Setup</code></pre>
 </body>

@@ -63,28 +63,28 @@ static domain_name_servers=$dnsserver</code></pre></li>
 <pre class="conf"><code>TIMEZONE=&quot;America/Denver&quot; # or appropriate timezone
 KEYMAP=&quot;us&quot;</code></pre></li>
 <li><p>Enable NTP and DHCP services:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ln</span> -s /etc/sv/ntpd /var/service
-<span class="kw">ln</span> -s /etc/sv/dhcpcd /var/service</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">ln</span> -s /etc/sv/ntpd /var/service
+<span class="fu">ln</span> -s /etc/sv/dhcpcd /var/service</code></pre></div></li>
 <li><p>Check <code>/etc/ntpd.conf</code> for constraints line, and comment out. This doesn't work on Raspi due to lack of HWCLK</p></li>
 <li><p>Add <code>server $gateway</code> to <code>/etc/ntpd.conf</code> since it doesn't seem to pick it up from DHCP. NTP server will usually be the pfsense gateway, but use whatever machine is actually the NTP server</p></li>
 <li><p>Create new non-root user, replacing $newusername with the actual name of the user. This command adds the user to the wheel group, which allows <code>sudo</code> access</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">useradd</span> -m -s /bin/bash -U -G wheel,users,audio,video,cdrom,input <span class="ot">$newusername</span></code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">useradd</span> -m -s /bin/bash -U -G wheel,users,audio,video,cdrom,input <span class="va">$newusername</span></code></pre></div></li>
 <li><p>Set system hostname by editing <code>/etc/hostname</code></p></li>
 </ol></li>
 <li><p>Reboot the system using <code>reboot</code> command. This should allow DHCP and NTP to do their thing and allow us to update the system and install new packages.</p></li>
 <li><p>Log in as the new user you created</p></li>
 <li><p>Update the system by running the following command until there is no output.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install -Svu</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install -Svu</code></pre></div></li>
 <li><p>Install the following packages.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install nano network-ups-tools rng-tools thefuck vim htop</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install nano network-ups-tools rng-tools thefuck vim htop</code></pre></div></li>
 <li><p>Install terminfo package to fix issues with ssh</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install st-terminfo</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install st-terminfo</code></pre></div></li>
 <li><p>Setup syslog daemon</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> xbps-install socklog-void
-<span class="kw">sudo</span> ln -s /etc/sv/socklog-unix /var/service
-<span class="kw">sudo</span> ln -s /etc/sv/nanoklogd /var/service
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install socklog-void
+<span class="fu">sudo</span> ln -s /etc/sv/socklog-unix /var/service
+<span class="fu">sudo</span> ln -s /etc/sv/nanoklogd /var/service
 <span class="co"># so normal user can access logs</span>
-<span class="kw">sudo</span> usermod -a -G socklog <span class="ot">$USER</span></code></pre></div></li>
+<span class="fu">sudo</span> usermod -a -G socklog <span class="va">$USER</span></code></pre></div></li>
 </ol>
 <h3 id="nut-config">
 NUT Configuration
@@ -113,12 +113,12 @@ MONITOR cyberpower@localhost 1 upsmonMaster $password master
 # all other values can be left as defaults for now</code></pre></li>
 </ol>
 <p>Need to change ownership of config files on void linux as the default is set up incorrectly:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> chown root:nut /etc/ups/*
-<span class="kw">sudo</span> chmod 640 /etc/ups/*</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> chown root:nut /etc/ups/*
+<span class="fu">sudo</span> chmod 640 /etc/ups/*</code></pre></div>
 <p>start the following services:</p>
 <p><code>bash sudo ln -s /etc/sv/upsdrvctl/ /var/service sudo ln -s /etc/sv/upsd/ /var/service sudo ln -s /etc/sv/upsmon/ /var/service</code></p>
 <p>check status of ups with the following command to make sure it is detected properly</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">upsc</span> cyberpower</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">upsc</span> cyberpower</code></pre></div>
 <pre class="tags"><code>build-script, rack-monitor, notes</code></pre>
 </body>
 </html>

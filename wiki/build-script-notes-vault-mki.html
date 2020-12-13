@@ -42,7 +42,8 @@ Notes
 <h2 id="build-script">
 Build Script
 </h2>
-&lt;h3 id=prereqs&quot;&gt;Prerequisites
+<h3 id="prereqs&quot;">
+Prerequisites
 </h3>
 <ol style="list-style-type: decimal">
 <li><p>Connect to IPMI interface of the server by going to $ip in a web browser.</p>
@@ -108,14 +109,14 @@ Initial Configuration
 <li><p>Change root's shell to <code>sh</code>: <code>chsh -s sh</code></p></li>
 <li><p>Log out and su back in again</p></li>
 <li><p>Update system and install software</p>
-<pre class="sh"><code>freebsd-update fetch
-freebsd-update install
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">freebsd-update</span> fetch
+<span class="ex">freebsd-update</span> install
 
-pkg update
-# answer yes to install pkg system
-pkg upgrade
+<span class="ex">pkg</span> update
+<span class="co"># answer yes to install pkg system</span>
+<span class="ex">pkg</span> upgrade
 
-pkg install nano sudo</code></pre></li>
+<span class="ex">pkg</span> install nano sudo</code></pre></div></li>
 <li><p>Configure sudo. <code>visudo</code> and uncomment line <code>%wheel ALL=(ALL) ALL</code></p></li>
 <li><p>Configure static IP addressing. First, run <code>ifconfig</code> to see what interface is actually connected, then add the following lines to <code>/etc/rc.conf</code> and modify existing lines so they read as follows.</p>
 <pre class="conf"><code>ifconfig_igb0=&quot;inet $ipaddress netmask $netmask&quot;
@@ -125,10 +126,10 @@ defaultrouter=&quot;$gateway&quot;</code></pre>
 <li><p>Setup system logging</p></li>
 <li><p>Set up ssh-agent</p></li>
 <li><p>Create Projects directory tree in <code>~</code> as follows:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> -p ~/projects/src/github.com/sww1235</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> -p ~/projects/src/github.com/sww1235</code></pre></div>
 <p>This mirrors the structure of how golang wants to set things up.</p></li>
 <li><p>Make symlink in <code>~</code> as follows:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ln</span> -s ~/projects/src/github.com/sww1235 myprojects</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">ln</span> -s ~/projects/src/github.com/sww1235 myprojects</code></pre></div></li>
 <li><p>Clone dotfiles repo from GitHub using ssh and install vim and bash files using <code>install.sh</code> script.</p></li>
 <li><p>Clone projects from github into Projects tree as desired.</p></li>
 </ol>
@@ -153,6 +154,29 @@ UPS Configuration
 <h3 id="zfs-config">
 ZFS Configuration
 </h3>
+<p>Also see the <a href="https://www.freebsd.org/doc/handbook/zfs.html">ZFS chapter of the FreeBSD handbook</a></p>
+<p>The current vdev design is 6 identical disks running in a RAIDZ2 configuration. When the storage is expanded, a new group of 6 disks will be added to a new vdev and added to the zpool.</p>
+<p>vdev = group of drives. You cannot add more drives to a vdev once it is created.</p>
+<p>zpool = group of vdevs. Redundancy is given by vdev configuration, not by multiple vdevs. if 1 vdev fails completely, <strong>all</strong> data in zpool is lost.</p>
+<ol style="list-style-type: decimal">
+<li><p>Install smartmontools and e2fsprogs packages.</p></li>
+<li><p>If the hard drives are new, Test hard drives with <code>sudo badblocks -b 4096 -wsv /dev/da* &gt; da*.log</code>, replacing * with the number for each HDD. This will take a while depending on the size of the hard drives.</p></li>
+<li><p>Add the following line to <code>/etc/rc.conf</code>, then start the service manually <code>sudo service zfs start</code> so you don't have to reboot.</p>
+<pre class="conf"><code>zfs_enable=&quot;YES&quot;</code></pre></li>
+<li><p>Add the following lines to <code>/boot/loader.conf</code> if they are not already there and reboot. This enables unique and static labels per disk, similar to <code>/dev/disk/by-id/</code> on linux.</p>
+<pre class="conf"><code>geom_label_load=&quot;YES&quot;
+kern.geom.label.disk_ident.enable=&quot;1&quot;</code></pre></li>
+<li><p>Now create and configure the zpool and vdevs as follows:</p>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="co"># replace /dev/diskid/... with the names of the disks you are using in the zpool</span>
+<span class="fu">sudo</span> zpool create the-vault raidz2 /dev/diskid/...
+<span class="co"># add any additional 6 disk sets</span>
+<span class="fu">sudo</span> zpool add the-vault raidz2 /dev/diskid/...</code></pre></div></li>
+<li><p>Now create ZFS datasets as follows:</p>
+<pre class="tags"><code>sudo zfs create -o compress=lz4 the-vault/backups
+sudo zfs create -o compress=lz4 the-vault/storage
+sudo zfs create -o compress=lz4 the-vault/media</code></pre></li>
+<li><p>Install zfsbackup-go either from packages/ports or github directly.</p></li>
+</ol>
 <h3 id="filesharing">
 Fileshare Configuration
 </h3>
