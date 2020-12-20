@@ -116,7 +116,7 @@ Initial Configuration
 <span class="co"># answer yes to install pkg system</span>
 <span class="ex">pkg</span> upgrade
 
-<span class="ex">pkg</span> install nano sudo</code></pre></div></li>
+<span class="ex">pkg</span> install nano sudo ipmitool openipmi</code></pre></div></li>
 <li><p>Configure sudo. <code>visudo</code> and uncomment line <code>%wheel ALL=(ALL) ALL</code></p></li>
 <li><p>Configure static IP addressing. First, run <code>ifconfig</code> to see what interface is actually connected, then add the following lines to <code>/etc/rc.conf</code> and modify existing lines so they read as follows.</p>
 <pre class="conf"><code>ifconfig_igb0=&quot;inet $ipaddress netmask $netmask&quot;
