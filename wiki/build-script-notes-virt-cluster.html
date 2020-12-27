@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <meta name="author" content="Stephen Walker-Weinshenker">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="styles/main.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<title>build-script-notes-virt-cluster</title>
+</head>
+<body>
+<div id="top">
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</div>
+<div id="topnavbar">
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="stuff.html">Stuff</a>
+            <ul>
+                <li><a href="https://github.com/sww1235">Github</a></li>
+                <li><a href="wiki/index.html">Wiki</a></li>
+
+            </ul>
+        </li>
+        <li><a href="blog-contents">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+
+    </ul>
+</div>
+<h1 id="top">
+Virtualization Cluster Configuration
+</h1>
+<p>Documentation on setup of virtualization cluster. Some info may be split into its own page.</p>
+<p>Current status of cluster, is 3 Intel NUCs, each running XCP-ng as a tier 1 hypervisor.</p>
+<h2 id="ind-host-setup">
+Individual Host Setup
+</h2>
+<h3 id="bios-config">
+BIOS Configuration
+</h3>
+<ol style="list-style-type: decimal">
+<li><p>Boot system into BIOS by spamming <code>F2</code> key after pressing power button.</p></li>
+<li><p>Check that all RAM and CPU are properly detected on <code>Main</code> tab.</p></li>
+<li><p>Under <code>Advanced-&gt;Storage</code>: Disable SATA port since we are not using it.</p></li>
+<li><p>Under <code>Advanced-&gt;Onboard Devices</code>: Disable HD Audio, WLAN, Bluetooth, Gaussian Mixture Models, HDMI CEC Control, and Enable IOMMU during pre-boot</p></li>
+<li><p>Under <code>Advanced-&gt;Video</code>: Set IGD Primary Video Port to HDMI</p></li>
+<li><p>Under <code>Security</code>: Enable USB Provisioning of Intel AMT.</p></li>
+<li><p>Under <code>Power-&gt;Secondary Power Settings</code>: Change After Power Failure to Power On.</p></li>
+<li><p>Under <code>Boot-&gt;Secure Boot</code>: Disable Secure Boot</p></li>
+<li><p>Under <code>Boot-&gt;Boot Priority</code>: Enable Boot USB Devices First, and disable Boot Network Devices Last. Disable Optical boot.</p></li>
+<li><p>Under <code>Boot-&gt;Boot Display Configuration</code>: Disable Suppress Alert Messages At Boot, and Enable F12 for network boot.</p></li>
+<li><p>Press F10 to save and Exit. On Reboot, press <code>CTRL-P</code> to get into Intel AMT configuration</p></li>
+</ol>
+<h3 id="amt-config">
+AMT Configuration
+</h3>
+<ol style="list-style-type: decimal">
+<li><p>Press <code>CTRL-P</code> at boot prompt to enter Intel AMT configuration.</p></li>
+<li><p>Hit <code>Enter</code> to login to AMT, with default password of <code>admin</code>. When prompted to enter new password, use password out of password manager.</p></li>
+<li><p>Under <code>Intel AMT Configuration-&gt;User Consent</code>: Change User Opt-in to NONE.</p></li>
+<li><p>Under <code>Intel AMT Configuration-&gt;Network Setup-&gt;Intel ME Network Name Settings</code>: Set hostname and domain to desired values. Leave Shared/Dedicated FQDN set to shared.</p></li>
+<li><p>Set static DHCP lease in DHCP server if not done already.</p></li>
+</ol>
+<h3 id="hypervisor-install">
+Install Hypervisor
+</h3>
+<h2 id="cluster-setup">
+Cluster Setup
+</h2>
+<pre class="tags"><code>cluster, virtualization, virt, NUC, xcp-ng</code></pre>
+</body>
+</html>
