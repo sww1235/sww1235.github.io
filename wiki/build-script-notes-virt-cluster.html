@@ -47,11 +47,11 @@ BIOS Configuration
 <li><p>Check that all RAM and CPU are properly detected on <code>Main</code> tab.</p></li>
 <li><p>Under <code>Advanced-&gt;Storage</code>: Disable SATA port since we are not using it.</p></li>
 <li><p>Under <code>Advanced-&gt;Onboard Devices</code>: Disable HD Audio, WLAN, Bluetooth, Gaussian Mixture Models, HDMI CEC Control, and Enable IOMMU during pre-boot</p></li>
-<li><p>Under <code>Advanced-&gt;Video</code>: Set IGD Primary Video Port to HDMI</p></li>
+<li><p>Under <code>Advanced-&gt;Video</code>: Set IGD Primary Video Port to HDMI and enable <code>Virtual Display Emulation</code> under <code>Display Emulation</code></p></li>
 <li><p>Under <code>Security</code>: Enable USB Provisioning of Intel AMT.</p></li>
 <li><p>Under <code>Power-&gt;Secondary Power Settings</code>: Change After Power Failure to Power On.</p></li>
 <li><p>Under <code>Boot-&gt;Secure Boot</code>: Disable Secure Boot</p></li>
-<li><p>Under <code>Boot-&gt;Boot Priority</code>: Enable Boot USB Devices First, and disable Boot Network Devices Last. Disable Optical boot.</p></li>
+<li><p>Under <code>Boot-&gt;Boot Priority</code>: Enable Boot USB Devices First, and disable Boot Network Devices Last.</p></li>
 <li><p>Under <code>Boot-&gt;Boot Display Configuration</code>: Disable Suppress Alert Messages At Boot, and Enable F12 for network boot.</p></li>
 <li><p>Press F10 to save and Exit. On Reboot, press <code>CTRL-P</code> to get into Intel AMT configuration</p></li>
 </ol>
@@ -68,6 +68,18 @@ AMT Configuration
 <h3 id="hypervisor-install">
 Install Hypervisor
 </h3>
+<ol style="list-style-type: decimal">
+<li><p>Download FreeBSD-bootonly ISO from reputable sources. Use this to reduce loading times</p></li>
+<li><p>Connect to system using Mesh Commander.</p></li>
+<li><p>Mount ISO using IDE-R, and select <code>Reset to IDE-R</code> in <code>Power Actions</code> menu.</p></li>
+<li><p>Wait for system to finish booting</p></li>
+<li><p>Select Install</p></li>
+<li><p>Select us keymap</p></li>
+<li><p>enter hostname</p></li>
+<li><p>configure network - IPv4 and DHCP</p></li>
+<li><p>use Auto (UFS) partitioning scheme and accept defaults</p></li>
+<li><p>Select default (main) FreeBSD mirror.</p></li>
+</ol>
 <h2 id="cluster-setup">
 Cluster Setup
 </h2>
