@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <meta name="author" content="Stephen Walker-Weinshenker">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="styles/main.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<title>gnupg-config</title>
+</head>
+<body>
+<div id="top">
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</div>
+<div id="topnavbar">
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="stuff.html">Stuff</a>
+            <ul>
+                <li><a href="https://github.com/sww1235">Github</a></li>
+                <li><a href="wiki/index.html">Wiki</a></li>
+
+            </ul>
+        </li>
+        <li><a href="blog-contents">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+
+    </ul>
+</div>
+<h1 id="top">
+GnuPG Configuration and Setup
+</h1>
+<p>This is documentation around how I have setup my GnuPG keys, across multiple operating systems, so I don't forget and have to do a bunch of research over again.</p>
+<h2 id="generating-keys">
+Generating Keys
+</h2>
+<ol style="list-style-type: decimal">
+<li><p>Install GnuPG package for your operating system. See Operating System specific sections below.</p></li>
+<li><p>Run <code>gnu --full-gen-key</code> to generate a public-private OpenPGP compatible keypair. Answer prompts as follows:</p>
+<ol style="list-style-type: decimal">
+<li>Answer <code>RSA and RSA</code> which is the default.</li>
+<li>4096 bit key.</li>
+<li>4y</li>
+<li>Enter legal name</li>
+<li>Enter domain@domain email for main identity</li>
+<li>Comment can be left blank</li>
+<li>Verify info and hit <code>O</code> for Ok</li>
+<li>Enter a strong passphrase. Use password vault to generate.</li>
+</ol></li>
+<li><p>Generate revocation certificate as well.</p>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">gpg</span> --list-keys
+<span class="co"># note your key id</span>
+<span class="co"># now generate certificate with that key id</span>
+<span class="ex">gpg</span> --armor --gen-revoke [your key ID] <span class="op">&gt;</span> pgp-revocation.asc</code></pre></div></li>
+</ol>
+<p>Now make sure to <a href="#backing-up-keys">backup</a> and <a href="#managing-keys">manage</a> your keys as follows.</p>
+<h2 id="backing-up-keys">
+Backing Up Keys
+</h2>
+<ol style="list-style-type: decimal">
+<li><p>Export ASCII armored version of public keys: <code>gpg --armor --export &gt; pgp-public-keys.asc</code></p></li>
+<li><p>Export ASCII armored version of private keys: <code>gpg --armor --export-secret-keys &gt; pgp-private-keys.asc</code></p></li>
+<li><p>Export owner-trust certificate: <code>gpg --export-ownertrust &gt; pgp-ownertrust.asc</code></p></li>
+<li><p>Print, using a OCR font, these 3 generated files as well as your revocation certificate and store them in a safe place. Current best method to print the files is:</p>
+<ol style="list-style-type: decimal">
+<li><p>copy the OCR-A font files into <code>~/.fonts/</code>.</p></li>
+<li><p>run <code>mkafmmap</code> in <code>~/.fonts/</code> to generate the font map file.</p></li>
+<li><p>create <code>~/.enscriptrc</code>, with contents of <code>AFMPath: /usr/share/enscript/afm:/usr/local/lib/ps:/usr/lib/ps:/home/toxicsauce/.fonts</code>. Essentially take the <code>AFMPath</code> from <code>/etc/enscript.cfg</code> and add your homedir font dir to the end.</p></li>
+<li><p>Run <code>enscript -f OCR-A10 &lt;file&gt;</code> to print public, private, ownertrust, and revocation files, then store them in a safe location, preferably a fireproof safe.</p></li>
+</ol></li>
+</ol>
+<p>Enscript reference: <a href="https://east.fm/posts/adding-fonts-to-enscript/index.html" class="uri">https://east.fm/posts/adding-fonts-to-enscript/index.html</a></p>
+<h2 id="managing-keys">
+Managing Keys
+</h2>
+<h3 id="restoring-backups">
+Restoring Backed Up Keys
+</h3>
+<ol style="list-style-type: decimal">
+<li><p>Scan and OCR your pages (or enter them by hand)</p></li>
+<li><p>Enter the following commands to restore from the files you created:</p>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">gpg</span> --import pgp-public-keys.asc
+<span class="ex">gpg</span> --import pgp-private-keys.asc
+<span class="ex">gpg</span> --import-ownertrust pgp-ownertrust.asc</code></pre></div></li>
+</ol>
+<h3 id="revoking-keys">
+Revoking keys
+</h3>
+<p>To revoke a compromised key, run the following command, and upload to any public keyservers. Also generate new keys imediately.</p>
+<pre><code>```sh
+gpg --import pgp-revocation.asc
+```</code></pre>
+<h3 id="renewing-keys">
+Renewing Keys
+</h3>
+<p>When your keypair expires, you can renew it instead of creating a new keypair.</p>
+<ol style="list-style-type: decimal">
+<li><code>gpg --list-keys</code> and record the keyid you want to rewew.</li>
+<li><code>gpg --edit-key [your key ID]</code></li>
+<li><code>Command: expire</code></li>
+<li>Enter new expiration time.</li>
+<li><code>Command: save</code> to save changes to key. Make sure to push to keyservers.</li>
+</ol>
+<h3 id="copying-keys">
+Copying Keys To Another Computer
+</h3>
+<p>Easiest way is to use scp. <code>scp -r ~/.gnupg user@remotehost:~/</code></p>
+<h2 id="os-specific">
+Operating System Specific Instructions
+</h2>
+<h3 id="freebsd">
+FreeBSD
+</h3>
+<p>Copied from the <a href="https://www.freebsd.org/doc/en/articles/committers-guide/pgpkeys.html">FreeBSD Handbook</a></p>
+<ol style="list-style-type: decimal">
+<li><p>Install <code>security/gnupg</code> from packages. this is gpg2</p></li>
+<li><p>Set preferences in <code>~/.gnupg/gpg.conf</code></p></li>
+</ol>
+<h3 id="void-linux">
+Void Linux
+</h3>
+<ol style="list-style-type: decimal">
+<li>Install <code>gnupg2</code></li>
+<li>Set preferences in <code>~/.gnupg/gpg.conf</code></li>
+</ol>
+<h2 id="references">
+References
+</h2>
+<ul>
+<li><a href="https://msol.io/blog/tech/back-up-your-pgp-keys-with-gpg/" class="uri">https://msol.io/blog/tech/back-up-your-pgp-keys-with-gpg/</a></li>
+<li><a href="https://tech.michaelaltfield.net/2009/02/05/new-gpg-key/" class="uri">https://tech.michaelaltfield.net/2009/02/05/new-gpg-key/</a></li>
+</ul>
+<pre class="tags"><code>GnuPG, PGP, GPG, Security</code></pre>
+</body>
+</html>
