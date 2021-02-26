@@ -35,7 +35,7 @@
 Virtualization Cluster Configuration
 </h1>
 <p>Documentation on setup of virtualization cluster. Some info may be split into its own page.</p>
-<p>Current status of cluster, is 3 Intel NUCs, each running XCP-ng as a tier 1 hypervisor.</p>
+<p>Current status of cluster, is 3 Intel NUCs, each running Xen as a tier 1 hypervisor with FreeBSD as Dom0.</p>
 <h2 id="ind-host-setup">
 Individual Host Setup
 </h2>
@@ -51,6 +51,7 @@ BIOS Configuration
 <li><p>Under <code>Security</code>: Enable USB Provisioning of Intel AMT.</p></li>
 <li><p>Under <code>Power-&gt;Secondary Power Settings</code>: Change After Power Failure to Power On.</p></li>
 <li><p>Under <code>Boot-&gt;Secure Boot</code>: Disable Secure Boot</p></li>
+<li><p>under <code>Boot-&gt;Boot Priority</code>: Disable UEFI boot and enable Legacy Boot. This is due to a quirk with FreeBSD and Xen (Multiboot vs Multiboot 2 issues)</p></li>
 <li><p>Under <code>Boot-&gt;Boot Priority</code>: Enable Boot USB Devices First, and disable Boot Network Devices Last.</p></li>
 <li><p>Under <code>Boot-&gt;Boot Display Configuration</code>: Disable Suppress Alert Messages At Boot, and Enable F12 for network boot.</p></li>
 <li><p>Press F10 to save and Exit. On Reboot, press <code>CTRL-P</code> to get into Intel AMT configuration</p></li>
@@ -65,8 +66,8 @@ AMT Configuration
 <li><p>Under <code>Intel AMT Configuration-&gt;Network Setup-&gt;Intel ME Network Name Settings</code>: Set hostname and domain to desired values. Leave Shared/Dedicated FQDN set to shared.</p></li>
 <li><p>Set static DHCP lease in DHCP server if not done already.</p></li>
 </ol>
-<h3 id="hypervisor-install">
-Install Hypervisor
+<h3 id="os-install">
+Install Operating System
 </h3>
 <ol style="list-style-type: decimal">
 <li><p>Download FreeBSD-bootonly ISO from reputable sources. Use this to reduce loading times</p></li>
@@ -79,6 +80,22 @@ Install Hypervisor
 <li><p>configure network - IPv4 and DHCP</p></li>
 <li><p>use Auto (UFS) partitioning scheme and accept defaults</p></li>
 <li><p>Select default (main) FreeBSD mirror.</p></li>
+<li><p>Wait for distribution files to be fetched and validated.</p></li>
+<li><p>Set root password</p></li>
+<li><p>Choose No for BIOS set to UTC for now.</p></li>
+<li><p>Select America -&gt; USA -&gt; Mountain (most areas) timezone</p></li>
+<li><p>Set date and time</p></li>
+<li><p>Enable <code>local_unbound</code>, <code>sshd</code>, <code>ntpdate</code>, <code>ntpd</code>, and <code>powerd</code> daemons to start at boot.</p></li>
+<li><p>Enable <code>hide_uids</code>, <code>hide_gids</code>, <code>hide_jail</code>, <code>read_msgbuf</code>, <code>proc_debug</code>, <code>random_pid</code>, <code>clear_temp</code> secuirty options</p></li>
+<li><p>Add normal user, and invite into <code>wheel</code> group.</p></li>
+<li><p>Don't need to add any more users.</p></li>
+<li><p>Exit installer and reboot.</p></li>
+<li><p>Enter BIOS and set boot options <code>BOOT -&gt; Boot Priority</code> so <code>UEFI OS (SSD)</code> is primary and <code>PXE4</code> is secondary.</p></li>
+<li><p>Login as root</p></li>
+<li><p>Install sudo with <code>pgk install sudo</code> and answer yes to install pkg ecosystem.</p></li>
+<li><p>Edit sudo config with <code>visudo</code>, and uncomment the line allowing wheel group to use sudo.</p></li>
+<li><p>Update system by running <code>freebsd-update fetch</code> and <code>freebsd-update install</code></p></li>
+<li><p>Reboot</p></li>
 </ol>
 <h2 id="cluster-setup">
 Cluster Setup

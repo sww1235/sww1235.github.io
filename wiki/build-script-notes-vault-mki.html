@@ -80,7 +80,7 @@ Initial Configuration
 <li><p>Choose timezone.</p></li>
 <li><p>Skip time and date setup if it is correct.</p></li>
 <li><p>Enable <code>local_unbound</code>, <code>sshd</code>, <code>ntpd</code>, <code>powerd</code> and <code>dumpdev</code> services to be started at boot</p></li>
-<li><p>Enable all security options except <code>disable_syslogd</code> , <code>secure_console</code> and <code>disable_sendmail</code>. Sendmail will be replaced later.</p></li>
+<li><p>Enable all security options except <code>disable_syslogd</code>, and <code>secure_console</code>.</p></li>
 <li><p>Add new admin user.</p>
 <ol style="list-style-type: decimal">
 <li>Username = <code>toxicsauce</code></li>
@@ -123,7 +123,43 @@ Initial Configuration
 defaultrouter=&quot;$gateway&quot;</code></pre>
 <p>Also, add the following line to <code>/etc/resolv.conf</code></p>
 <pre class="conf"><code>nameserver $gateway</code></pre></li>
-<li><p>Setup system logging</p></li>
+<li><p>Setup system logging and disable sendmail:</p>
+<ol style="list-style-type: decimal">
+<li><p>edit <code>/etc/rc.conf</code> and add the following lines to disable sendmail and enable syslog.</p>
+<pre class="conf"><code># disable sendmail and enable syslog
+syslogd_enable=&quot;YES&quot;
+sendmail_enable=&quot;NO&quot;
+sendmail_submit_enable=&quot;NO&quot;
+sendmail_outbound_enable=&quot;NO&quot;
+sendmail_msp_queue_enable=&quot;NO&quot;
+newsyslog_enable=&quot;YES&quot; # make sure this doesn&#39;t break in future defaults
+# fix cron trying to send mail
+cron_flags=&quot;-m &#39;&#39;&quot;</code></pre></li>
+<li><p>create log files needed for next step:</p>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">sudo</span> touch /var/log/console.log
+<span class="fu">sudo</span> chmod 600 /var/log/console.log
+<span class="fu">sudo</span> touch /var/log/all.log
+<span class="fu">sudo</span> chmod 600 /var/log/all.log</code></pre></div></li>
+<li><p>edit <code>/etc/syslog.conf</code> and uncomment the lines for <code>console.log</code> and <code>all.log</code>. TODO: setup remote logging.</p></li>
+<li><p>Check <code>/etc/newsyslog.conf</code> to confirm log rotation is setup correctly.</p></li>
+<li><p>Edit <code>/etc/periodic.conf</code> and add the following to the beginning of the file to disable sending root email and instead log to syslog. (This will override the defaults in <code>/etc/defaults/periodic.conf</code>)</p>
+<pre class="conf"><code># redirect periodic output to syslog files
+daily_output=&quot;/var/log/daily.log&quot; # user or /file
+weekly_output=&quot;/var/log/weekly.log&quot; # user or /file
+monthly_output=&quot;/var/log/monthly.log&quot; # user or /file
+# turn off sendmail periodic functions
+daily_clean_hoststat_enable=&quot;NO&quot;
+daily_status_mail_rejects_enable=&quot;NO&quot;
+daily_status_include_submit_mailq=&quot;NO&quot;
+daily_submit_queuerun=&quot;NO&quot;</code></pre></li>
+<li><p>Fix crontab logging by appending <code>2&gt;&amp;1 | /usr/bin/logger -t cron_xxx</code> and replacing xxx with whatever the cron command was doing. Do not need to do this for periodic and periodic snapshot sections.</p></li>
+</ol></li>
+<li><p>Random sysadmin tweaks:</p>
+<ol style="list-style-type: decimal">
+<li><p>Edit <code>/etc/periodic.conf</code> and include the following lines:</p>
+<pre class="conf"><code># never going to use locate on a fileserver
+weekly_locate_enable=&quot;NO&quot;   #Disable weekly locate run.</code></pre></li>
+</ol></li>
 <li><p>Set up ssh-agent</p></li>
 <li><p>Create Projects directory tree in <code>~</code> as follows:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> -p ~/projects/src/github.com/sww1235</code></pre></div>
@@ -159,7 +195,7 @@ ZFS Configuration
 <p>vdev = group of drives. You cannot add more drives to a vdev once it is created.</p>
 <p>zpool = group of vdevs. Redundancy is given by vdev configuration, not by multiple vdevs. if 1 vdev fails completely, <strong>all</strong> data in zpool is lost.</p>
 <ol style="list-style-type: decimal">
-<li><p>Install smartmontools and e2fsprogs packages.</p></li>
+<li><p>Install <code>smartmontools</code> and <code>e2fsprogs</code> packages.</p></li>
 <li><p>If the hard drives are new, Test hard drives with <code>sudo badblocks -b 4096 -wsv /dev/da* &gt; da*.log</code>, replacing * with the number for each HDD. This will take a while depending on the size of the hard drives.</p></li>
 <li><p>Add the following line to <code>/etc/rc.conf</code>, then start the service manually <code>sudo service zfs start</code> so you don't have to reboot.</p>
 <pre class="conf"><code>zfs_enable=&quot;YES&quot;</code></pre></li>
@@ -181,24 +217,49 @@ sudo zfs create -o compress=lz4 the-vault/archive</code></pre></li>
 <li><p>Also, you need to export your keys into a form that <code>zfsbackup</code> can understand.</p>
 <div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">gpg</span> --output public.pgp --armor --export domain@domain
 <span class="ex">gpg</span> --output private.pgp --armor --export-secret-key domain@domain</code></pre></div></li>
-<li><p>Install <code>freebsd-snapshot</code> from pkg.</p></li>
+<li><p>Install <code>freebsd-snapshot and flock</code> from pkg.</p></li>
+<li><p>Edit <code>/etc/periodic.conf</code> and add the following lines:</p>
+<pre class="conf"><code>daily_status_zfs
+</code></pre></li>
 <li><p>Edit <code>/etc/crontab</code> and include the following:</p>
 <pre class="crontab"><code>
 # Perform hourly/daily/weekly maintenance (FreeBSD UFS2/ZFS snapshots only).
 0       *       *       *       *       root    /usr/local/sbin/periodic-snapshot hourly
 0       0       *       *       *       root    /usr/local/sbin/periodic-snapshot daily
-0       0       *       *       0       root    /usr/local/sbin/periodic-snapshot weekly
+0       0       *       *       0       root    /usr/local/sbin/periodic-snapshot weekly</code></pre></li>
+<li><p>Create <code>/etc/periodic/daily/600.zfsbackup-backblaze</code> and chmod it to 710, so only root can read and wheel can execute if need be. This is because it will have passphrases in it.</p>
+<p>Put in the following contents.</p>
+<pre><code>#!/bin/sh
+#
 
-PGP_PASSPHRASE= #from password manager
-B2_ACCOUNT_ID= # from b2 setup
-B2_ACCOUNT_KEY= # from b2 setup
-# auto backup zfs snapshots to B2 at 11am every day.
-0       11      *       *       *       root    /usr/bin/zfsbackup send --encryptTo user@domain --signFrom user@domain --publicKeyRingPath /home/user/.gnupg/public.pgp --secretKeyRingPath private.pgp --increment the-vault/backups b2://the-vault-remote/backups
-0       11      *       *       *       root    /usr/bin/zfsbackup send --encryptTo user@domain --signFrom user@domain --publicKeyRingPath /home/user/.gnupg/public.pgp --secretKeyRingPath private.pgp --increment the-vault/storage b2://the-vault-remote/storage
-0       11      *       *       *       root    /usr/bin/zfsbackup send --encryptTo user@domain --signFrom user@domain --publicKeyRingPath /home/user/.gnupg/public.pgp --secretKeyRingPath private.pgp --increment the-vault/media b2://the-vault-remote/media
-0       11      *       *       *       root    /usr/bin/zfsbackup send --encryptTo user@domain --signFrom user@domain --publicKeyRingPath /home/user/.gnupg/public.pgp --secretKeyRingPath private.pgp --increment the-vault/archive b2://the-vault-remote/archive</code></pre></li>
+# If there is a global system configuration file, suck it in.
+#
+
+newline=&quot;
+&quot; # A single newline
+
+if [ -r /etc/defaults/periodic.conf ]
+then
+    . /etc/defaults/periodic.conf
+    source_periodic_confs
+fi
+
+
+export PGP_PASSPHRASE= $from password manager
+export B2_ACCOUNT_ID= $from password manager
+export B2_ACCOUNT_KEY= $ from password manager
+
+# backups pool
+/usr/local/bin/flock -xn /root/zfsbackup-backups.lock -c &quot;/usr/bin/zfsbackup send --encryptTo domain@domain.net --signFrom domain@domain.net --publicKeyRingPath /home/toxicsauce/.gnupg/public.pgp --secretKeyRingPath /home/toxicsauce/.gnupg/private.pgp --increment the-vault/backups b2://the-vault-remote/backups&quot;
+# storage pool
+/usr/local/bin/flock -xn /root/zfsbackup-storage.lock -c &quot;/usr/bin/zfsbackup send --encryptTo domain@domain.net --signFrom domain@domain.net --publicKeyRingPath /home/toxicsauce/.gnupg/public.pgp --secretKeyRingPath /home/toxicsauce/.gnupg/private.pgp --increment the-vault/storage b2://the-vault-remote/storage&quot;
+# media pool
+/usr/local/bin/flock -xn /root/zfsbackup-media.lock -c &quot;/usr/bin/zfsbackup send --encryptTo domain@domain.net --signFrom domain@domain.net --publicKeyRingPath /home/toxicsauce/.gnupg/public.pgp --secretKeyRingPath /home/toxicsauce/.gnupg/private.pgp --increment the-vault/media b2://the-vault-remote/media&quot;
+# archive pool
+/usr/local/bin/flock -xn /root/zfsbackup-archive.lock -c &quot;/usr/bin/zfsbackup send --encryptTo domain@domain.net --signFrom domain@domain.net --publicKeyRingPath /home/toxicsauce/.gnupg/public.pgp --secretKeyRingPath /home/toxicsauce/.gnupg/private.pgp --increment the-vault/archive b2://the-vault-remote/archive&quot;</code></pre></li>
 <li><p>Edit <code>/etc/periodic.conf</code> and configure according to the datasets. Current config as below.</p>
-<pre class="conf"><code>snapshot_enable=&quot;YES&quot;
+<pre class="conf"><code>daily_scrub_zfs_enable=&quot;YES&quot;
+snapshot_enable=&quot;YES&quot;
 # :4:7:0 = 4 weekly snapshots (1 per week, and storing the last 4,
 # 1 per day and storing the last 7, and 0 per hour, storing the last 0.
 snapshot_schedule=&quot;/the-vault/backups:4:7:0 /the-vault/storage:4:7:0 /the-vault/media:2:3:0 /the-vault/archive:2:3:0&quot;</code></pre></li>
