@@ -175,9 +175,13 @@ Initial Configuration
 <span class="ex">./xbps-src</span> pkg st</code></pre></div></li>
 <li><p>Install <code>dwm</code>, <code>dmenu</code>, and <code>st</code> with the command:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install --repository=hostdir/binpkgs/build-branch-void-vm dwm dmenu st</code></pre></div></li>
-<li><p>Modify ~/.xinitrc to contain the following:</p>
-<pre class="xinitrc"><code>exec dwm</code></pre></li>
 <li><p>Install <code>xorg</code> and <code>xorg-fonts</code> to get graphics working</p></li>
+<li><p>Install and run <code>arandr</code> to generate a <code>xrandr</code> command to fix the monitor rotation. Save the script as <code>~/.screenlayout/main.sh</code></p></li>
+<li><p>Install <code>xscreensaver</code>, then run <code>xscreensaver-demo</code> and unselect the screensavers that you don't want to run.</p></li>
+<li><p>Modify ~/.xinitrc to contain the following:</p>
+<pre class="xinitrc"><code>~/.screenlayout/main.sh
+xscreensaver &amp;
+exec dwm</code></pre></li>
 </ol>
 <h2 id="resources">
 Resources
