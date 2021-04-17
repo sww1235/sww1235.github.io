@@ -34,14 +34,14 @@
 <h1 id="top">
 GnuPG Configuration and Setup
 </h1>
-<p>This is documentation around how I have setup my GnuPG keys, across multiple operating systems, so I don't forget and have to do a bunch of research over again.</p>
+<p>This is documentation around how I have setup my GnuPG keys, across multiple operating systems, so I don’t forget and have to do a bunch of research over again.</p>
 <h2 id="generating-keys">
 Generating Keys
 </h2>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>Install GnuPG package for your operating system. See Operating System specific sections below.</p></li>
 <li><p>Run <code>gnu --full-gen-key</code> to generate a public-private OpenPGP compatible keypair. Answer prompts as follows:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>Answer <code>RSA and RSA</code> which is the default.</li>
 <li>4096 bit key.</li>
 <li>4y</li>
@@ -52,21 +52,21 @@ Generating Keys
 <li>Enter a strong passphrase. Use password vault to generate.</li>
 </ol></li>
 <li><p>Generate revocation certificate as well.</p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">gpg</span> --list-keys
-<span class="co"># note your key id</span>
-<span class="co"># now generate certificate with that key id</span>
-<span class="ex">gpg</span> --armor --gen-revoke [your key ID] <span class="op">&gt;</span> pgp-revocation.asc</code></pre></div></li>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="ex">gpg</span> --list-keys</a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="co"># note your key id</span></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="co"># now generate certificate with that key id</span></a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="ex">gpg</span> --armor --gen-revoke [your key ID] <span class="op">&gt;</span> pgp-revocation.asc</a></code></pre></div></li>
 </ol>
 <p>Now make sure to <a href="#backing-up-keys">backup</a> and <a href="#managing-keys">manage</a> your keys as follows.</p>
 <h2 id="backing-up-keys">
 Backing Up Keys
 </h2>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>Export ASCII armored version of public keys: <code>gpg --armor --export &gt; pgp-public-keys.asc</code></p></li>
 <li><p>Export ASCII armored version of private keys: <code>gpg --armor --export-secret-keys &gt; pgp-private-keys.asc</code></p></li>
 <li><p>Export owner-trust certificate: <code>gpg --export-ownertrust &gt; pgp-ownertrust.asc</code></p></li>
 <li><p>Print, using a OCR font, these 3 generated files as well as your revocation certificate and store them in a safe place. Current best method to print the files is:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>copy the OCR-A font files into <code>~/.fonts/</code>.</p></li>
 <li><p>run <code>mkafmmap</code> in <code>~/.fonts/</code> to generate the font map file.</p></li>
 <li><p>create <code>~/.enscriptrc</code>, with contents of <code>AFMPath: /usr/share/enscript/afm:/usr/local/lib/ps:/usr/lib/ps:/home/toxicsauce/.fonts</code>. Essentially take the <code>AFMPath</code> from <code>/etc/enscript.cfg</code> and add your homedir font dir to the end.</p></li>
@@ -80,12 +80,12 @@ Managing Keys
 <h3 id="restoring-backups">
 Restoring Backed Up Keys
 </h3>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>Scan and OCR your pages (or enter them by hand)</p></li>
 <li><p>Enter the following commands to restore from the files you created:</p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">gpg</span> --import pgp-public-keys.asc
-<span class="ex">gpg</span> --import pgp-private-keys.asc
-<span class="ex">gpg</span> --import-ownertrust pgp-ownertrust.asc</code></pre></div></li>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1"><span class="ex">gpg</span> --import pgp-public-keys.asc</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="ex">gpg</span> --import pgp-private-keys.asc</a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="ex">gpg</span> --import-ownertrust pgp-ownertrust.asc</a></code></pre></div></li>
 </ol>
 <h3 id="revoking-keys">
 Revoking keys
@@ -98,7 +98,7 @@ gpg --import pgp-revocation.asc
 Renewing Keys
 </h3>
 <p>When your keypair expires, you can renew it instead of creating a new keypair.</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><code>gpg --list-keys</code> and record the keyid you want to rewew.</li>
 <li><code>gpg --edit-key [your key ID]</code></li>
 <li><code>Command: expire</code></li>
@@ -116,14 +116,14 @@ Operating System Specific Instructions
 FreeBSD
 </h3>
 <p>Copied from the <a href="https://www.freebsd.org/doc/en/articles/committers-guide/pgpkeys.html">FreeBSD Handbook</a></p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>Install <code>security/gnupg</code> from packages. this is gpg2</p></li>
 <li><p>Set preferences in <code>~/.gnupg/gpg.conf</code></p></li>
 </ol>
 <h3 id="void-linux">
 Void Linux
 </h3>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>Install <code>gnupg2</code></li>
 <li>Set preferences in <code>~/.gnupg/gpg.conf</code></li>
 </ol>

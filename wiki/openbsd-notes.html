@@ -58,26 +58,26 @@ Ports Usage
 <p>most systems will be running release versions of openBSD</p>
 <p>use packages unless ports are needed. If ports are needed use <code>-stable</code> in order to get security fixes from <code>-current</code> tree.</p>
 <p>add the following to <code>/etc/mk.conf</code></p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="va">PORTS_PRIVSEP=</span>YES
-<span class="va">WRKOBJDIR=</span>/usr/obj/ports
-<span class="va">DISTDIR=</span>/usr/distfiles
-<span class="va">PACKAGE_REPOSITORY=</span>/usr/packages</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1"><span class="va">PORTS_PRIVSEP=</span>YES</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="va">WRKOBJDIR=</span>/usr/obj/ports</a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="va">DISTDIR=</span>/usr/distfiles</a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="va">PACKAGE_REPOSITORY=</span>/usr/packages</a></code></pre></div>
 <p>create the directories above then change ownership to local user and group, make sure they are world readable.</p>
 <p>also following commands:</p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">mkdir</span> -p ports src
-<span class="ex">cngrp</span> wsrc ports src
-<span class="fu">chmod</span> 775 ports src</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1"><span class="fu">mkdir</span> -p ports src</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="ex">cngrp</span> wsrc ports src</a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="fu">chmod</span> 775 ports src</a></code></pre></div>
 <p>add the following lines to <code>doas.conf</code> and add <code>SUDO=doas</code> to <code>/etc/mk.conf</code></p>
 <pre class="doas"><code>permit keepenv nopass toxic as _pbuild
 permit keepenv nopass toxic as _pfetch</code></pre>
 <p>add user to <code>wsrc</code> group: <code>doas usermod -G wsrc toxic</code>.</p>
 <p>Also add</p>
 <p>download stable ports branch from anonCVS:</p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="bu">cd</span> /usr
-<span class="ex">cvs</span> -qd anoncvs@anoncvs3.usa.openbsd.org:/cvs checkout -rOPENBSD_6_4 -P ports</code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" title="1"><span class="bu">cd</span> /usr</a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="ex">cvs</span> -qd anoncvs@anoncvs3.usa.openbsd.org:/cvs checkout -rOPENBSD_6_4 -P ports</a></code></pre></div>
 <p>to update after initial clone:</p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="bu">cd</span> /usr/ports
-<span class="ex">cvs</span> -q up -Pd -rOPENBSD_6_4</code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1"><span class="bu">cd</span> /usr/ports</a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="ex">cvs</span> -q up -Pd -rOPENBSD_6_4</a></code></pre></div>
 <p>default shell is <code>ksh</code>. Configuration goes in <code>.profile</code></p>
 <pre class="tags"><code>OpenBSD, Homelab, Setup</code></pre>
 </body>

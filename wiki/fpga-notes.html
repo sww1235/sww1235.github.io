@@ -39,34 +39,34 @@ Lattice Ice40 FPGAs
 </h2>
 <p>Using internal libraries in VHDL need to look at actual contents of files in install directory, located at <code>./lscc/iCEcube2.2016.02/vhdl/sb_ice_syn_vital.vhd</code>. This contains the compiler prototypes.</p>
 <p>might need to add:</p>
-<div class="sourceCode"><pre class="sourceCode vhdl"><code class="sourceCode vhdl"><span class="kw">library</span> sb_ice40_components_syn;
-<span class="kw">use</span> sb_ice40_components_syn<span class="ot">.</span>components<span class="ot">.</span>all;</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode vhdl"><code class="sourceCode vhdl"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span> sb_ice40_components_syn;</a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="kw">use</span> sb_ice40_components_syn<span class="ot">.</span>components<span class="ot">.</span>all;</a></code></pre></div>
 <p>in order to get things to work.</p>
 <p>Also might need to declare components manually.</p>
 <p>Code from <a href="http://we.easyelectronics.ru/teplofizik/podklyuchenie-vstroennogo-modulya-tokovogo-drayvera-fpga-serii-ice5-ice40-ultra.html" class="uri">http://we.easyelectronics.ru/teplofizik/podklyuchenie-vstroennogo-modulya-tokovogo-drayvera-fpga-serii-ice5-ice40-ultra.html</a></p>
 <p>Verilog Library description:</p>
-<div class="sourceCode"><pre class="sourceCode verilog"><code class="sourceCode verilog">SB_RGB_DRV RGB_DRIVER (
-.RGBLEDEN(ENABLE_LED),
-.RGB0PWM(RGB0),
-.RGB1PWM(RGB1),
-.RGB2PWM(RGB2),
-.RGBPU(led_power_up),
-.RGB0(LED0),
-.RGB1(LED1),
-.RGB2(LED2)
-);
-<span class="kw">defparam</span> RGB_DRIVER.RGB0_CURRENT = <span class="st">&quot;0b111111&quot;</span>;
-<span class="kw">defparam</span> RGB_DRIVER.RGB1_CURRENT = <span class="st">&quot;0b111111&quot;</span>;
-<span class="kw">defparam</span> RGB_DRIVER.RGB2_CURRENT = <span class="st">&quot;0b111111&quot;</span>;</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode verilog"><code class="sourceCode verilog"><a class="sourceLine" id="cb2-1" title="1">SB_RGB_DRV RGB_DRIVER (</a>
+<a class="sourceLine" id="cb2-2" title="2">.RGBLEDEN(ENABLE_LED),</a>
+<a class="sourceLine" id="cb2-3" title="3">.RGB0PWM(RGB0),</a>
+<a class="sourceLine" id="cb2-4" title="4">.RGB1PWM(RGB1),</a>
+<a class="sourceLine" id="cb2-5" title="5">.RGB2PWM(RGB2),</a>
+<a class="sourceLine" id="cb2-6" title="6">.RGBPU(led_power_up),</a>
+<a class="sourceLine" id="cb2-7" title="7">.RGB0(LED0),</a>
+<a class="sourceLine" id="cb2-8" title="8">.RGB1(LED1),</a>
+<a class="sourceLine" id="cb2-9" title="9">.RGB2(LED2)</a>
+<a class="sourceLine" id="cb2-10" title="10">);</a>
+<a class="sourceLine" id="cb2-11" title="11"><span class="kw">defparam</span> RGB_DRIVER.RGB0_CURRENT = <span class="st">&quot;0b111111&quot;</span>;</a>
+<a class="sourceLine" id="cb2-12" title="12"><span class="kw">defparam</span> RGB_DRIVER.RGB1_CURRENT = <span class="st">&quot;0b111111&quot;</span>;</a>
+<a class="sourceLine" id="cb2-13" title="13"><span class="kw">defparam</span> RGB_DRIVER.RGB2_CURRENT = <span class="st">&quot;0b111111&quot;</span>;</a></code></pre></div>
 <p>VHDL component:</p>
-<div class="sourceCode"><pre class="sourceCode vhdl"><code class="sourceCode vhdl">component SB_RGB_DRV is
-        generic (
-                RGB0_CURRENT <span class="ot">:</span> string <span class="ot">:=</span> <span class="st">&quot;0b000000&quot;</span>;
-                RGB1_CURRENT <span class="ot">:</span> string <span class="ot">:=</span> <span class="st">&quot;0b000000&quot;</span>;
-                RGB2_CURRENT <span class="ot">:</span> string <span class="ot">:=</span> <span class="st">&quot;0b000000&quot;</span>);
-        port (RGBLEDEN<span class="ot">,</span> RGBPU<span class="ot">,</span> RGB0PWM<span class="ot">,</span> RGB1PWM<span class="ot">,</span> RGB2PWM<span class="ot">:</span> in std_logic;
-                RGB0<span class="ot">,</span> RGB1<span class="ot">,</span> RGB2<span class="ot">:</span> out std_logic);
-end component;</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode vhdl"><code class="sourceCode vhdl"><a class="sourceLine" id="cb3-1" title="1">component SB_RGB_DRV is</a>
+<a class="sourceLine" id="cb3-2" title="2">        generic (</a>
+<a class="sourceLine" id="cb3-3" title="3">                RGB0_CURRENT <span class="ot">:</span> string <span class="ot">:=</span> <span class="st">&quot;0b000000&quot;</span>;</a>
+<a class="sourceLine" id="cb3-4" title="4">                RGB1_CURRENT <span class="ot">:</span> string <span class="ot">:=</span> <span class="st">&quot;0b000000&quot;</span>;</a>
+<a class="sourceLine" id="cb3-5" title="5">                RGB2_CURRENT <span class="ot">:</span> string <span class="ot">:=</span> <span class="st">&quot;0b000000&quot;</span>);</a>
+<a class="sourceLine" id="cb3-6" title="6">        port (RGBLEDEN<span class="ot">,</span> RGBPU<span class="ot">,</span> RGB0PWM<span class="ot">,</span> RGB1PWM<span class="ot">,</span> RGB2PWM<span class="ot">:</span> in std_logic;</a>
+<a class="sourceLine" id="cb3-7" title="7">                RGB0<span class="ot">,</span> RGB1<span class="ot">,</span> RGB2<span class="ot">:</span> out std_logic);</a>
+<a class="sourceLine" id="cb3-8" title="8">end component;</a></code></pre></div>
 <pre class="tags"><code>Contributing, info</code></pre>
 </body>
 </html>

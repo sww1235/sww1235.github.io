@@ -43,12 +43,12 @@ After Installation Configuration
 <h3 id="timezone-clock">
 Timezone and Clock Configuration
 </h3>
-<p>edit <code>/etc/rc.conf</code> as root (sudo doesn't work) and change the following lines:</p>
+<p>edit <code>/etc/rc.conf</code> as root (sudo doesn’t work) and change the following lines:</p>
 <pre><code>HARDWARECLOCK=&quot;UTC&quot;
 TIMEZONE=&quot;America/Denver&quot; # or appropriate timezone
 KEYMAP=&quot;us&quot;</code></pre>
 <p>enable NTP:</p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">sudo</span> ln -s /etc/sv/ntpd /var/service/</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1"><span class="fu">sudo</span> ln -s /etc/sv/ntpd /var/service/</a></code></pre></div>
 <h3 id="network">
 Network Configuration
 </h3>
@@ -56,14 +56,14 @@ Network Configuration
 Static Networking
 </h4>
 <p>edit <code>/etc/rc.local</code> and add following commands. Verify interface names are correct from ip link.</p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">ip</span> link set dev eth0 up
-<span class="ex">ip</span> addr add 10.0.1.12/24 brd + dev eth0
-<span class="ex">ip</span> route add default via 10.0.1.1</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1"><span class="ex">ip</span> link set dev eth0 up</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="ex">ip</span> addr add 10.0.1.12/24 brd + dev eth0</a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="ex">ip</span> route add default via 10.0.1.1</a></code></pre></div>
 <h4 id="network-dhcp">
 DHCP
 </h4>
 <p>enable dhcpcd with</p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">sudo</span> ln -s /etc/sv/dhcpcd /var/service/</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" title="1"><span class="fu">sudo</span> ln -s /etc/sv/dhcpcd /var/service/</a></code></pre></div>
 <pre class="tags"><code>Void, Linux, Homelab, Setup</code></pre>
 </body>
 </html>

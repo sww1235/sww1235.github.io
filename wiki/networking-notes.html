@@ -38,8 +38,8 @@ Networking Notes
 <h2 id="content-guidelines">
 General Notes
 </h2>
-<p>Firewall rules on an <code>Interface Tab</code> in pfSense apply on an inbound direction on that interface. From the pfsense handbook: &quot;This means traffic initiated from the LAN is filtered using the LAN interface rules. Traffic initiated from the Internet is filtered with the WAN interface rules.&quot;</p>
-<p>to allow access from a interface to the internet, you must have a destination of <code>any</code>. If you want to block specific hosts from accessing the internet, you must have a block rule before the allow to any rule. Using the <code>WAN net</code> or <code>WAN address</code> shortcuts doesn't work, as it would only allow traffic to the network that the WAN interface is in, not the networks the wan interface can get to.</p>
+<p>Firewall rules on an <code>Interface Tab</code> in pfSense apply on an inbound direction on that interface. From the pfsense handbook: “This means traffic initiated from the LAN is filtered using the LAN interface rules. Traffic initiated from the Internet is filtered with the WAN interface rules.”</p>
+<p>to allow access from a interface to the internet, you must have a destination of <code>any</code>. If you want to block specific hosts from accessing the internet, you must have a block rule before the allow to any rule. Using the <code>WAN net</code> or <code>WAN address</code> shortcuts doesn’t work, as it would only allow traffic to the network that the WAN interface is in, not the networks the wan interface can get to.</p>
 <p>If you want to block specific hosts or networks from other networks, you need a block rule on the <code>Interface Tab</code> above the allow rules if the allow any rule is present.</p>
 <pre class="tags"><code>Contributing, info</code></pre>
 </body>

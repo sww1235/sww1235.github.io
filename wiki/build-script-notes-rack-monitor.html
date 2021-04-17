@@ -44,47 +44,47 @@ Build Script
 <h3 id="initial-configuration">
 Initial Configuration
 </h3>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>Download the rpi2-musl image of void linux from reputable sources, currently <a href="https://alpha.de.repo.voidlinux.org/live/current/">here</a></p></li>
-<li><p>Burn image to MicroSD card using either <code>dd</code> or whatever windows tool is the popular thing and preferably doesn't use electron.</p></li>
+<li><p>Burn image to MicroSD card using either <code>dd</code> or whatever windows tool is the popular thing and preferably doesn’t use electron.</p></li>
 <li><p>Use <code>cfdisk</code> to expand main partition from 2GB to remaining size of MicroSD card.</p></li>
 <li><p>Login as root with default password of <code>void-linux</code></p></li>
 <li><p>Need to get correct time and network set up in order to update system and install packages (as root) Remember that the only available text editor is <code>vi</code>!</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>Configure static IP address by editing <code>/etc/dhcpcd.conf</code> with the following lines at the bottom of the file. Actual IP addresses are found in the network documentation. We use DHCP rather than manual <code>ip</code> commands in <code>/etc/rc.local</code> to take advantage of other aspects of DHCP including auto DNS server population and domain name.</p>
 <p>also uncomment ntp_servers option</p>
 <p>dns server is usually pfsense default gateway</p>
-<pre class="conf"><code>interface eth0
-inform ip_address=$IPaddress
-static ip_address=$IPaddress
-static routers=$defaultgateway
-static domain_name_servers=$dnsserver</code></pre></li>
+<div class="sourceCode" id="cb1"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb1-1" title="1"><span class="dt">interface eth0</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="dt">inform ip_address</span><span class="ot">=</span><span class="st">$IPaddress</span></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="dt">static ip_address</span><span class="ot">=</span><span class="st">$IPaddress</span></a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="dt">static routers</span><span class="ot">=</span><span class="st">$defaultgateway</span></a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="dt">static domain_name_servers</span><span class="ot">=</span><span class="st">$dnsserver</span></a></code></pre></div></li>
 <li><p>edit <code>/etc/rc.conf</code> and change the following lines to set keymap and timezone:</p>
-<pre class="conf"><code>TIMEZONE=&quot;America/Denver&quot; # or appropriate timezone
-KEYMAP=&quot;us&quot;</code></pre></li>
+<div class="sourceCode" id="cb2"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb2-1" title="1"><span class="dt">TIMEZONE</span><span class="ot">=</span><span class="st">&quot;America/Denver&quot; # or appropriate timezone</span></a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="dt">KEYMAP</span><span class="ot">=</span><span class="st">&quot;us&quot;</span></a></code></pre></div></li>
 <li><p>Enable NTP and DHCP services:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">ln</span> -s /etc/sv/ntpd /var/service
-<span class="fu">ln</span> -s /etc/sv/dhcpcd /var/service</code></pre></div></li>
-<li><p>Check <code>/etc/ntpd.conf</code> for constraints line, and comment out. This doesn't work on Raspi due to lack of HWCLK</p></li>
-<li><p>Add <code>server $gateway</code> to <code>/etc/ntpd.conf</code> since it doesn't seem to pick it up from DHCP. NTP server will usually be the pfsense gateway, but use whatever machine is actually the NTP server</p></li>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1"><span class="fu">ln</span> -s /etc/sv/ntpd /var/service</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="fu">ln</span> -s /etc/sv/dhcpcd /var/service</a></code></pre></div></li>
+<li><p>Check <code>/etc/ntpd.conf</code> for constraints line, and comment out. This doesn’t work on Raspi due to lack of HWCLK</p></li>
+<li><p>Add <code>server $gateway</code> to <code>/etc/ntpd.conf</code> since it doesn’t seem to pick it up from DHCP. NTP server will usually be the pfsense gateway, but use whatever machine is actually the NTP server</p></li>
 <li><p>Create new non-root user, replacing $newusername with the actual name of the user. This command adds the user to the wheel group, which allows <code>sudo</code> access</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">useradd</span> -m -s /bin/bash -U -G wheel,users,audio,video,cdrom,input <span class="va">$newusername</span></code></pre></div></li>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" title="1"><span class="ex">useradd</span> -m -s /bin/bash -U -G wheel,users,audio,video,cdrom,input <span class="va">$newusername</span></a></code></pre></div></li>
 <li><p>Set system hostname by editing <code>/etc/hostname</code></p></li>
 </ol></li>
 <li><p>Reboot the system using <code>reboot</code> command. This should allow DHCP and NTP to do their thing and allow us to update the system and install new packages.</p></li>
 <li><p>Log in as the new user you created</p></li>
 <li><p>Update the system by running the following command until there is no output.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install -Svu</code></pre></div></li>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" title="1"><span class="fu">sudo</span> xbps-install -Svu</a></code></pre></div></li>
 <li><p>Install the following packages.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install nano network-ups-tools rng-tools thefuck vim htop</code></pre></div></li>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1"><span class="fu">sudo</span> xbps-install nano network-ups-tools rng-tools thefuck vim htop</a></code></pre></div></li>
 <li><p>Install terminfo package to fix issues with ssh</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install st-terminfo</code></pre></div></li>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" title="1"><span class="fu">sudo</span> xbps-install st-terminfo</a></code></pre></div></li>
 <li><p>Setup syslog daemon</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> xbps-install socklog-void
-<span class="fu">sudo</span> ln -s /etc/sv/socklog-unix /var/service
-<span class="fu">sudo</span> ln -s /etc/sv/nanoklogd /var/service
-<span class="co"># so normal user can access logs</span>
-<span class="fu">sudo</span> usermod -a -G socklog <span class="va">$USER</span></code></pre></div></li>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" title="1"><span class="fu">sudo</span> xbps-install socklog-void</a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="fu">sudo</span> ln -s /etc/sv/socklog-unix /var/service</a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="fu">sudo</span> ln -s /etc/sv/nanoklogd /var/service</a>
+<a class="sourceLine" id="cb8-4" title="4"><span class="co"># so normal user can access logs</span></a>
+<a class="sourceLine" id="cb8-5" title="5"><span class="fu">sudo</span> usermod -a -G socklog <span class="va">$USER</span></a></code></pre></div></li>
 </ol>
 <h3 id="nut-config">
 NUT Configuration
@@ -94,7 +94,7 @@ NUT Configuration
 <p><code>ups.conf</code> is where you configure what UPSes the system will be interacting with</p>
 <p><code>upsd.conf</code> is the configuration for the UPS data server</p>
 <p>Configuration steps as follows:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>Edit <code>/etc/ups/nut.conf</code> and set <code>MODE=netserver</code>. This is not strictly required on void, but still better to set.</p></li>
 <li><p>Run <code>nut-scanner</code> to generate config options for attached UPSes</p></li>
 <li><p>Edit <code>/etc/ups/ups.conf</code> and add the results of <code>nut-scanner</code> to the begining of the file, except the vendor line. Add <code>[cyberpower]</code> before. See syntax examples in config file.</p></li>
@@ -106,19 +106,21 @@ NUT Configuration
 <li><p><code>upsmonSlave</code> user is set up per example in config file with slave attributes for remote monitoring by other clients.</p></li>
 </ul></li>
 <li><p>Edit <code>/etc/ups/upsmon.conf</code> to set up local UPS monitoring. Add the following lines to the config file.</p>
-<pre class="conf"><code># raspi has 1 power supply connected to this UPS. It is master
-# because it is the monitoring system for the ups.
-# other systems will be listed as slaves
-MONITOR cyberpower@localhost 1 upsmonMaster $password master
-# all other values can be left as defaults for now</code></pre></li>
+<div class="sourceCode" id="cb9"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb9-1" title="1"><span class="co"># raspi has 1 power supply connected to this UPS. It is master</span></a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="co"># because it is the monitoring system for the ups.</span></a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="co"># other systems will be listed as slaves</span></a>
+<a class="sourceLine" id="cb9-4" title="4"><span class="dt">MONITOR cyberpower@localhost 1 upsmonMaster $password master</span></a>
+<a class="sourceLine" id="cb9-5" title="5"><span class="co"># all other values can be left as defaults for now</span></a></code></pre></div></li>
 </ol>
 <p>Need to change ownership of config files on void linux as the default is set up incorrectly:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> chown root:nut /etc/ups/*
-<span class="fu">sudo</span> chmod 640 /etc/ups/*</code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb10-1" title="1"><span class="fu">sudo</span> chown root:nut /etc/ups/*</a>
+<a class="sourceLine" id="cb10-2" title="2"><span class="fu">sudo</span> chmod 640 /etc/ups/*</a></code></pre></div>
 <p>start the following services:</p>
-<p><code>bash sudo ln -s /etc/sv/upsdrvctl/ /var/service sudo ln -s /etc/sv/upsd/ /var/service sudo ln -s /etc/sv/upsmon/ /var/service</code></p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb11-1" title="1"><span class="fu">sudo</span> ln -s /etc/sv/upsdrvctl/ /var/service</a>
+<a class="sourceLine" id="cb11-2" title="2"><span class="fu">sudo</span> ln -s /etc/sv/upsd/ /var/service</a>
+<a class="sourceLine" id="cb11-3" title="3"><span class="fu">sudo</span> ln -s /etc/sv/upsmon/ /var/service</a></code></pre></div>
 <p>check status of ups with the following command to make sure it is detected properly</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">upsc</span> cyberpower</code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb12-1" title="1"><span class="ex">upsc</span> cyberpower</a></code></pre></div>
 <pre class="tags"><code>build-script, rack-monitor, notes</code></pre>
 </body>
 </html>

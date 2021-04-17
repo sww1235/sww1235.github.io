@@ -35,8 +35,8 @@
 Void Packages Setup
 </h1>
 <p>Notes on setting up void packages and building from source.</p>
-<ol style="list-style-type: decimal">
-<li><p>Fork the <a href="https://github.com/void-linux/void-packages">Void Packages</a> repo on github if you haven't already.</p></li>
+<ol type="1">
+<li><p>Fork the <a href="https://github.com/void-linux/void-packages">Void Packages</a> repo on github if you haven’t already.</p></li>
 <li><p>Clone your fork locally (mine is at <a href="https://github.com/sww1235/void-packages" class="uri">https://github.com/sww1235/void-packages</a> and usually exists locally at ~/Projects/src/github.com/sww1235/void-packages).</p></li>
 <li><p><code>cd</code> into your local git repo and add the upstream repo <code>git remote add upstream git@github.com:void-linux/void-packages.git</code>. This allows you to run <code>git checkout master</code> and then <code>git pull --rebase upstream master</code> to bring your local master branch up to date with the master void linux repository.</p></li>
 </ol>
@@ -47,13 +47,13 @@ Contributing to Void Packages
 <h2 id="building">
 Building packages from source
 </h2>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p><code>cd</code> into local git repo of <code>void-packages</code> and run <code>./xbps-src binary-bootstrap</code>. This will initialize the packages necessary for building software.</p></li>
 <li><p>To enable both custom contributions to void-packages, and building modified software with patches, use a separate git branch to actually build your custom packages from. I use a branch called <code>build-branch-$hostname</code> created with <code>git checkout -b build-branch-$hostname</code>. Whenever you want to build your custom software, checkout that branch first. I use a branch per hostname to enable unique changes per machine. This is especially important for suckless software such as dwm.</p></li>
 </ol>
 <p>A side effect of using a custom <code>build-branch-$hostname</code> is that all custom changes will have full git history and can be easily applied without having to go through all the effort of rebuilding the patch files.</p>
 <p>patches are stored in <code>srcpkgs/&lt;pkgname&gt;/patches</code></p>
-<p>To install custom software from a branch, need to use --repository=hostdir/binpkgs/$branch</p>
+<p>To install custom software from a branch, need to use –repository=hostdir/binpkgs/$branch</p>
 <pre class="tags"><code>void-linux, void-packages, source, building</code></pre>
 </body>
 </html>

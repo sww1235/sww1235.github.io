@@ -45,7 +45,7 @@ Build Script
 <h3 id="prereqs&quot;">
 Prerequisites
 </h3>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>Connect to IPMI interface of the server by going to $ip in a web browser.</p>
 <ul>
 <li>If this is first startup of system, then configure static IP for IPMI, and admin user and password.</li>
@@ -54,15 +54,15 @@ Prerequisites
 <h3 id="initial-configuration">
 Initial Configuration
 </h3>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>Download the bootonly ISO of the current release of FreeBSD from reputable sources. (12.2 as of 11/07/2020)</p></li>
 <li><p>Enable cd/dvd instance in IPMI under Settings -&gt; Media Redirection Settings -&gt; VMedia Instance Settings</p></li>
 <li><p>Open up HTML5 viewer for IPMI, and attach ISO to virtual CD rom.</p></li>
 <li><p>Start server, and boot to UEFI CD rom.</p></li>
-<li><p>Let FreeBSD boot to the install menu. Don't exit out of the autoboot menu.</p></li>
-<li><p>Press enter to start the instllation process.</p></li>
+<li><p>Let FreeBSD boot to the install menu. Don’t exit out of the autoboot menu.</p></li>
+<li><p>Press enter to start the installation process.</p></li>
 <li><p>Proceed through installation wizard. Press space to select options.</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>Keymap = United States of America. Space will not work here, just scroll down and hit enter.</p></li>
 <li><p>Hostname = <code>the-vault</code></p></li>
 <li><p>Disable kernel-dbg system component, and add the ports tree.</p></li>
@@ -79,10 +79,10 @@ Initial Configuration
 <li><p>Choose no at CMOS clock prompt. TODO: fix this.</p></li>
 <li><p>Choose timezone.</p></li>
 <li><p>Skip time and date setup if it is correct.</p></li>
-<li><p>Enable <code>local_unbound</code>, <code>sshd</code>, <code>ntpd</code>, <code>powerd</code> and <code>dumpdev</code> services to be started at boot</p></li>
+<li><p>Enable <code>local_unbound</code>, <code>sshd</code>, <code>ntpdate</code>, <code>ntpd</code>, <code>powerd</code> and <code>dumpdev</code> services to be started at boot</p></li>
 <li><p>Enable all security options except <code>disable_syslogd</code>, and <code>secure_console</code>.</p></li>
 <li><p>Add new admin user.</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>Username = <code>toxicsauce</code></li>
 <li>Full Name = <code>toxicsauce</code></li>
 <li>UID = (hit enter to accept default)</li>
@@ -105,83 +105,81 @@ Initial Configuration
 <li><p>Stop CD media after system has rebooted.</p></li>
 </ol></li>
 <li><p>Log in as the new user you created</p></li>
-<li><p>Become root with <code>su -</code>. You will need root's password.</p></li>
-<li><p>Change root's shell to <code>sh</code>: <code>chsh -s sh</code></p></li>
-<li><p>Log out and su back in again</p></li>
+<li><p>Become root with <code>su -</code>. You will need root’s password.</p></li>
 <li><p>Update system and install software</p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">freebsd-update</span> fetch
-<span class="ex">freebsd-update</span> install
-
-<span class="ex">pkg</span> update
-<span class="co"># answer yes to install pkg system</span>
-<span class="ex">pkg</span> upgrade
-
-<span class="ex">pkg</span> install nano sudo ipmitool openipmi</code></pre></div></li>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="ex">freebsd-update</span> fetch</a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="ex">freebsd-update</span> install</a>
+<a class="sourceLine" id="cb1-3" title="3"></a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="ex">pkg</span> update</a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="co"># answer yes to install pkg system</span></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="ex">pkg</span> upgrade</a>
+<a class="sourceLine" id="cb1-7" title="7"></a>
+<a class="sourceLine" id="cb1-8" title="8"><span class="ex">pkg</span> install nano sudo ipmitool openipmi</a></code></pre></div></li>
 <li><p>Configure sudo. <code>visudo</code> and uncomment line <code>%wheel ALL=(ALL) ALL</code></p></li>
 <li><p>Configure static IP addressing. First, run <code>ifconfig</code> to see what interface is actually connected, then add the following lines to <code>/etc/rc.conf</code> and modify existing lines so they read as follows.</p>
-<pre class="conf"><code>ifconfig_igb0=&quot;inet $ipaddress netmask $netmask&quot;
-defaultrouter=&quot;$gateway&quot;</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb2-1" title="1"><span class="dt">ifconfig_igb0</span><span class="ot">=</span><span class="st">&quot;inet $ipaddress netmask $netmask&quot;</span></a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="dt">defaultrouter</span><span class="ot">=</span><span class="st">&quot;$gateway&quot;</span></a></code></pre></div>
 <p>Also, add the following line to <code>/etc/resolv.conf</code></p>
-<pre class="conf"><code>nameserver $gateway</code></pre></li>
+<div class="sourceCode" id="cb3"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb3-1" title="1"><span class="dt">nameserver $gateway</span></a></code></pre></div></li>
 <li><p>Setup system logging and disable sendmail:</p>
-<ol style="list-style-type: decimal">
-<li><p>edit <code>/etc/rc.conf</code> and add the following lines to disable sendmail and enable syslog.</p>
-<pre class="conf"><code># disable sendmail and enable syslog
-syslogd_enable=&quot;YES&quot;
-sendmail_enable=&quot;NO&quot;
-sendmail_submit_enable=&quot;NO&quot;
-sendmail_outbound_enable=&quot;NO&quot;
-sendmail_msp_queue_enable=&quot;NO&quot;
-newsyslog_enable=&quot;YES&quot; # make sure this doesn&#39;t break in future defaults
-# fix cron trying to send mail
-cron_flags=&quot;-m &#39;&#39;&quot;</code></pre></li>
-<li><p>create log files needed for next step:</p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="fu">sudo</span> touch /var/log/console.log
-<span class="fu">sudo</span> chmod 600 /var/log/console.log
-<span class="fu">sudo</span> touch /var/log/all.log
-<span class="fu">sudo</span> chmod 600 /var/log/all.log</code></pre></div></li>
-<li><p>edit <code>/etc/syslog.conf</code> and uncomment the lines for <code>console.log</code> and <code>all.log</code>. TODO: setup remote logging.</p></li>
+<ol type="1">
+<li><p>Edit <code>/etc/rc.conf</code> and add the following lines to disable sendmail and enable syslog.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb4-1" title="1"><span class="co"># disable sendmail and enable syslog</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="dt">syslogd_enable</span><span class="ot">=</span><span class="st">&quot;YES&quot;</span></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="dt">sendmail_enable</span><span class="ot">=</span><span class="st">&quot;NO&quot;</span></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="dt">sendmail_submit_enable</span><span class="ot">=</span><span class="st">&quot;NO&quot;</span></a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="dt">sendmail_outbound_enable</span><span class="ot">=</span><span class="st">&quot;NO&quot;</span></a>
+<a class="sourceLine" id="cb4-6" title="6"><span class="dt">sendmail_msp_queue_enable</span><span class="ot">=</span><span class="st">&quot;NO&quot;</span></a>
+<a class="sourceLine" id="cb4-7" title="7"><span class="dt">newsyslog_enable</span><span class="ot">=</span><span class="st">&quot;YES&quot; # make sure this doesn&#39;t break in future </span><span class="kw">defaults</span></a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="co"># fix cron trying to send mail</span></a>
+<a class="sourceLine" id="cb4-9" title="9"><span class="dt">cron_flags</span><span class="ot">=</span><span class="st">&quot;-m &#39;&#39;&quot;</span></a></code></pre></div></li>
+<li><p>Create log files needed for next step:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" title="1"><span class="fu">sudo</span> touch /var/log/console.log</a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="fu">sudo</span> chmod 600 /var/log/console.log</a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="fu">sudo</span> touch /var/log/all.log</a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="fu">sudo</span> chmod 600 /var/log/all.log</a></code></pre></div></li>
+<li><p>Edit <code>/etc/syslog.conf</code> and uncomment the lines for <code>console.log</code> and <code>all.log</code>. TODO: setup remote logging.</p></li>
 <li><p>Check <code>/etc/newsyslog.conf</code> to confirm log rotation is setup correctly.</p></li>
 <li><p>Edit <code>/etc/periodic.conf</code> and add the following to the beginning of the file to disable sending root email and instead log to syslog. (This will override the defaults in <code>/etc/defaults/periodic.conf</code>)</p>
-<pre class="conf"><code># redirect periodic output to syslog files
-daily_output=&quot;/var/log/daily.log&quot; # user or /file
-weekly_output=&quot;/var/log/weekly.log&quot; # user or /file
-monthly_output=&quot;/var/log/monthly.log&quot; # user or /file
-# turn off sendmail periodic functions
-daily_clean_hoststat_enable=&quot;NO&quot;
-daily_status_mail_rejects_enable=&quot;NO&quot;
-daily_status_include_submit_mailq=&quot;NO&quot;
-daily_submit_queuerun=&quot;NO&quot;</code></pre></li>
-<li><p>Fix crontab logging by appending <code>2&gt;&amp;1 | /usr/bin/logger -t cron_xxx</code> and replacing xxx with whatever the cron command was doing. Do not need to do this for periodic and periodic snapshot sections.</p></li>
+<div class="sourceCode" id="cb6"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb6-1" title="1"><span class="co"># redirect periodic output to syslog files</span></a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="dt">daily_output</span><span class="ot">=</span><span class="st">&quot;/var/log/daily.log&quot; # user or /file</span></a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="dt">weekly_output</span><span class="ot">=</span><span class="st">&quot;/var/log/weekly.log&quot; # user or /file</span></a>
+<a class="sourceLine" id="cb6-4" title="4"><span class="dt">monthly_output</span><span class="ot">=</span><span class="st">&quot;/var/log/monthly.log&quot; # user or /file</span></a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="co"># turn off sendmail periodic functions</span></a>
+<a class="sourceLine" id="cb6-6" title="6"><span class="dt">daily_clean_hoststat_enable</span><span class="ot">=</span><span class="st">&quot;NO&quot;</span></a>
+<a class="sourceLine" id="cb6-7" title="7"><span class="dt">daily_status_mail_rejects_enable</span><span class="ot">=</span><span class="st">&quot;NO&quot;</span></a>
+<a class="sourceLine" id="cb6-8" title="8"><span class="dt">daily_status_include_submit_mailq</span><span class="ot">=</span><span class="st">&quot;NO&quot;</span></a>
+<a class="sourceLine" id="cb6-9" title="9"><span class="dt">daily_submit_queuerun</span><span class="ot">=</span><span class="st">&quot;NO&quot;</span></a></code></pre></div></li>
+<li><p>Fix crontab logging by editing <code>/etc/crontab</code> and appending <code>2&gt;&amp;1 | /usr/bin/logger -t cron_xxx</code> and replacing xxx with whatever the cron command was doing. Do not need to do this for periodic and periodic snapshot sections.</p></li>
 </ol></li>
 <li><p>Random sysadmin tweaks:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>Edit <code>/etc/periodic.conf</code> and include the following lines:</p>
-<pre class="conf"><code># never going to use locate on a fileserver
-weekly_locate_enable=&quot;NO&quot;   #Disable weekly locate run.</code></pre></li>
+<div class="sourceCode" id="cb7"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb7-1" title="1"><span class="co"># never going to use locate on a fileserver</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="dt">weekly_locate_enable</span><span class="ot">=</span><span class="st">&quot;NO&quot;   #Disable weekly locate run.</span></a></code></pre></div></li>
 </ol></li>
 <li><p>Set up ssh-agent</p></li>
 <li><p>Create Projects directory tree in <code>~</code> as follows:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> -p ~/projects/src/github.com/sww1235</code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" title="1"><span class="fu">mkdir</span> -p ~/projects/src/github.com/sww1235</a></code></pre></div>
 <p>This mirrors the structure of how golang wants to set things up.</p></li>
 <li><p>Make symlink in <code>~</code> as follows:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">ln</span> -s ~/projects/src/github.com/sww1235 myprojects</code></pre></div></li>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" title="1"><span class="fu">ln</span> -s ~/projects/src/github.com/sww1235 myprojects</a></code></pre></div></li>
 <li><p>Clone dotfiles repo from GitHub using ssh and install vim and bash files using <code>install.sh</code> script.</p></li>
 <li><p>Clone projects from github into Projects tree as desired.</p></li>
 </ol>
 <h3 id="ups-config">
 UPS Configuration
 </h3>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>Install Network UPS Tools from packages. <code>sudo pkg install nut</code></p></li>
 <li><p>Edit <code>/usr/local/etc/nut/upsmon.conf</code> and add in the following lines:</p>
-<pre class="conf"><code>MONITOR cyberpower@$ipaddress 1 upsmonSlave $password slave</code></pre></li>
+<div class="sourceCode" id="cb10"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb10-1" title="1"><span class="dt">MONITOR cyberpower@$ipaddress 1 upsmonSlave $password slave</span></a></code></pre></div></li>
 <li><p>Edit <code>/etc/rc.conf</code> and add the following line:</p>
-<pre class="conf"><code>nut_upsmon_enable=&quot;YES&quot;</code></pre></li>
-<li><p>Start <code>nut_upsmon</code> service with <code>sudo service nut_upsmon start</code> and make sure it doesn't error out.</p></li>
+<div class="sourceCode" id="cb11"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb11-1" title="1"><span class="dt">nut_upsmon_enable</span><span class="ot">=</span><span class="st">&quot;YES&quot;</span></a></code></pre></div></li>
+<li><p>Start <code>nut_upsmon</code> service with <code>sudo service nut_upsmon start</code> and make sure it doesn’t error out.</p></li>
 <li><p>Reboot system to make sure everything comes up normally.</p></li>
 <li><p>Run a shutdown test to make sure nut is working properly.</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>Login to <code>rack-monitor</code> system and run <code>upsdrvctl -t shutdown</code>. This will show you what will happen during a shutdown without actually shutting the systems down.</p></li>
 <li><p>Now run the command <code>upsmon -c fsd</code>. This will simulate a power failure and send the shutdown signal to all connected machines before shutting down itself.</p></li>
 <li><p>This should have worked, so now you need to manually remove power and apply power from all machines connected to the UPS to get them to come back up.</p></li>
@@ -194,19 +192,19 @@ ZFS Configuration
 <p>The current vdev design is 6 identical disks running in a RAIDZ2 configuration. When the storage is expanded, a new group of 6 disks will be added to a new vdev and added to the zpool.</p>
 <p>vdev = group of drives. You cannot add more drives to a vdev once it is created.</p>
 <p>zpool = group of vdevs. Redundancy is given by vdev configuration, not by multiple vdevs. if 1 vdev fails completely, <strong>all</strong> data in zpool is lost.</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>Install <code>smartmontools</code> and <code>e2fsprogs</code> packages.</p></li>
 <li><p>If the hard drives are new, Test hard drives with <code>sudo badblocks -b 4096 -wsv /dev/da* &gt; da*.log</code>, replacing * with the number for each HDD. This will take a while depending on the size of the hard drives.</p></li>
-<li><p>Add the following line to <code>/etc/rc.conf</code>, then start the service manually <code>sudo service zfs start</code> so you don't have to reboot.</p>
-<pre class="conf"><code>zfs_enable=&quot;YES&quot;</code></pre></li>
+<li><p>Add the following line to <code>/etc/rc.conf</code>, then start the service manually <code>sudo service zfs start</code> so you don’t have to reboot.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb12-1" title="1"><span class="dt">zfs_enable</span><span class="ot">=</span><span class="st">&quot;YES&quot;</span></a></code></pre></div></li>
 <li><p>Add the following lines to <code>/boot/loader.conf</code> if they are not already there and reboot. This enables unique and static labels per disk, similar to <code>/dev/disk/by-id/</code> on linux.</p>
-<pre class="conf"><code>geom_label_load=&quot;YES&quot;
-kern.geom.label.disk_ident.enable=&quot;1&quot;</code></pre></li>
+<div class="sourceCode" id="cb13"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb13-1" title="1"><span class="dt">geom_label_load</span><span class="ot">=</span><span class="st">&quot;YES&quot;</span></a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="dt">kern.geom.label.disk_ident.enable</span><span class="ot">=</span><span class="st">&quot;</span><span class="dv">1</span><span class="st">&quot;</span></a></code></pre></div></li>
 <li><p>Now create and configure the zpool and vdevs as follows:</p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="co"># replace /dev/diskid/... with the names of the disks you are using in the zpool</span>
-<span class="fu">sudo</span> zpool create the-vault raidz2 /dev/diskid/...
-<span class="co"># add any additional 6 disk sets</span>
-<span class="fu">sudo</span> zpool add the-vault raidz2 /dev/diskid/...</code></pre></div></li>
+<div class="sourceCode" id="cb14"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb14-1" title="1"><span class="co"># replace /dev/diskid/... with the names of the disks you are using in the zpool</span></a>
+<a class="sourceLine" id="cb14-2" title="2"><span class="fu">sudo</span> zpool create the-vault raidz2 /dev/diskid/...</a>
+<a class="sourceLine" id="cb14-3" title="3"><span class="co"># add any additional 6 disk sets</span></a>
+<a class="sourceLine" id="cb14-4" title="4"><span class="fu">sudo</span> zpool add the-vault raidz2 /dev/diskid/...</a></code></pre></div></li>
 <li><p>Now create ZFS datasets as follows:</p>
 <pre class="tags"><code>sudo zfs create -o compress=lz4 the-vault/backups
 sudo zfs create -o compress=lz4 the-vault/storage
@@ -215,12 +213,11 @@ sudo zfs create -o compress=lz4 the-vault/archive</code></pre></li>
 <li><p>Install zfsbackup-go either from packages/ports or github directly. (Download release binary and copy to <code>/usr/bin/</code> for now and rename to zfsbackup.)</p></li>
 <li><p>Install <code>gnupg</code> from packages, and make sure gpg is set up as described in <a href="gnupg-config.html">GnuPG Configuration</a>.</p></li>
 <li><p>Also, you need to export your keys into a form that <code>zfsbackup</code> can understand.</p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">gpg</span> --output public.pgp --armor --export domain@domain
-<span class="ex">gpg</span> --output private.pgp --armor --export-secret-key domain@domain</code></pre></div></li>
+<div class="sourceCode" id="cb16"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb16-1" title="1"><span class="ex">gpg</span> --output public.pgp --armor --export domain@domain</a>
+<a class="sourceLine" id="cb16-2" title="2"><span class="ex">gpg</span> --output private.pgp --armor --export-secret-key domain@domain</a></code></pre></div></li>
 <li><p>Install <code>freebsd-snapshot and flock</code> from pkg.</p></li>
 <li><p>Edit <code>/etc/periodic.conf</code> and add the following lines:</p>
-<pre class="conf"><code>daily_status_zfs
-</code></pre></li>
+<div class="sourceCode" id="cb17"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb17-1" title="1"><span class="dt">daily_status_zfs</span></a></code></pre></div></li>
 <li><p>Edit <code>/etc/crontab</code> and include the following:</p>
 <pre class="crontab"><code>
 # Perform hourly/daily/weekly maintenance (FreeBSD UFS2/ZFS snapshots only).
@@ -258,11 +255,11 @@ export B2_ACCOUNT_KEY= $ from password manager
 # archive pool
 /usr/local/bin/flock -xn /root/zfsbackup-archive.lock -c &quot;/usr/bin/zfsbackup send --encryptTo domain@domain.net --signFrom domain@domain.net --publicKeyRingPath /home/toxicsauce/.gnupg/public.pgp --secretKeyRingPath /home/toxicsauce/.gnupg/private.pgp --increment the-vault/archive b2://the-vault-remote/archive&quot;</code></pre></li>
 <li><p>Edit <code>/etc/periodic.conf</code> and configure according to the datasets. Current config as below.</p>
-<pre class="conf"><code>daily_scrub_zfs_enable=&quot;YES&quot;
-snapshot_enable=&quot;YES&quot;
-# :4:7:0 = 4 weekly snapshots (1 per week, and storing the last 4,
-# 1 per day and storing the last 7, and 0 per hour, storing the last 0.
-snapshot_schedule=&quot;/the-vault/backups:4:7:0 /the-vault/storage:4:7:0 /the-vault/media:2:3:0 /the-vault/archive:2:3:0&quot;</code></pre></li>
+<div class="sourceCode" id="cb20"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb20-1" title="1"><span class="dt">daily_scrub_zfs_enable</span><span class="ot">=</span><span class="st">&quot;YES&quot;</span></a>
+<a class="sourceLine" id="cb20-2" title="2"><span class="dt">snapshot_enable</span><span class="ot">=</span><span class="st">&quot;YES&quot;</span></a>
+<a class="sourceLine" id="cb20-3" title="3"><span class="co"># :4:7:0 = 4 weekly snapshots (1 per week, and storing the last 4,</span></a>
+<a class="sourceLine" id="cb20-4" title="4"><span class="co"># 1 per day and storing the last 7, and 0 per hour, storing the last 0.</span></a>
+<a class="sourceLine" id="cb20-5" title="5"><span class="dt">snapshot_schedule</span><span class="ot">=</span><span class="st">&quot;/the-vault/backups:</span><span class="dv">4</span><span class="st">:</span><span class="dv">7</span><span class="st">:</span><span class="dv">0</span><span class="st"> /the-vault/storage:</span><span class="dv">4</span><span class="st">:</span><span class="dv">7</span><span class="st">:</span><span class="dv">0</span><span class="st"> /the-vault/media:</span><span class="dv">2</span><span class="st">:</span><span class="dv">3</span><span class="st">:</span><span class="dv">0</span><span class="st"> /the-vault/archive:</span><span class="dv">2</span><span class="st">:</span><span class="dv">3</span><span class="st">:</span><span class="dv">0</span><span class="st">&quot;</span></a></code></pre></div></li>
 </ol>
 <h3 id="filesharing">
 Fileshare Configuration

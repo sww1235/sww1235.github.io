@@ -39,13 +39,13 @@ For AMD CPUs (AMD-Vi) set amd_iommu=on</code></pre>
 <p>confirm that iommu is on:</p>
 <p><code>dmesg | grep -e DMAR -e IOMMU</code></p>
 <h2 id="iommu-group-check">iommu group check</h2>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co">#!/bin/bash</span>
-<span class="bu">shopt</span> -s nullglob
-<span class="kw">for</span> <span class="ex">d</span> in /sys/kernel/iommu_groups/*/devices/*<span class="kw">;</span> <span class="kw">do</span> 
-    <span class="va">n=${d#</span>*/iommu_groups/*<span class="va">}</span>; <span class="va">n=${n%%</span>/*<span class="va">}</span>
-    <span class="bu">printf</span> <span class="st">&#39;IOMMU Group %s &#39;</span> <span class="st">&quot;</span><span class="va">$n</span><span class="st">&quot;</span>
-    <span class="ex">lspci</span> -nns <span class="st">&quot;</span><span class="va">${d##</span>*/<span class="va">}</span><span class="st">&quot;</span>
-<span class="kw">done</span>;</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1"><span class="co">#!/bin/bash</span></a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="bu">shopt</span> -s nullglob</a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="kw">for</span> <span class="ex">d</span> in /sys/kernel/iommu_groups/*/devices/*<span class="kw">;</span> <span class="kw">do</span> </a>
+<a class="sourceLine" id="cb2-4" title="4">    <span class="va">n=${d#</span>*/iommu_groups/*<span class="va">}</span>; <span class="va">n=${n%%</span>/*<span class="va">}</span></a>
+<a class="sourceLine" id="cb2-5" title="5">    <span class="bu">printf</span> <span class="st">&#39;IOMMU Group %s &#39;</span> <span class="st">&quot;</span><span class="va">$n</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb2-6" title="6">    <span class="ex">lspci</span> -nns <span class="st">&quot;</span><span class="va">${d##</span>*/<span class="va">}</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb2-7" title="7"><span class="kw">done</span>;</a></code></pre></div>
 <p>make sure only to add pci ids of graphics card and associated audio device, not the root if in the same group.</p>
 <h2 id="configure-vfio-pci">configure vfio-pci</h2>
 <p>change IDs to match those found through lspci for your specific card</p>
@@ -59,10 +59,10 @@ options vfio-pci ids=10de:13c2,10de:0fbb</code></pre>
 <p>dracut is used to make initramfs</p>
 <p>its config is /etc/dracut.conf.d/dracut.conf</p>
 <p>need to add kernel modules to initramfs</p>
-<p>use add_drivers+=&quot;vfio-pci vfio vfio_iommu_type1 vfio_virqfd&quot; as an example</p>
-<p>also need to add_dracutmodules+=&quot;kernel-modules&quot; in order for dracut to look at modprobe/modules-load</p>
-<p>I also needed to blacklist nouvaeu on the host using a config file in /etc/modprobe.d/ containing <code>blacklist nouveau</code> and in dracut.conf using `omit_drivers+=&quot;nouveau&quot;</p>
-<p>regen initramfs using dracut --force to overwrite the existing one</p>
+<p>use add_drivers+=“vfio-pci vfio vfio_iommu_type1 vfio_virqfd” as an example</p>
+<p>also need to add_dracutmodules+=“kernel-modules” in order for dracut to look at modprobe/modules-load</p>
+<p>I also needed to blacklist nouvaeu on the host using a config file in /etc/modprobe.d/ containing <code>blacklist nouveau</code> and in dracut.conf using `omit_drivers+=“nouveau”</p>
+<p>regen initramfs using dracut –force to overwrite the existing one</p>
 <h2 id="getting-ovmf">getting ovmf</h2>
 <p>it is not in xbps so need to manually download from https://www.kraxel.org/repos/jenkins/edk2/ as of the writing of this build. download the ovmf appropriate either 32 or 64 bit version then use</p>
 <p>rpm2cpio <file>.rpm | xz -d | cpio -idmv</p>
