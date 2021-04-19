@@ -192,7 +192,25 @@ Cluster Setup
 <a class="sourceLine" id="cb7-7" title="7"><span class="fu">make</span> check-old-libs <span class="co"># obsolete libraries</span></a>
 <a class="sourceLine" id="cb7-8" title="8"><span class="fu">make</span> delete-old-libs</a>
 <a class="sourceLine" id="cb7-9" title="9"><span class="ex">shutdown</span> -r now</a></code></pre></div></li>
-<li><p>Finally start installing Xen</p></li>
+<li><p>Finally start installing Xen. All commands run as root.</p>
+<ol type="1">
+<li><p>sudo pkg install xen-kernel xen-tools. May have to regenerate pkg database</p></li>
+<li><p>add the line <code>vm.max_user_wired=-1</code> to <code>/etc/sysctl.conf</code></p></li>
+<li><p>add the line <code>xc0     "/usr/libexec/getty Pc"         xterm   onifconsole  secure</code> to <code>/etc/ttys</code></p></li>
+<li><p>edit <code>/boot/loader.conf</code> and add the following lines for 2G memory and 1vCPU core dom0:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb8-1" title="1"><span class="dt">if_tap_load</span><span class="ot">=</span><span class="st">&quot;YES&quot;</span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="dt">xen_kernel</span><span class="ot">=</span><span class="st">&quot;/boot/xen&quot;</span></a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="dt">xen_cmdline</span><span class="ot">=</span><span class="st">&quot;dom0_mem=2048M dom0_max_vcpus=</span><span class="dv">1</span><span class="st"> dom0=pvh com1=</span><span class="dv">115200</span><span class="st">,8n1 guest_loglvl=all loglvl=all console=vga,com1&quot;</span></a>
+<a class="sourceLine" id="cb8-4" title="4"><span class="dt">boot_multicons</span><span class="ot">=</span><span class="st">&quot;YES&quot;</span></a>
+<a class="sourceLine" id="cb8-5" title="5"><span class="dt">boot_serial</span><span class="ot">=</span><span class="st">&quot;YES&quot;</span></a>
+<a class="sourceLine" id="cb8-6" title="6"><span class="dt">console</span><span class="ot">=</span><span class="st">&quot;commconsole,vidconsole&quot;</span></a></code></pre></div></li>
+<li><p>run the following commands:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" title="1"><span class="ex">sysrc</span> xencommons_enable=yes</a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="ex">sysrc</span> closed_interfaces=<span class="st">&quot;bridge0&quot;</span></a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="ex">sysrc</span> ifconfig_bridge0=<span class="st">&quot;addm em0 SYNCDNCP&quot;</span></a>
+<a class="sourceLine" id="cb9-4" title="4"><span class="ex">sysrc</span> ifconfig_em0=<span class="st">&quot;up&quot;</span></a></code></pre></div></li>
+<li><p>Reboot system</p></li>
+</ol></li>
 </ol>
 <pre class="tags"><code>cluster, virtualization, virt, NUC, xcp-ng</code></pre>
 </body>
