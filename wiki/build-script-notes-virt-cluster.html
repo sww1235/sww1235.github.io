@@ -53,7 +53,7 @@ BIOS Configuration
 <li><p>Under <code>Boot-&gt;Secure Boot</code>: Disable Secure Boot</p></li>
 <li><p>Under <code>Boot-&gt;Boot Priority</code>: Enable Boot USB Devices First, and disable Boot Network Devices Last.</p></li>
 <li><p>Under <code>Boot-&gt;Boot Display Configuration</code>: Disable Suppress Alert Messages At Boot, and Enable F12 for network boot.</p></li>
-<li><p>Set BIOS clock to UTC time.</p></li>
+<li><p>Under <code>Main</code> Select System Time and Set BIOS clock to UTC time.</p></li>
 <li><p>Press F10 to save and Exit. On Reboot, press <code>CTRL-P</code> to get into Intel AMT configuration</p></li>
 </ol>
 <h3 id="amt-config">
@@ -79,7 +79,7 @@ Install Operating System
 <ol type="1">
 <li><p>Keymap = United States of America. Space will not work here, just scroll down and hit enter.</p></li>
 <li><p>Enter hostname</p></li>
-<li><p>Add the ports tree. Optionally, add the src tree (prior to multiboot2 xen patch being included in a release version).</p></li>
+<li><p>Add the ports tree.</p></li>
 <li><p>Hit Ok to configure network for installation.</p></li>
 <li><p>Configure IPv4 and use DHCP</p></li>
 <li><p>Confirm resolver config. (Defaults picked up from DHCP should be good to go.)</p></li>
@@ -127,18 +127,18 @@ Install Operating System
 <a class="sourceLine" id="cb1-5" title="5"><span class="co"># answer yes to install pkg system</span></a>
 <a class="sourceLine" id="cb1-6" title="6"><span class="ex">pkg</span> upgrade</a>
 <a class="sourceLine" id="cb1-7" title="7"></a>
-<a class="sourceLine" id="cb1-8" title="8"><span class="ex">pkg</span> install nano sudo</a></code></pre></div></li>
+<a class="sourceLine" id="cb1-8" title="8"><span class="ex">pkg</span> install nano sudo vim-console</a></code></pre></div></li>
 <li><p>Configure sudo. <code>visudo</code> and uncomment line <code>%wheel ALL=(ALL) ALL</code></p></li>
 <li><p>Setup system logging and disable sendmail:</p>
 <ol type="1">
 <li><p>Edit <code>/etc/rc.conf</code> and add the following lines to disable sendmail and enable syslog.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb2-1" title="1"><span class="co"># disable sendmail and enable syslog</span></a>
 <a class="sourceLine" id="cb2-2" title="2"><span class="dt">syslogd_enable</span><span class="ot">=</span><span class="st">&quot;YES&quot;</span></a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="dt">sendmail_enable</span><span class="ot">=</span><span class="st">&quot;NO&quot; # modify existing line</span></a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="dt">sendmail_submit_enable</span><span class="ot">=</span><span class="st">&quot;NO&quot;</span></a>
-<a class="sourceLine" id="cb2-5" title="5"><span class="dt">sendmail_outbound_enable</span><span class="ot">=</span><span class="st">&quot;NO&quot;</span></a>
-<a class="sourceLine" id="cb2-6" title="6"><span class="dt">sendmail_msp_queue_enable</span><span class="ot">=</span><span class="st">&quot;NO&quot;</span></a>
-<a class="sourceLine" id="cb2-7" title="7"><span class="dt">newsyslog_enable</span><span class="ot">=</span><span class="st">&quot;YES&quot; # make sure this doesn&#39;t break in future </span><span class="kw">defaults</span></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="dt">newsyslog_enable</span><span class="ot">=</span><span class="st">&quot;YES&quot; # make sure this doesn&#39;t break in future </span><span class="kw">defaults</span></a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="dt">sendmail_enable</span><span class="ot">=</span><span class="st">&quot;NO&quot; # modify existing line</span></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="dt">sendmail_submit_enable</span><span class="ot">=</span><span class="st">&quot;NO&quot;</span></a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="dt">sendmail_outbound_enable</span><span class="ot">=</span><span class="st">&quot;NO&quot;</span></a>
+<a class="sourceLine" id="cb2-7" title="7"><span class="dt">sendmail_msp_queue_enable</span><span class="ot">=</span><span class="st">&quot;NO&quot;</span></a>
 <a class="sourceLine" id="cb2-8" title="8"><span class="co"># fix cron trying to send mail</span></a>
 <a class="sourceLine" id="cb2-9" title="9"><span class="dt">cron_flags</span><span class="ot">=</span><span class="st">&quot;-m &#39;&#39;&quot;</span></a></code></pre></div></li>
 <li><p>Create log files needed for next step:</p>
@@ -163,7 +163,7 @@ Install Operating System
 <li><p>Random sysadmin tweaks:</p>
 <ol type="1">
 <li><p>Edit <code>/etc/periodic.conf</code> and include the following lines:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb5-1" title="1"><span class="co"># never going to use locate on a fileserver</span></a>
+<div class="sourceCode" id="cb5"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb5-1" title="1"><span class="co"># never going to use locate on a virtualization host</span></a>
 <a class="sourceLine" id="cb5-2" title="2"><span class="dt">weekly_locate_enable</span><span class="ot">=</span><span class="st">&quot;NO&quot;   #Disable weekly locate run.</span></a></code></pre></div></li>
 </ol></li>
 <li><p>Reboot</p></li>
@@ -171,6 +171,29 @@ Install Operating System
 <h2 id="cluster-setup">
 Cluster Setup
 </h2>
+<ol type="1">
+<li><p>Before UEFI support for XEN is merged in a freebsd release version, need to fetch and compile from source. Wait until commit <code>97527e9c4fd37140</code> is merged into master before removing these instructions and running on release version.</p></li>
+<li><p>Run the following commands as root to build and install FreeBSD from source</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1"><span class="fu">git</span> clone --branch releng/10.3 https://git.FreeBSD.org/src.git /usr/src</a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="bu">cd</span> /usr/src/</a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="fu">make</span> buildworld <span class="kw">&amp;&amp;</span> <span class="fu">make</span> buildkernel</a>
+<a class="sourceLine" id="cb6-4" title="4"><span class="fu">make</span> installkernel</a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="ex">shutdown</span> -r now</a>
+<a class="sourceLine" id="cb6-6" title="6"><span class="bu">cd</span> /usr/src/</a>
+<a class="sourceLine" id="cb6-7" title="7"><span class="fu">make</span> installworld</a>
+<a class="sourceLine" id="cb6-8" title="8"><span class="ex">shutdown</span> -r now</a></code></pre></div></li>
+<li><p>Once the reboots have completed, need to merge config files, and check for outdated libraries. Run as root.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" title="1"><span class="ex">etcupdate</span> diff <span class="co"># to see what changed in settings</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="ex">etcupdate</span> <span class="co"># to automagically merge changes</span></a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="ex">etcupdate</span> resolve <span class="co"># if needed to resolve any changes that couldn&#39;t be merged automatically</span></a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="bu">cd</span> /usr/src/</a>
+<a class="sourceLine" id="cb7-5" title="5"><span class="fu">make</span> check-old <span class="co"># obsolete files or directories</span></a>
+<a class="sourceLine" id="cb7-6" title="6"><span class="fu">make</span> delete-old</a>
+<a class="sourceLine" id="cb7-7" title="7"><span class="fu">make</span> check-old-libs <span class="co"># obsolete libraries</span></a>
+<a class="sourceLine" id="cb7-8" title="8"><span class="fu">make</span> delete-old-libs</a>
+<a class="sourceLine" id="cb7-9" title="9"><span class="ex">shutdown</span> -r now</a></code></pre></div></li>
+<li><p>Finally start installing Xen</p></li>
+</ol>
 <pre class="tags"><code>cluster, virtualization, virt, NUC, xcp-ng</code></pre>
 </body>
 </html>
