@@ -182,6 +182,27 @@ Initial Configuration
 <pre class="xinitrc"><code>~/.screenlayout/main.sh
 xscreensaver &amp;
 exec dwm</code></pre></li>
+<li><p>Setup CUPS for printing:</p>
+<ol type="1">
+<li>Install and enable the service:</li>
+</ol>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb20-1" title="1"><span class="fu">sudo</span> xbps-install cups</a>
+<a class="sourceLine" id="cb20-2" title="2"><span class="fu">sudo</span> ln -s /etc/sv/cupsd/ /var/service</a></code></pre></div>
+<ol start="2" type="1">
+<li><p>Edit /etc/cups/cupsd.conf, find line that starts with <code>&lt;Limit CUPS-Add-Modify-Printer</code> and add <code>toxicsauce</code> after <code>@SYSTEM</code></p></li>
+<li><p>Restart <code>cupsd</code> service</p></li>
+<li><p>go to <a href="http://localhost:631/" class="uri">http://localhost:631/</a> to configure</p></li>
+</ol></li>
+</ol>
+<p>install alas-utils to get audio working</p>
+<p>FIXME: Install NVIDIA drivers</p>
+<ol type="1">
+<li><p>Take snapshot of VM before installing drivers.</p></li>
+<li><p>Install the <code>nonfree-repository</code>.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb21-1" title="1"><span class="fu">sudo</span> xbps-install void-repo-nonfree</a></code></pre></div></li>
+<li><p>Upgrade the system</p></li>
+<li><p>Install the <code>nvidia</code> package.</p></li>
+<li><p>Reboot. It should just work.</p></li>
 </ol>
 <h2 id="resources">
 Resources
