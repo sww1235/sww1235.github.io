@@ -1,21 +1,19 @@
 <!DOCTYPE html>
-<html>
-<head lang="en">
-  <meta charset="UTF-8">
-  <meta name="author" content="Stephen Walker-Weinshenker">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="styles/main.css">
-  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
-<title>void-suckless-config</title>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Void Suckless Config</title>
 </head>
 <body>
-<div id="top">
+<header>
     <a href="index.html">
         <img src="images/logo.png" alt="Home" width="280" height="32">
     </a>
 
-</div>
-<div id="topnavbar">
+</header>
+<nav>
     <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="about.html">About</a></li>
@@ -30,36 +28,56 @@
         <li><a href="contact.html">Contact</a></li>
 
     </ul>
-</div>
-<h1 id="top">
-Contributing
-</h1>
+</nav>
+<header id="title-block-header">
+<h1 class="title">Void Suckless Config</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#prereqs">Prerequisites</a></li>
+<li><a href="#dwm">DWM install</a>
+<ul>
+<li><a href="#status2d">status2d</a></li>
+<li><a href="#host-the-machine">Host: The Machine</a></li>
+</ul></li>
+<li><a href="#slstatus">slstatus</a></li>
+</ul>
+</nav>
 <p>How I setup suckless software such as st and dwm on void linux using <code>void-packages</code> and <code>xbps-src</code>.</p>
 <p>Note:</p>
 <p>If you use the <code>build-branch-$hostname</code> branch of my fork of the <code>void-packages</code> repo, then all these changes should already be in place. Rebasing and debugging may be necessary if version bumps have happened.</p>
-<h2 id="prereqs">
-Prerequisites
-</h2>
-<p>Setup <code>void-packages</code> according to the instructions <a href="void-packages-setup">here</a></p>
-<h2 id="dwm">
-DWM install
-</h2>
+<section id="prereqs" class="level1">
+<h1>Prerequisites</h1>
+<p>Setup <code>void-packages</code> according to the instructions <a href="void-packages-setup.html">here</a></p>
+</section>
+<section id="dwm" class="level1">
+<h1>DWM install</h1>
 <p>First thing we want to do, is add patches.</p>
 <p>Create a <code>patches</code> directory in <code>srcpkgs/dwm/</code> then add the following patches to the correct machine specific build-branch.</p>
-<h3 id="status2d">
-status2d
-</h3>
+<section id="status2d" class="level2">
+<h2>status2d</h2>
 <p>wget correct patch for dwm from suckless website</p>
-<h3 id="status2d-the-machine">
-Host: The Machine
-</h3>
-<p>add the following to config.h</p>
-<h2 id="slstatus">
-slstatus
-</h2>
+</section>
+<section id="host-the-machine" class="level2">
+<h2>Host: The Machine</h2>
+<p>add the following to <code>config.h</code></p>
+</section>
+</section>
+<section id="slstatus" class="level1">
+<h1>slstatus</h1>
 <p>Configure <code>config.h</code> in <code>srcpkgs/slstatus/files</code></p>
 <p>The format argument in the struct in <code>config.h</code> uses <code>sprintf</code> format string syntax. All variables are strings.</p>
 <p>this can use flags from <a href="#status2d">status2d</a> in its format strings if the status2d patch is included in dwm.</p>
 <pre class="tags"><code>Contributing, info</code></pre>
+</section>
+<footer>
+	<address>
+	sww1235.net<br/>
+	write to: website &lt;at-sign&gt; sww1235.net
+	</address>
+
+&copy; 2021 - Stephen Walker-Weinshenker
+
+</footer>
 </body>
 </html>

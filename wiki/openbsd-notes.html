@@ -1,21 +1,19 @@
 <!DOCTYPE html>
-<html>
-<head lang="en">
-  <meta charset="UTF-8">
-  <meta name="author" content="Stephen Walker-Weinshenker">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="styles/main.css">
-  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
-<title>openbsd-notes</title>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>OpenBSD Notes</title>
 </head>
 <body>
-<div id="top">
+<header>
     <a href="index.html">
         <img src="images/logo.png" alt="Home" width="280" height="32">
     </a>
 
-</div>
-<div id="topnavbar">
+</header>
+<nav>
     <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="about.html">About</a></li>
@@ -30,55 +28,71 @@
         <li><a href="contact.html">Contact</a></li>
 
     </ul>
-</div>
-<h1 id="top">
-OpenBSD Notes
-</h1>
-<h2 id="doas">
-Doas Configuration
-</h2>
-<p>see doas.conf(5) for more details.</p>
+</nav>
+<header id="title-block-header">
+<h1 class="title">OpenBSD Notes</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#doas-config">Doas Configuration</a></li>
+<li><a href="#power">Power Management</a></li>
+<li><a href="#ports">Ports Usage</a></li>
+</ul>
+</nav>
+<section id="doas-config" class="level1">
+<h1>Doas Configuration</h1>
+<p>See <code>doas.conf(5)</code> for more details.</p>
 <p>This is a base configuration for all openBSD systems I use.</p>
 <p>rules work in a <strong>last match</strong> manner.</p>
-<pre><code>permit persist :wheel
+<pre class="conf"><code>permit persist :wheel
 permit nopass keepenv root # allow root to do whatever
 permit :wheel cmd reboot # relist command to ensure password is needed.
 permit :wheel cmd halt
 permit :wheel cmd poweroff</code></pre>
 <p>this can be further customized based on need.</p>
 <p>sourced from openbsd doas mastery.</p>
-<h2 id="power">
-Power Management
-</h2>
+</section>
+<section id="power" class="level1">
+<h1>Power Management</h1>
 <p>poweroff/shutdown gracefully shutdown system</p>
 <p>reboot/halt kill system immediately</p>
-<h2 id="ports">
-Ports Usage
-</h2>
-<p>most systems will be running release versions of openBSD</p>
+</section>
+<section id="ports" class="level1">
+<h1>Ports Usage</h1>
+<p>most systems will be running release versions of OpenBSD</p>
 <p>use packages unless ports are needed. If ports are needed use <code>-stable</code> in order to get security fixes from <code>-current</code> tree.</p>
 <p>add the following to <code>/etc/mk.conf</code></p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1"><span class="va">PORTS_PRIVSEP=</span>YES</a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="va">WRKOBJDIR=</span>/usr/obj/ports</a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="va">DISTDIR=</span>/usr/distfiles</a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="va">PACKAGE_REPOSITORY=</span>/usr/packages</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="va">PORTS_PRIVSEP</span><span class="op">=</span>YES</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="va">WRKOBJDIR</span><span class="op">=</span>/usr/obj/ports</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="va">DISTDIR</span><span class="op">=</span>/usr/distfiles</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="va">PACKAGE_REPOSITORY</span><span class="op">=</span>/usr/packages</span></code></pre></div>
 <p>create the directories above then change ownership to local user and group, make sure they are world readable.</p>
 <p>also following commands:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1"><span class="fu">mkdir</span> -p ports src</a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="ex">cngrp</span> wsrc ports src</a>
-<a class="sourceLine" id="cb3-3" title="3"><span class="fu">chmod</span> 775 ports src</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ports src</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cngrp</span> wsrc ports src</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> 775 ports src</span></code></pre></div>
 <p>add the following lines to <code>doas.conf</code> and add <code>SUDO=doas</code> to <code>/etc/mk.conf</code></p>
 <pre class="doas"><code>permit keepenv nopass toxic as _pbuild
 permit keepenv nopass toxic as _pfetch</code></pre>
 <p>add user to <code>wsrc</code> group: <code>doas usermod -G wsrc toxic</code>.</p>
 <p>Also add</p>
 <p>download stable ports branch from anonCVS:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" title="1"><span class="bu">cd</span> /usr</a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="ex">cvs</span> -qd anoncvs@anoncvs3.usa.openbsd.org:/cvs checkout -rOPENBSD_6_4 -P ports</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /usr</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cvs</span> <span class="at">-qd</span> anoncvs@anoncvs3.usa.openbsd.org:/cvs checkout <span class="at">-rOPENBSD_6_4</span> <span class="at">-P</span> ports</span></code></pre></div>
 <p>to update after initial clone:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1"><span class="bu">cd</span> /usr/ports</a>
-<a class="sourceLine" id="cb6-2" title="2"><span class="ex">cvs</span> -q up -Pd -rOPENBSD_6_4</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /usr/ports</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cvs</span> <span class="at">-q</span> up <span class="at">-Pd</span> <span class="at">-rOPENBSD_6_4</span></span></code></pre></div>
 <p>default shell is <code>ksh</code>. Configuration goes in <code>.profile</code></p>
 <pre class="tags"><code>OpenBSD, Homelab, Setup</code></pre>
+</section>
+<footer>
+	<address>
+	sww1235.net<br/>
+	write to: website &lt;at-sign&gt; sww1235.net
+	</address>
+
+&copy; 2021 - Stephen Walker-Weinshenker
+
+</footer>
 </body>
 </html>

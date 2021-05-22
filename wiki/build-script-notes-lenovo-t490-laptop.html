@@ -1,21 +1,19 @@
 <!DOCTYPE html>
-<html>
-<head lang="en">
-  <meta charset="UTF-8">
-  <meta name="author" content="Stephen Walker-Weinshenker">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="styles/main.css">
-  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
-<title>build-script-notes-lenovo-t490-laptop</title>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Lenovo Laptop Build Script</title>
 </head>
 <body>
-<div id="top">
+<header>
     <a href="index.html">
         <img src="images/logo.png" alt="Home" width="280" height="32">
     </a>
 
-</div>
-<div id="topnavbar">
+</header>
+<nav>
     <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="about.html">About</a></li>
@@ -30,32 +28,47 @@
         <li><a href="contact.html">Contact</a></li>
 
     </ul>
-</div>
-<h1 id="top">
-Rack Monitor Build Script and Notes
-</h1>
+</nav>
+<header id="title-block-header">
+<h1 class="title">Lenovo Laptop Build Script</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#notes">Notes</a></li>
+<li><a href="#build-script">Build Script</a>
+<ul>
+<li><a href="#initial-configuration">Initial Configuration</a>
+<ul>
+<li><a href="#windows-installation">Windows Installation</a></li>
+<li><a href="#refind-installation">rEFInd Installation</a></li>
+<li><a href="#void-linux-installation">Void Linux Installation</a></li>
+<li><a href="#void-linux-config">Void Linux Configuration</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
 <p>This is the build script and notes for my Lenovo T490 laptop.</p>
-<h2 id="notes">
-Notes
-</h2>
-<h2 id="build-script">
-Build Script
-</h2>
-<h3 id="initial-configuration">
-Initial Configuration
-</h3>
+<section id="notes" class="level1">
+<h1>Notes</h1>
+</section>
+<section id="build-script" class="level1">
+<h1>Build Script</h1>
+<section id="initial-configuration" class="level2">
+<h2>Initial Configuration</h2>
 <p>Laptop will start from factory with preinstalled Windows 10 Pro + bloatware. Reimage then setup dual booting.</p>
-<h4 id="windows-installation">
-Windows Installation
-</h4>
+<section id="windows-installation" class="level3">
+<h3>Windows Installation</h3>
 <ol type="1">
 <li><p>Download a copy of Windows 10 Pro from Microsoft</p></li>
 <li><p>Create bootable USB stick using instructions on Microsoft website.</p></li>
-<li><p>Disable fast boot in preinstalled windows.</p>
-<ol type="1">
-<li><p>Go to Settings -&gt; System -&gt; Power &amp; Sleep -&gt; Additional Power Settings -&gt; Choose What Power Buttons Do -&gt; Change settings that are currently unavailable</p></li>
-<li><p>Uncheck “Turn on Fast Startup”. This prevents skipping the BIOS screen.</p></li>
-</ol></li>
+<li><p>Disable fast boot in preinstalled windows.</p></li>
+</ol>
+<pre><code>1.	Go to Settings -&gt; System -&gt; Power &amp; Sleep -&gt; Additional Power Settings
+	-&gt; Choose What Power Buttons Do -&gt; Change settings that are currently
+	unavailable
+
+2.	Uncheck &quot;Turn on Fast Startup&quot;. This prevents skipping the BIOS screen.</code></pre>
+<ol start="4" type="1">
 <li><p>Verify BIOS is set to allow booting from USB sticks. Also verify that BIOS is only set to UEFI mode</p></li>
 <li><p>Make sure laptop does not have an internet connection. This allows for the creation of a local user account without a Microsoft account.</p></li>
 <li><p>Insert USB stick and boot. Hit enter to interrupt startup, then select USB stick as boot drive.</p></li>
@@ -63,13 +76,17 @@ Windows Installation
 <li><p>Click Install Now.</p></li>
 <li><p>Accept Terms and Conditions</p></li>
 <li><p>Select Custom: Install Windows Only.</p></li>
-<li><p>Wipe out all existing partitions on the main SSD, then create the following:</p>
-<ul>
-<li>A main 120GB partition for windows</li>
-<li>A 500GB partition for passthrough between Windows and Linux OS installs.</li>
-</ul>
-<p>Leave the remaining space unpartitioned. This will be partitioned during the linux install.</p>
-<p>These will both be NTFS. Windowe will create additional partitions at the beginning of the partition list for recovery ETC.</p></li>
+<li><p>Wipe out all existing partitions on the main SSD, then create the following:</p></li>
+</ol>
+<pre><code>-	A main 120GB partition for windows
+-	A 500GB partition for passthrough between Windows and Linux OS installs.
+
+Leave the remaining space unpartitioned. This will be partitioned during the
+linux install.
+
+These will both be NTFS. Windowe will create additional partitions at the
+beginning of the partition list for recovery ETC.</code></pre>
+<ol start="12" type="1">
 <li><p>Select the 120GB partiton to install windows on.</p></li>
 <li><p>Wait for several reboots</p></li>
 <li><p>Select Customize Settings option on Express Settings Prompt.</p></li>
@@ -78,9 +95,9 @@ Windows Installation
 <li><p>After setup is finished, uninstall all apps that can be uninstalled, and clean up the start menu.</p></li>
 <li><p>Install Lenovo Vantage from Lenovo’s website and make sure BIOS and drivers are installed and up to date. (Especially important for Thunderbolt devices)</p></li>
 </ol>
-<h4 id="refind-installation">
-rEFInd Installation
-</h4>
+</section>
+<section id="refind-installation" class="level3">
+<h3>rEFInd Installation</h3>
 <p>Install rEFInd boot manager. These steps are shamelessly reappropriated and modified from <a href="https://rodsbooks.com/refind/installing.html#windows" class="uri">https://rodsbooks.com/refind/installing.html#windows</a></p>
 <ol type="1">
 <li><p>Download rEFInd as a binary ZIP file from reputable sources, currently: <a href="https://rodsbooks.com/refind/getting.html" class="uri">https://rodsbooks.com/refind/getting.html</a></p></li>
@@ -97,9 +114,9 @@ rEFInd Installation
 <li><p>Type <code>bcdedit /set "{bootmgr}" description "rEFInd description"</code> to set a description (change rEFInd description as you see fit).</p></li>
 </ol>
 <p>Now, when the laptop is rebooted, rEFInd should present itself with an option to boot into windows 10.</p>
-<h4 id="void-linux-installation">
-Void Linux Installation
-</h4>
+</section>
+<section id="void-linux-installation" class="level3">
+<h3>Void Linux Installation</h3>
 <ol type="1">
 <li><p>Download a copy of <code>void-live-x86_64-date.iso</code> from reputable sources, currently: <a href="https://alpha.de.repo.voidlinux.org/live/current/" class="uri">https://alpha.de.repo.voidlinux.org/live/current/</a>.</p></li>
 <li><p>Create bootable USB stick using <code>dd</code> or whatever windows tool is the popular thing and preferably doesn’t use electron.</p></li>
@@ -116,137 +133,227 @@ Void Linux Installation
 <li><p>Set up normal user account based on password database.</p></li>
 <li><p>Select <code>none</code> for bootloader since rEFInd was installed earlier.</p></li>
 <li><p>Create an <code>Linux filesystem</code> partition out of the remaining space on disk and write the partition map to disk. Make note of the partition names and filesystems for the next step.</p></li>
-<li><p>Proceed through all partitions and set mount points as follows:</p>
-<ul>
-<li><p>Do not set mount points for the <code>Windows recovery partion</code>, or the <code>Microsoft reserved</code> partition.</p></li>
-<li><p>Set the <code>EFI System</code> partition filesystem to <code>vfat</code> and the mount point to <code>/boot/efi</code>.</p></li>
-<li><p>Set the 500GB <code>Microsoft basic data</code> partition to filesystem <code>ntfs</code> and mountpoint <code>/mnt/passthrough</code>.</p></li>
-<li><p>Set the ~1.3TB <code>Linux filesystem</code> partition to filesystem <code>ext4</code> and mountpoint <code>/</code>.</p></li>
-</ul></li>
+<li><p>Proceed through all partitions and set mount points as follows:</p></li>
+</ol>
+<pre><code>-	Do not set mount points for the `Windows recovery partion`, or the
+	`Microsoft reserved` partition.
+
+-	Set the `EFI System` partition filesystem to `vfat` and the mount point
+	to `/boot/efi`.
+
+-	Set the 500GB `Microsoft basic data` partition to filesystem `ntfs` and
+	mountpoint `/mnt/passthrough`.
+
+-	Set the ~1.3TB `Linux filesystem` partition to filesystem `ext4` and
+	mountpoint `/`.</code></pre>
+<ol start="17" type="1">
 <li><p>Review settings and install. This will take a while.</p></li>
 <li><p>Reboot and select Void Linux at rEFInd prompt.</p></li>
 </ol>
-<h4 id="void-linux-configuration">
-Void Linux Configuration
-</h4>
+</section>
+<section id="void-linux-config" class="level3">
+<h3>Void Linux Configuration</h3>
 <ol type="1">
 <li><p>Login to newly installed Void Linux using root account and password found in password database. This is due to the fact that we haven’t configured sudo yet.</p></li>
-<li><p>Configure <code>sudo</code> to allow full access to members of <code>wheel</code> group. Run <code>visudo</code> and uncomment the line</p>
-<pre class="sudo"><code>#%wheel ALL=(ALL) ALL</code></pre></li>
-<li><p>Enable NTP and DHCP services</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1"><span class="fu">ln</span> -s /etc/sv/ntpd /var/service</a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="fu">ln</span> -s /etc/sv/dhcpcd /var/service</a></code></pre></div></li>
+<li><p>Configure <code>sudo</code> to allow full access to members of <code>wheel</code> group. Run <code>visudo</code> and uncomment the line</p></li>
+</ol>
+<pre><code>```sudo
+#%wheel ALL=(ALL) ALL
+```</code></pre>
+<ol start="3" type="1">
+<li>Enable NTP and DHCP services</li>
+</ol>
+<pre><code>```bash
+ln -s /etc/sv/ntpd /var/service
+ln -s /etc/sv/dhcpcd /var/service
+```</code></pre>
+<ol start="4" type="1">
 <li><p>Create <code>passthrough</code> folder under <code>/mnt/</code> to allow passthrough partition to mount correctly.</p></li>
 <li><p>Update system by running command <code>xbps-install -Svu</code> until it shows no updates.</p></li>
-<li><p>Install ntfs driver.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1"><span class="ex">xbps-install</span> ntfs-3g</a></code></pre></div></li>
+<li><p>Install ntfs driver.</p></li>
+</ol>
+<pre><code>```bash
+xbps-install ntfs-3g
+```</code></pre>
+<ol start="7" type="1">
 <li><p>Reboot system and login as normal user.</p></li>
 <li><p>Enable trim on SSD by editing <code>/etc/fstab</code> and adding <code>,discard</code> after the defaults line on the <code>/</code> and <code>/mnt/passthrough</code> mountpoints.</p></li>
-<li><p>Install and remove the following packages. Want to use simpler NTP implementation.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" title="1"><span class="fu">sudo</span> xbps-install nano openntpd rng-tools thefuck vim htop socklog</a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="fu">sudo</span> xbps-remove chrony</a></code></pre></div></li>
-<li><p>Install commonly used applications.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" title="1"><span class="fu">sudo</span> xbps-install firefox freecad git glow kicad lynx netcat p7zip powertop</a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="fu">rsync</span> tmux unzip wget zip</a></code></pre></div></li>
-<li><p>Setup system logging using socklog</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1"><span class="fu">sudo</span> xbps-install socklog-void</a>
-<a class="sourceLine" id="cb6-2" title="2"><span class="co"># enable services</span></a>
-<a class="sourceLine" id="cb6-3" title="3"><span class="fu">sudo</span> ln -s /etc/sv/socklog-unix/ /var/service</a>
-<a class="sourceLine" id="cb6-4" title="4"><span class="fu">sudo</span> ln -s /etc/sv/nanoklogd/ /var/service</a>
-<a class="sourceLine" id="cb6-5" title="5"><span class="co"># add user to log group</span></a>
-<a class="sourceLine" id="cb6-6" title="6"><span class="fu">sudo</span> usermod -a -G socklog <span class="va">$USER</span></a>
-<a class="sourceLine" id="cb6-7" title="7"><span class="co"># log out and log back in</span></a></code></pre></div></li>
-<li><p>Create projects directory tree in <code>~</code> as follows:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" title="1"><span class="fu">mkdir</span> -p ~/projects/src/github.com/sww1235</a></code></pre></div>
-<p>This mirrors the structure of how golang wants to set things up.</p></li>
+<li><p>Install and remove the following packages. Want to use simpler NTP implementation.</p></li>
+</ol>
+<pre><code>```bash
+sudo xbps-install nano openntpd rng-tools thefuck vim htop socklog
+sudo xbps-remove chrony
+```</code></pre>
+<ol start="10" type="1">
+<li>Install commonly used applications.</li>
+</ol>
+<pre><code>```bash
+sudo xbps-install firefox freecad git glow kicad lynx netcat p7zip powertop
+rsync tmux unzip wget zip
+```</code></pre>
+<ol start="11" type="1">
+<li>Setup system logging using socklog</li>
+</ol>
+<pre><code>```bash
+sudo xbps-install socklog-void
+# enable services
+sudo ln -s /etc/sv/socklog-unix/ /var/service
+sudo ln -s /etc/sv/nanoklogd/ /var/service
+# add user to log group
+sudo usermod -a -G socklog $USER
+# log out and log back in
+```</code></pre>
+<ol start="12" type="1">
+<li>Create projects directory tree in <code>~</code> as follows:</li>
+</ol>
+<pre><code>```bash
+mkdir -p ~/projects/src/github.com/sww1235
+```
+
+This mirrors the structure of how golang wants to set things up.</code></pre>
+<ol start="13" type="1">
 <li><p>Clone dotfiles repo from GitHub and install vim and bash files using <code>install.sh</code> script.</p></li>
-<li><p>Set up ssh-agent using user specific services. Instructions taken from <a href="https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/" class="uri">https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/</a></p>
-<ol type="1">
-<li>Create user specific service directory:</li>
+<li><p>Set up ssh-agent using user specific services. Instructions taken from <a href="https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/" class="uri">https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/</a></p></li>
 </ol>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" title="1"><span class="fu">sudo</span> mkdir /etc/sv/runit-user-toxicsauce</a></code></pre></div>
-<ol start="2" type="1">
-<li>Create run script for user specific service by adding the following into <code>/etc/sv/runit-user-toxicsauce/run</code></li>
-</ol>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" title="1"><span class="co">#!/bin/sh</span></a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="bu">exec</span> <span class="op">2&gt;&amp;1</span></a>
-<a class="sourceLine" id="cb9-3" title="3"><span class="bu">exec</span> chpst -u toxicsauce:toxicsauce runsvdir /home/toxicsauce/runit/service</a></code></pre></div>
-<ol start="3" type="1">
-<li>Mark it as executable:</li>
-</ol>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb10-1" title="1"><span class="fu">sudo</span> chmod +x /etc/sv/runit-user-toxicsauce/run</a></code></pre></div>
-<ol start="4" type="1">
-<li>Create necessary user specific service directories:</li>
-</ol>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb11-1" title="1"><span class="fu">mkdir</span> ~/runit</a>
-<a class="sourceLine" id="cb11-2" title="2"><span class="fu">mkdir</span> ~/runit/sv</a>
-<a class="sourceLine" id="cb11-3" title="3"><span class="fu">mkdir</span> ~/runit/service</a></code></pre></div>
-<ol start="5" type="1">
-<li>Start this service of services with:</li>
-</ol>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb12-1" title="1"><span class="fu">sudo</span> ln -s /etc/sv/runit-user-toxicsauce /var/service</a></code></pre></div>
-<ol start="6" type="1">
-<li>Now set up <code>ssh-agent</code> service:</li>
-</ol>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb13-1" title="1"><span class="fu">mkdir</span> ~/runit/sv/ssh-agent</a></code></pre></div>
-<ol start="7" type="1">
-<li>Create run script for <code>ssh-agent</code> service by adding the following into <code>~/runit/sv/ssh-agent/run</code>.</li>
-</ol>
-<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb14-1" title="1"><span class="co">#!/usr/bin/env bash</span></a>
-<a class="sourceLine" id="cb14-2" title="2"><span class="co">#</span></a>
-<a class="sourceLine" id="cb14-3" title="3"><span class="co"># Start ssh-agent from runit</span></a>
-<a class="sourceLine" id="cb14-4" title="4"></a>
-<a class="sourceLine" id="cb14-5" title="5"><span class="va">file=</span>~/.ssh/ssh-agent-env</a>
-<a class="sourceLine" id="cb14-6" title="6"></a>
-<a class="sourceLine" id="cb14-7" title="7"><span class="bu">exec</span> <span class="op">&gt;</span> <span class="st">&quot;</span><span class="va">$file</span><span class="st">&quot;</span></a>
-<a class="sourceLine" id="cb14-8" title="8"></a>
-<a class="sourceLine" id="cb14-9" title="9"><span class="bu">echo</span> <span class="st">&quot;# started </span><span class="va">$(</span><span class="fu">date</span><span class="va">)</span><span class="st">&quot;</span></a>
-<a class="sourceLine" id="cb14-10" title="10"></a>
-<a class="sourceLine" id="cb14-11" title="11"><span class="co"># For some reason, this line doesn&#39;t get emitted by ssh-agent when it is run</span></a>
-<a class="sourceLine" id="cb14-12" title="12"><span class="co"># with -d or -D.  Since we are starting the program with exec we already know</span></a>
-<a class="sourceLine" id="cb14-13" title="13"><span class="co"># the pid ahead of time though so we can create this line manually</span></a>
-<a class="sourceLine" id="cb14-14" title="14"><span class="bu">echo</span> <span class="st">&quot;SSH_AGENT_PID=</span><span class="va">$$</span><span class="st">; export SSH_AGENT_PID&quot;</span></a>
-<a class="sourceLine" id="cb14-15" title="15"></a>
-<a class="sourceLine" id="cb14-16" title="16"><span class="bu">exec</span> ssh-agent -D</a></code></pre></div>
-<ol start="8" type="1">
-<li>Mark run file as executable with:</li>
-</ol>
-<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb15-1" title="1"><span class="fu">chmod</span> +x ~/runit/sv/ssh-agent/run</a></code></pre></div>
-<ol start="9" type="1">
-<li>Now start the service with:</li>
-</ol>
-<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb16-1" title="1"><span class="fu">ln</span> -s ~/runit/sv/ssh-agent ~/runit/service</a></code></pre></div></li>
+<pre><code>1.	Create user specific service directory:
+
+	```bash
+	sudo mkdir /etc/sv/runit-user-toxicsauce
+	```
+
+2.	Create run script for user specific service by adding the following
+	into `/etc/sv/runit-user-toxicsauce/run`
+
+	```bash
+	#!/bin/sh
+	exec 2&gt;&amp;1
+	exec chpst -u toxicsauce:toxicsauce runsvdir /home/toxicsauce/runit/service
+	```
+
+3.	Mark it as executable:
+
+	```bash
+	sudo chmod +x /etc/sv/runit-user-toxicsauce/run
+	```
+
+4.	Create necessary user specific service directories:
+
+	```bash
+	mkdir ~/runit
+	mkdir ~/runit/sv
+	mkdir ~/runit/service
+	```
+
+5.	Start this service of services with:
+
+	```bash
+	sudo ln -s /etc/sv/runit-user-toxicsauce /var/service
+	```
+
+6.	Now set up `ssh-agent` service:
+
+	```bash
+	mkdir ~/runit/sv/ssh-agent
+	```
+
+7.	Create run script for `ssh-agent` service by adding the following into `~/runit/sv/ssh-agent/run`.
+
+	```bash
+	#!/usr/bin/env bash
+	#
+	# Start ssh-agent from runit
+
+	file=~/.ssh/ssh-agent-env
+
+	exec &gt; &quot;$file&quot;
+
+	echo &quot;# started $(date)&quot;
+
+	# For some reason, this line doesn&#39;t get emitted by ssh-agent when it is run
+	# with -d or -D.  Since we are starting the program with exec we already know
+	# the pid ahead of time though so we can create this line manually
+	echo &quot;SSH_AGENT_PID=$$; export SSH_AGENT_PID&quot;
+
+	exec ssh-agent -D
+	```
+
+8.	Mark run file as executable with:
+
+	```bash
+	chmod +x ~/runit/sv/ssh-agent/run
+	```
+
+9.	Now start the service with:
+
+	```bash
+	ln -s ~/runit/sv/ssh-agent ~/runit/service
+	```</code></pre>
+<ol start="15" type="1">
 <li><p>Clone projects from github into Projects tree as desired.</p></li>
 <li><p>Set up void-packages per the <a href="void-packages-setup.html">instructions</a> in this wiki.</p></li>
-<li><p>Make sure <code>build-branch-the-machine</code> in my fork of <code>void-packages</code> is checked out, and up to date with desired patches. See the <a href="void-suckless-config.html">suckless page</a> for more info.</p></li>
-<li><p>Build binary packages of <code>dwm</code>, <code>dmenu</code>, <code>st</code> and <code>slstatus</code> as follows:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb17-1" title="1"><span class="bu">cd</span> ~/Projects/src/github.com/sww1235/void-packages</a>
-<a class="sourceLine" id="cb17-2" title="2"><span class="ex">./xbps-src</span> pkg dwm</a>
-<a class="sourceLine" id="cb17-3" title="3"><span class="ex">./xbps-src</span> pkg dmenu</a>
-<a class="sourceLine" id="cb17-4" title="4"><span class="ex">./xbps-src</span> pkg st</a>
-<a class="sourceLine" id="cb17-5" title="5"><span class="ex">./xbps-src</span> pkg slstatus</a></code></pre></div></li>
-<li><p>Install <code>dwm</code>, <code>dmenu</code>, <code>st</code> and <code>slstatus</code> with the command:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb18-1" title="1"><span class="fu">sudo</span> xbps-install --repository=hostdir/binpkgs/build-branch-the-machine dwm dmenu st slstatus</a></code></pre></div></li>
-<li><p>Modify ~/.xinitrc to contain the following:</p>
-<pre class="xinitrc"><code>slstatus &amp;
-exec dwm</code></pre></li>
-<li><p>Install <code>tlp</code> for power management:</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb20-1" title="1"><span class="fu">sudo</span> xbps-install tlp</a>
-<a class="sourceLine" id="cb20-2" title="2"><span class="fu">sudo</span> ln -s /etc/sv/tlp /var/service</a></code></pre></div></li>
-<li><p>Setup CUPS for printing:</p>
-<ol type="1">
-<li>Install and enable the service:</li>
+<li><p>Make sure <code>build-branch-the-machine</code> in my fork of <code>void-packages</code> is checked out, and up to date with desired patches. See the <a href="void-suckless-config.html">suckless page](void-s</a> for more info.</p></li>
+<li><p>Build binary packages of <code>dwm</code>, <code>dmenu</code>, <code>st</code> and <code>slstatus</code> as follows:</p></li>
 </ol>
-<div class="sourceCode" id="cb21"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb21-1" title="1"><span class="fu">sudo</span> xbps-install cups</a>
-<a class="sourceLine" id="cb21-2" title="2"><span class="fu">sudo</span> ln -s /etc/sv/cupsd/ /var/service</a></code></pre></div>
-<ol start="2" type="1">
-<li><p>Edit /etc/cups/cupsd.conf, find line that starts with <code>&lt;Limit CUPS-Add-Modify-Printer</code> and add <code>toxicsauce</code> after <code>@SYSTEM</code></p></li>
-<li><p>Restart <code>cupsd</code> service</p></li>
-<li><p>go to <a href="http://localhost:631/" class="uri">http://localhost:631/</a> to configure</p></li>
-</ol></li>
-<li><p>Need to set up bumblebee/optimus for graphics, set up dropbox and 1password cli client.</p>
-<p>install alsa-utils to get audio working</p></li>
+<pre><code>```bash
+cd ~/Projects/src/github.com/sww1235/void-packages
+./xbps-src pkg dwm
+./xbps-src pkg dmenu
+./xbps-src pkg st
+./xbps-src pkg slstatus
+```</code></pre>
+<ol start="19" type="1">
+<li>Install <code>dwm</code>, <code>dmenu</code>, <code>st</code> and <code>slstatus</code> with the command:</li>
 </ol>
+<pre><code>```bash
+sudo xbps-install --repository=hostdir/binpkgs/build-branch-the-machine \
+	dwm dmenu st slstatus
+```</code></pre>
+<ol start="20" type="1">
+<li>Modify ~/.xinitrc to contain the following:</li>
+</ol>
+<pre><code>```xinitrc
+slstatus &amp;
+exec dwm
+```</code></pre>
+<ol start="21" type="1">
+<li>Install <code>tlp</code> for power management:</li>
+</ol>
+<pre><code>```bash
+sudo xbps-install tlp
+sudo ln -s /etc/sv/tlp /var/service
+```</code></pre>
+<ol start="22" type="1">
+<li>Setup CUPS for printing:</li>
+</ol>
+<pre><code>1.	Install and enable the service:
+
+	```bash
+	sudo xbps-install cups
+	sudo ln -s /etc/sv/cupsd/ /var/service
+	```
+
+2.	Edit /etc/cups/cupsd.conf, find line that starts with `&lt;Limit
+	CUPS-Add-Modify-Printer` and add `toxicsauce` after `@SYSTEM`
+
+3.	Restart `cupsd` service
+
+4. go to &lt;http://localhost:631/&gt; to configure</code></pre>
+<ol start="23" type="1">
+<li>Need to set up bumblebee/optimus for graphics, set up dropbox and 1password cli client.</li>
+</ol>
+<pre><code>install alsa-utils to get audio working</code></pre>
 <pre class="tags"><code>build-script, void-linux,laptop, lenovo, notes</code></pre>
+</section>
+</section>
+</section>
+<footer>
+	<address>
+	sww1235.net<br/>
+	write to: website &lt;at-sign&gt; sww1235.net
+	</address>
+
+&copy; 2021 - Stephen Walker-Weinshenker
+
+</footer>
 </body>
 </html>

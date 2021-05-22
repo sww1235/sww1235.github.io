@@ -1,21 +1,19 @@
 <!DOCTYPE html>
-<html>
-<head lang="en">
-  <meta charset="UTF-8">
-  <meta name="author" content="Stephen Walker-Weinshenker">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="styles/main.css">
-  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
-<title>build-script-notes-rack-monitor</title>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Rack Monitor Build Script and Notes</title>
 </head>
 <body>
-<div id="top">
+<header>
     <a href="index.html">
         <img src="images/logo.png" alt="Home" width="280" height="32">
     </a>
 
-</div>
-<div id="topnavbar">
+</header>
+<nav>
     <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="about.html">About</a></li>
@@ -30,65 +28,117 @@
         <li><a href="contact.html">Contact</a></li>
 
     </ul>
-</div>
-<h1 id="top">
-Rack Monitor Build Script and Notes
-</h1>
+</nav>
+<header id="title-block-header">
+<h1 class="title">Rack Monitor Build Script and Notes</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#notes">Notes</a></li>
+<li><a href="#build-script">Build Script</a>
+<ul>
+<li><a href="#initial-config">Initial Configuration</a></li>
+<li><a href="#nut-config">NUT Configuration</a></li>
+</ul></li>
+</ul>
+</nav>
 <p>This is the build script and notes for the raspberry pi that monitors my Rack and UPS.</p>
-<h2 id="notes">
-Notes
-</h2>
-<h2 id="build-script">
-Build Script
-</h2>
-<h3 id="initial-configuration">
-Initial Configuration
-</h3>
+<section id="notes" class="level1">
+<h1>Notes</h1>
+</section>
+<section id="build-script" class="level1">
+<h1>Build Script</h1>
+<section id="initial-config" class="level2">
+<h2>Initial Configuration</h2>
 <ol type="1">
 <li><p>Download the rpi2-musl image of void linux from reputable sources, currently <a href="https://alpha.de.repo.voidlinux.org/live/current/">here</a></p></li>
 <li><p>Burn image to MicroSD card using either <code>dd</code> or whatever windows tool is the popular thing and preferably doesn’t use electron.</p></li>
 <li><p>Use <code>cfdisk</code> to expand main partition from 2GB to remaining size of MicroSD card.</p></li>
 <li><p>Login as root with default password of <code>void-linux</code></p></li>
-<li><p>Need to get correct time and network set up in order to update system and install packages (as root) Remember that the only available text editor is <code>vi</code>!</p>
-<ol type="1">
-<li><p>Configure static IP address by editing <code>/etc/dhcpcd.conf</code> with the following lines at the bottom of the file. Actual IP addresses are found in the network documentation. We use DHCP rather than manual <code>ip</code> commands in <code>/etc/rc.local</code> to take advantage of other aspects of DHCP including auto DNS server population and domain name.</p>
-<p>also uncomment ntp_servers option</p>
-<p>dns server is usually pfsense default gateway</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb1-1" title="1"><span class="dt">interface eth0</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="dt">inform ip_address</span><span class="ot">=</span><span class="st">$IPaddress</span></a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="dt">static ip_address</span><span class="ot">=</span><span class="st">$IPaddress</span></a>
-<a class="sourceLine" id="cb1-4" title="4"><span class="dt">static routers</span><span class="ot">=</span><span class="st">$defaultgateway</span></a>
-<a class="sourceLine" id="cb1-5" title="5"><span class="dt">static domain_name_servers</span><span class="ot">=</span><span class="st">$dnsserver</span></a></code></pre></div></li>
-<li><p>edit <code>/etc/rc.conf</code> and change the following lines to set keymap and timezone:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb2-1" title="1"><span class="dt">TIMEZONE</span><span class="ot">=</span><span class="st">&quot;America/Denver&quot; # or appropriate timezone</span></a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="dt">KEYMAP</span><span class="ot">=</span><span class="st">&quot;us&quot;</span></a></code></pre></div></li>
-<li><p>Enable NTP and DHCP services:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1"><span class="fu">ln</span> -s /etc/sv/ntpd /var/service</a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="fu">ln</span> -s /etc/sv/dhcpcd /var/service</a></code></pre></div></li>
-<li><p>Check <code>/etc/ntpd.conf</code> for constraints line, and comment out. This doesn’t work on Raspi due to lack of HWCLK</p></li>
-<li><p>Add <code>server $gateway</code> to <code>/etc/ntpd.conf</code> since it doesn’t seem to pick it up from DHCP. NTP server will usually be the pfsense gateway, but use whatever machine is actually the NTP server</p></li>
-<li><p>Create new non-root user, replacing $newusername with the actual name of the user. This command adds the user to the wheel group, which allows <code>sudo</code> access</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" title="1"><span class="ex">useradd</span> -m -s /bin/bash -U -G wheel,users,audio,video,cdrom,input <span class="va">$newusername</span></a></code></pre></div></li>
-<li><p>Set system hostname by editing <code>/etc/hostname</code></p></li>
-</ol></li>
+<li><p>Need to get correct time and network set up in order to update system and install packages (as root) Remember that the only available text editor is <code>vi</code>!</p></li>
+</ol>
+<pre><code>1.	Configure static IP address by editing `/etc/dhcpcd.conf` with the
+	following lines at the bottom of the file.  Actual IP addresses are
+	found in the network documentation.  We use DHCP rather than manual
+	`ip` commands in `/etc/rc.local` to take advantage of other aspects of
+	DHCP including auto DNS server population and domain name.
+
+	also uncomment `ntp_servers` option
+
+	dns server is usually pfsense default gateway
+
+	```conf
+	interface eth0
+	inform ip_address=$IPaddress
+	static ip_address=$IPaddress
+	static routers=$defaultgateway
+	static domain_name_servers=$dnsserver
+	```
+
+2.	edit `/etc/rc.conf` and change the following lines to set keymap and
+	timezone:
+
+	```conf
+	TIMEZONE=&quot;America/Denver&quot; # or appropriate timezone
+	KEYMAP=&quot;us&quot;
+	```
+
+3.	Enable NTP and DHCP services:
+
+	```bash
+	ln -s /etc/sv/ntpd /var/service
+	ln -s /etc/sv/dhcpcd /var/service
+	```
+
+4.	Check `/etc/ntpd.conf` for constraints line, and comment out. This
+	doesn&#39;t work on Raspi due to lack of HWCLK
+
+5.	Add `server $gateway` to `/etc/ntpd.conf` since it doesn&#39;t seem to pick
+	it up from DHCP. NTP server will usually be the pfsense gateway, but
+	use whatever machine is actually the NTP server
+
+6.	Create new non-root user, replacing $newusername with the actual name
+	of the user. This command adds the user to the wheel group, which
+	allows `sudo` access
+
+	```bash
+	useradd -m -s /bin/bash -U -G wheel,users,audio,video,cdrom,input $newusername
+	```
+
+7.	Set system hostname by editing `/etc/hostname`</code></pre>
+<ol start="6" type="1">
 <li><p>Reboot the system using <code>reboot</code> command. This should allow DHCP and NTP to do their thing and allow us to update the system and install new packages.</p></li>
 <li><p>Log in as the new user you created</p></li>
-<li><p>Update the system by running the following command until there is no output.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" title="1"><span class="fu">sudo</span> xbps-install -Svu</a></code></pre></div></li>
-<li><p>Install the following packages.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1"><span class="fu">sudo</span> xbps-install nano network-ups-tools rng-tools thefuck vim htop</a></code></pre></div></li>
-<li><p>Install terminfo package to fix issues with ssh</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" title="1"><span class="fu">sudo</span> xbps-install st-terminfo</a></code></pre></div></li>
-<li><p>Setup syslog daemon</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" title="1"><span class="fu">sudo</span> xbps-install socklog-void</a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="fu">sudo</span> ln -s /etc/sv/socklog-unix /var/service</a>
-<a class="sourceLine" id="cb8-3" title="3"><span class="fu">sudo</span> ln -s /etc/sv/nanoklogd /var/service</a>
-<a class="sourceLine" id="cb8-4" title="4"><span class="co"># so normal user can access logs</span></a>
-<a class="sourceLine" id="cb8-5" title="5"><span class="fu">sudo</span> usermod -a -G socklog <span class="va">$USER</span></a></code></pre></div></li>
+<li><p>Update the system by running the following command until there is no output.</p></li>
 </ol>
-<h3 id="nut-config">
-NUT Configuration
-</h3>
+<pre><code>```bash
+sudo xbps-install -Svu
+```</code></pre>
+<ol start="9" type="1">
+<li>Install the following packages.</li>
+</ol>
+<pre><code>```bash
+sudo xbps-install nano network-ups-tools rng-tools thefuck vim htop
+```</code></pre>
+<ol start="10" type="1">
+<li>Install terminfo package to fix issues with ssh</li>
+</ol>
+<pre><code>```bash
+sudo xbps-install st-terminfo
+```</code></pre>
+<ol start="11" type="1">
+<li>Setup syslog daemon</li>
+</ol>
+<pre><code>```bash
+sudo xbps-install socklog-void
+sudo ln -s /etc/sv/socklog-unix /var/service
+sudo ln -s /etc/sv/nanoklogd /var/service
+# so normal user can access logs
+sudo usermod -a -G socklog $USER
+```</code></pre>
+</section>
+<section id="nut-config" class="level2">
+<h2>NUT Configuration</h2>
 <p>Config files for Network UPS Tool (NUT) are found at <code>/etc/ups/</code></p>
 <p><code>nut.conf</code> has a few global config options, which are not important on void.</p>
 <p><code>ups.conf</code> is where you configure what UPSes the system will be interacting with</p>
@@ -99,28 +149,45 @@ NUT Configuration
 <li><p>Run <code>nut-scanner</code> to generate config options for attached UPSes</p></li>
 <li><p>Edit <code>/etc/ups/ups.conf</code> and add the results of <code>nut-scanner</code> to the begining of the file, except the vendor line. Add <code>[cyberpower]</code> before. See syntax examples in config file.</p></li>
 <li><p>Edit <code>/etc/ups/upsd.conf</code> and update listen directive to the IP address of the local system.</p></li>
-<li><p>Edit <code>/etc/ups/upsd.users</code> and add an <code>admin</code> user, <code>upsmonMaster</code> and <code>upsmonSlave</code> users with passwords from password safe.</p>
-<ul>
-<li><p><code>admin</code> user has set actions and all instcmds</p></li>
-<li><p><code>upsmonMaster</code> user is set up per example in config file with master attributes for local monitoring by the raspi.</p></li>
-<li><p><code>upsmonSlave</code> user is set up per example in config file with slave attributes for remote monitoring by other clients.</p></li>
-</ul></li>
-<li><p>Edit <code>/etc/ups/upsmon.conf</code> to set up local UPS monitoring. Add the following lines to the config file.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode conf"><code class="sourceCode ini"><a class="sourceLine" id="cb9-1" title="1"><span class="co"># raspi has 1 power supply connected to this UPS. It is master</span></a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="co"># because it is the monitoring system for the ups.</span></a>
-<a class="sourceLine" id="cb9-3" title="3"><span class="co"># other systems will be listed as slaves</span></a>
-<a class="sourceLine" id="cb9-4" title="4"><span class="dt">MONITOR cyberpower@localhost 1 upsmonMaster $password master</span></a>
-<a class="sourceLine" id="cb9-5" title="5"><span class="co"># all other values can be left as defaults for now</span></a></code></pre></div></li>
+<li><p>Edit <code>/etc/ups/upsd.users</code> and add an <code>admin</code> user, <code>upsmonMaster</code> and <code>upsmonSlave</code> users with passwords from password safe.</p></li>
 </ol>
+<pre><code>-	`admin` user has set actions and all instcmds
+
+-	`upsmonMaster` user is set up per example in config file with master
+	attributes for local monitoring by the raspi.
+
+-	`upsmonSlave` user is set up per example in config file with slave
+	attributes for remote monitoring by other clients.</code></pre>
+<ol start="6" type="1">
+<li>Edit <code>/etc/ups/upsmon.conf</code> to set up local UPS monitoring. Add the following lines to the config file.</li>
+</ol>
+<pre><code>```conf
+# raspi has 1 power supply connected to this UPS. It is master
+# because it is the monitoring system for the ups.
+# other systems will be listed as slaves
+MONITOR cyberpower@localhost 1 upsmonMaster $password master
+# all other values can be left as defaults for now
+```</code></pre>
 <p>Need to change ownership of config files on void linux as the default is set up incorrectly:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb10-1" title="1"><span class="fu">sudo</span> chown root:nut /etc/ups/*</a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="fu">sudo</span> chmod 640 /etc/ups/*</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> chown root:nut /etc/ups/<span class="pp">*</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> chmod 640 /etc/ups/<span class="pp">*</span></span></code></pre></div>
 <p>start the following services:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb11-1" title="1"><span class="fu">sudo</span> ln -s /etc/sv/upsdrvctl/ /var/service</a>
-<a class="sourceLine" id="cb11-2" title="2"><span class="fu">sudo</span> ln -s /etc/sv/upsd/ /var/service</a>
-<a class="sourceLine" id="cb11-3" title="3"><span class="fu">sudo</span> ln -s /etc/sv/upsmon/ /var/service</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ln <span class="at">-s</span> /etc/sv/upsdrvctl/ /var/service</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ln <span class="at">-s</span> /etc/sv/upsd/ /var/service</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ln <span class="at">-s</span> /etc/sv/upsmon/ /var/service</span></code></pre></div>
 <p>check status of ups with the following command to make sure it is detected properly</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb12-1" title="1"><span class="ex">upsc</span> cyberpower</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">upsc</span> cyberpower</span></code></pre></div>
 <pre class="tags"><code>build-script, rack-monitor, notes</code></pre>
+</section>
+</section>
+<footer>
+	<address>
+	sww1235.net<br/>
+	write to: website &lt;at-sign&gt; sww1235.net
+	</address>
+
+&copy; 2021 - Stephen Walker-Weinshenker
+
+</footer>
 </body>
 </html>

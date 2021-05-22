@@ -1,21 +1,19 @@
 <!DOCTYPE html>
-<html>
-<head lang="en">
-  <meta charset="UTF-8">
-  <meta name="author" content="Stephen Walker-Weinshenker">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="styles/main.css">
-  <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
-<title>void-packages-setup</title>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Void Packages Setup</title>
 </head>
 <body>
-<div id="top">
+<header>
     <a href="index.html">
         <img src="images/logo.png" alt="Home" width="280" height="32">
     </a>
 
-</div>
-<div id="topnavbar">
+</header>
+<nav>
     <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="about.html">About</a></li>
@@ -30,30 +28,46 @@
         <li><a href="contact.html">Contact</a></li>
 
     </ul>
-</div>
-<h1 id="top">
-Void Packages Setup
-</h1>
+</nav>
+<header id="title-block-header">
+<h1 class="title">Void Packages Setup</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#contributing">Contributing to Void Packages</a></li>
+<li><a href="#building-from-source">Building packages from source</a></li>
+</ul>
+</nav>
 <p>Notes on setting up void packages and building from source.</p>
 <ol type="1">
 <li><p>Fork the <a href="https://github.com/void-linux/void-packages">Void Packages</a> repo on github if you haven’t already.</p></li>
 <li><p>Clone your fork locally (mine is at <a href="https://github.com/sww1235/void-packages" class="uri">https://github.com/sww1235/void-packages</a> and usually exists locally at ~/Projects/src/github.com/sww1235/void-packages).</p></li>
-<li><p><code>cd</code> into your local git repo and add the upstream repo <code>git remote add upstream git@github.com:void-linux/void-packages.git</code>. This allows you to run <code>git checkout master</code> and then <code>git pull --rebase upstream master</code> to bring your local master branch up to date with the master void linux repository.</p></li>
+<li><p><code>cd</code> into your local git repo and add the upstream repo <code>git remote add 	upstream git@github.com:void-linux/void-packages.git</code>. This . This allows you to run <code>git checkout master</code> and then <code>git pull --rebase upstream master</code> to bring your local master branch up to date with the master void linux repository.</p></li>
 </ol>
-<h2 id="contributing">
-Contributing to Void Packages
-</h2>
+<section id="contributing" class="level1">
+<h1>Contributing to Void Packages</h1>
 <p>make sure your local master is up to date, then start a new branch to make your contributions in.</p>
-<h2 id="building">
-Building packages from source
-</h2>
+</section>
+<section id="building-from-source" class="level1">
+<h1>Building packages from source</h1>
 <ol type="1">
-<li><p><code>cd</code> into local git repo of <code>void-packages</code> and run <code>./xbps-src binary-bootstrap</code>. This will initialize the packages necessary for building software.</p></li>
-<li><p>To enable both custom contributions to void-packages, and building modified software with patches, use a separate git branch to actually build your custom packages from. I use a branch called <code>build-branch-$hostname</code> created with <code>git checkout -b build-branch-$hostname</code>. Whenever you want to build your custom software, checkout that branch first. I use a branch per hostname to enable unique changes per machine. This is especially important for suckless software such as dwm.</p></li>
+<li><p><code>cd</code> into local git repo of <code>void-packages</code> and run <code>./xbps-src 	binary-bootstrap</code>. This . This will initialize the packages necessary for building software.</p></li>
+<li><pre><code>To enable both custom contributions to void-packages, and building modified</code></pre>
+<p>software with patches, use a separate git branch to actually build your custom packages from. I use a branch called <code>build-branch-$hostname</code> created with <code>git checkout -b build-branch-$hostname</code>. Whenever you want to build your custom software, checkout that branch first. I use a branch per hostname to enable unique changes per machine. This is especially important for suckless software such as dwm.</p></li>
 </ol>
 <p>A side effect of using a custom <code>build-branch-$hostname</code> is that all custom changes will have full git history and can be easily applied without having to go through all the effort of rebuilding the patch files.</p>
 <p>patches are stored in <code>srcpkgs/&lt;pkgname&gt;/patches</code></p>
 <p>To install custom software from a branch, need to use –repository=hostdir/binpkgs/$branch</p>
 <pre class="tags"><code>void-linux, void-packages, source, building</code></pre>
+</section>
+<footer>
+	<address>
+	sww1235.net<br/>
+	write to: website &lt;at-sign&gt; sww1235.net
+	</address>
+
+&copy; 2021 - Stephen Walker-Weinshenker
+
+</footer>
 </body>
 </html>

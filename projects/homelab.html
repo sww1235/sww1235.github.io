@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>My Homelab</title>
+</head>
+<body>
+<header>
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</header>
+<nav>
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="stuff.html">Stuff</a>
+            <ul>
+                <li><a href="https://github.com/sww1235">Github</a></li>
+                <li><a href="wiki/index.html">Wiki</a></li>
+
+            </ul>
+        </li>
+        <li><a href="blog-contents">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+
+    </ul>
+</nav>
+<header id="title-block-header">
+<h1 class="title">My Homelab</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#future-plans">Future Plans</a></li>
+<li><a href="#far-future-plans">Far Future Plans</a></li>
+<li><a href="#hosts">Hosts</a>
+<ul>
+<li><a href="#the-vault">The Vault</a></li>
+<li><a href="#rack-monitor">Rack Monitor</a></li>
+<li><a href="#main-ws-host">Main Workstation Host</a>
+<ul>
+<li><a href="#win-10-vm">Primary Windows 10 VM</a></li>
+<li><a href="#void-vm">Void Linux VM</a></li>
+</ul></li>
+<li><a href="#pffirewall">PfFirewall</a></li>
+<li><a href="#den1">Den1</a></li>
+</ul></li>
+</ul>
+</nav>
+<section id="overview" class="level1">
+<h1>Overview</h1>
+<p>Currently, my homelab consists of the following systems:</p>
+<ul>
+<li><a href="#the-vault">The Vault</a></li>
+<li><a href="#rack-monitor">Rack Monitor</a></li>
+<li><a href="#ws-host">Main Workstation Host</a> - <a href="#vm-win10">Windows 10 VM</a> - <a href="#vm-void">Void Linux VM</a></li>
+<li><a href="#pffirewall">PfFirewall</a></li>
+<li><a href="#den1">Den1</a></li>
+<li><a href="#virt-cluster">Virt Cluster</a> - <a href="#alpha">Alpha</a> - <a href="#beta">Beta</a> - <a href="#gamma">Gamma</a></li>
+</ul>
+<p>My website and DNS are hosted through NearlyFreeSpeech.net</p>
+<p>Most of these machines are located inside a custom built sound dampening rack enclosure. This is documented at its own <a href="custom-rack-enclosure.html">projects page</a></p>
+</section>
+<section id="future-plans" class="level1">
+<h1>Future Plans</h1>
+<ul>
+<li><p><del>move fileserver duties from main workstation to dedicated FreeNAS file server with ZFS</del></p></li>
+<li><p>Migrate to 10Gb networking</p></li>
+<li><p><del>Add UPS</del></p></li>
+<li><p>Upgrade Brian</p></li>
+<li><p>Setup pfsense box at parents house</p></li>
+<li><p>Setup reciprocal offsite backups at parents house.</p></li>
+</ul>
+</section>
+<section id="far-future-plans" class="level1">
+<h1>Far Future Plans</h1>
+<ul>
+<li><p>All servers either run OpenBSD or FreeBSD unless specific exception is needed.</p></li>
+<li><p>Package caching servers used for all 3rd party binary packaging systems in use in homelab</p></li>
+<li><p>All computers run custom linux image, probably a modified version of void linux</p></li>
+<li><p>All linux software (including kernel) is compiled from source, targeting different architectures as necessary.</p></li>
+<li><p>All source code for compiled software is kept in an archive as long as that version is installed in a production or testing environment, and minimally for a period of 1 year if it has been installed.</p></li>
+</ul>
+<pre><code>-	If software is not updated, then keep most complete version. clone git
+	repo if possible.</code></pre>
+<ul>
+<li><p>As much as possible, all images use musl libc or derivative.</p></li>
+<li><p>Use automated continuous integration process for new software versions</p></li>
+</ul>
+<pre><code>-	For all software, try to automatically pull down new releases of
+	software and build in testing environment. Send weekly email of
+	successes and failures.
+
+-	Software is manually pushed into production using automation similar to
+	Ansible.</code></pre>
+<ul>
+<li>Ideally I would be able to take a stock OpenBSD image, clone some setup scripts, and be able to build images for the rest of the server infrastructure, then install them using a network boot server. This would have a temporary DHCP and DNS server, along with a firewall and router config based on pf, to allow the network to exist without any other infrastructure. This would be easily disabled during the initial script options, as well as after the fact.</li>
+</ul>
+</section>
+<section id="hosts" class="level1">
+<h1>Hosts</h1>
+<section id="the-vault" class="level2">
+<h2>The Vault</h2>
+<p>This is my main file server. It is a whitebox build, in a supermicro chassis with a ASRockRack motherboard.</p>
+<p>See <a href="/wiki/build-script-notes-vault-mki.html">the buildscript</a></p>
+<p><strong>Hardware:</strong></p>
+<p><strong>Software:</strong> FreeBSD</p>
+</section>
+<section id="rack-monitor" class="level2">
+<h2>Rack Monitor</h2>
+<p>Runs Network UPS tools to monitor cyberpower UPS and tell other systems to shutdown</p>
+<p>Removes the need for the built in cyberpower $159 network card which also runs an ancient version of TLS</p>
+<p>This will also perform temperature monitoring of the rack and fan speed control eventually.</p>
+<p>Want to replace this with a purpose built ARM board running NUT and a RTOS for increased reliability.</p>
+<p>See <a href="/wiki/build-script-notes-rack-monitor.html">the buildscript</a> for more details</p>
+<p><strong>Hardware:</strong> Raspberry Pi 2B V1.1 with 64GB microSD card</p>
+<p><strong>Software:</strong> Musl Void Linux for ARM</p>
+</section>
+<section id="main-ws-host" class="level2">
+<h2>Main Workstation Host</h2>
+<p>This acts as both a vm host using kvm/qemu, and a file server with a btrfs pool shared over SAMBA.</p>
+<p>See <a href="/wiki/build-script-notes-main-ws-host.html">the buildscript</a> for more details</p>
+<p><strong>Hardware:</strong></p>
+<p><a href="https://pcpartpicker.com/list/zpwFbX">PCPartPicker part list</a> / <a href="https://pcpartpicker.com/list/zpwFbX/by_merchant/">Price breakdown by merchant</a></p>
+<table>
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 88%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Item</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>CPU</strong></td>
+<td style="text-align: left;">Intel - Core i3-8350K 4 GHz Quad-Core Processor</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>CPU Cooler</strong></td>
+<td style="text-align: left;">Noctua - NH-D9L 46.44 CFM CPU Cooler</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Motherboard</strong></td>
+<td style="text-align: left;">ASRock - Fatal1ty Z370 Gaming K6 ATX LGA1151 Motherboard</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Memory</strong></td>
+<td style="text-align: left;">Corsair - Vengeance LPX 16 GB (2 x 8 GB) DDR4-2133 Memory</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Storage</strong></td>
+<td style="text-align: left;">Samsung - 970 Pro 512 GB M.2-2280 Solid State Drive</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Storage</strong></td>
+<td style="text-align: left;">Western Digital - Red Pro 2 TB 3.5" 7200RPM Internal Hard Drive</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Storage</strong></td>
+<td style="text-align: left;">Western Digital - Gold 2 TB 3.5" 7200RPM Internal Hard Drive</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Storage</strong></td>
+<td style="text-align: left;">Western Digital - Gold 4 TB 3.5" 7200RPM Internal Hard Drive</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Video Card</strong></td>
+<td style="text-align: left;">EVGA - GeForce GTX 1060 6GB 6 GB SC GAMING Video Card</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Power Supply</strong></td>
+<td style="text-align: left;">Corsair - HX Platinum 750 W 80+ Platinum Certified Fully-Modular ATX Power Supply</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Case Fan</strong></td>
+<td style="text-align: left;">Noctua - NF-A8 PWM 32.66 CFM 80mm Fan</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Case Fan</strong></td>
+<td style="text-align: left;">Noctua - NF-A12x25 PWM 60.1 CFM 120mm Fan</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Other</strong></td>
+<td style="text-align: left;">Old Rackmount Case</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Software:</strong> Musl Void Linux for x86_64</p>
+<section id="win-10-vm" class="level3">
+<h3>Primary Windows 10 VM</h3>
+<p>Runs windows 10 for gaming and windows only applications.</p>
+<p>Uses VFIO to pass through the GTX1060</p>
+<p>See <a href="/wiki/build-script-notes-win10-vm.html">the buildscript</a> for more details</p>
+</section>
+<section id="void-vm" class="level3">
+<h3>Void Linux VM</h3>
+<p>Runs Void Linux as my main workstation.</p>
+<p>Uses VFIO to pass through the GTX1060</p>
+<p>See <a href="/wiki/build-script-notes-void-vm.html">the buildscript</a> for more details.</p>
+</section>
+</section>
+<section id="pffirewall" class="level2">
+<h2>PfFirewall</h2>
+<p>Primary firewall and router for local network. Runs OpenVPN client connected to the server running on <a href="#den1">Den1</a>.</p>
+<p><strong>Hardware:</strong> SG-2220 pfSense appliance from Netgate</p>
+<p><strong>Software:</strong> pfSense</p>
+</section>
+<section id="den1" class="level2">
+<h2>Den1</h2>
+<p>OpenVPN server and jump box. VPS from Mean Servers in Denver</p>
+<p>See <a href="/wiki/build-script-notes-den1.html">the buildscript</a> for more details</p>
+<p><strong>Hardware:</strong> Mean Servers VPS</p>
+<p><strong>Software:</strong> pfSense Community Edition</p>
+<pre class="tags"><code>Homelab, Documentation</code></pre>
+</section>
+</section>
+<footer>
+	<address>
+	sww1235.net<br/>
+	write to: website &lt;at-sign&gt; sww1235.net
+	</address>
+
+&copy; 2021 - Stephen Walker-Weinshenker
+
+</footer>
+</body>
+</html>
