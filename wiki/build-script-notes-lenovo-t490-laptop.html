@@ -89,14 +89,11 @@
 <ol type="1">
 <li><p>Download a copy of Windows 10 Pro from Microsoft</p></li>
 <li><p>Create bootable USB stick using instructions on Microsoft website.</p></li>
-<li><p>Disable fast boot in preinstalled windows.</p></li>
-</ol>
-<pre><code>1.	Go to Settings -&gt; System -&gt; Power &amp; Sleep -&gt; Additional Power Settings
-	-&gt; Choose What Power Buttons Do -&gt; Change settings that are currently
-	unavailable
-
-2.	Uncheck &quot;Turn on Fast Startup&quot;. This prevents skipping the BIOS screen.</code></pre>
-<ol start="4" type="1">
+<li><p>Disable fast boot in preinstalled windows.</p>
+<ol type="1">
+<li><p>Go to Settings -&gt; System -&gt; Power &amp; Sleep -&gt; Additional Power Settings -&gt; Choose What Power Buttons Do -&gt; Change settings that are currently unavailable</p></li>
+<li><p>Uncheck “Turn on Fast Startup”. This prevents skipping the BIOS screen.</p></li>
+</ol></li>
 <li><p>Verify BIOS is set to allow booting from USB sticks. Also verify that BIOS is only set to UEFI mode</p></li>
 <li><p>Make sure laptop does not have an internet connection. This allows for the creation of a local user account without a Microsoft account.</p></li>
 <li><p>Insert USB stick and boot. Hit enter to interrupt startup, then select USB stick as boot drive.</p></li>
@@ -104,17 +101,13 @@
 <li><p>Click Install Now.</p></li>
 <li><p>Accept Terms and Conditions</p></li>
 <li><p>Select Custom: Install Windows Only.</p></li>
-<li><p>Wipe out all existing partitions on the main SSD, then create the following:</p></li>
-</ol>
-<pre><code>-	A main 120GB partition for windows
--	A 500GB partition for passthrough between Windows and Linux OS installs.
-
-Leave the remaining space unpartitioned. This will be partitioned during the
-linux install.
-
-These will both be NTFS. Windowe will create additional partitions at the
-beginning of the partition list for recovery ETC.</code></pre>
-<ol start="12" type="1">
+<li><p>Wipe out all existing partitions on the main SSD, then create the following:</p>
+<ul>
+<li>A main 120GB partition for windows</li>
+<li>A 500GB partition for passthrough between Windows and Linux OS installs.</li>
+</ul>
+<p>Leave the remaining space unpartitioned. This will be partitioned during the linux install.</p>
+<p>These will both be NTFS. Windowe will create additional partitions at the beginning of the partition list for recovery ETC.</p></li>
 <li><p>Select the 120GB partiton to install windows on.</p></li>
 <li><p>Wait for several reboots</p></li>
 <li><p>Select Customize Settings option on Express Settings Prompt.</p></li>
@@ -161,20 +154,13 @@ beginning of the partition list for recovery ETC.</code></pre>
 <li><p>Set up normal user account based on password database.</p></li>
 <li><p>Select <code>none</code> for bootloader since rEFInd was installed earlier.</p></li>
 <li><p>Create an <code>Linux filesystem</code> partition out of the remaining space on disk and write the partition map to disk. Make note of the partition names and filesystems for the next step.</p></li>
-<li><p>Proceed through all partitions and set mount points as follows:</p></li>
-</ol>
-<pre><code>-	Do not set mount points for the `Windows recovery partion`, or the
-	`Microsoft reserved` partition.
-
--	Set the `EFI System` partition filesystem to `vfat` and the mount point
-	to `/boot/efi`.
-
--	Set the 500GB `Microsoft basic data` partition to filesystem `ntfs` and
-	mountpoint `/mnt/passthrough`.
-
--	Set the ~1.3TB `Linux filesystem` partition to filesystem `ext4` and
-	mountpoint `/`.</code></pre>
-<ol start="17" type="1">
+<li><p>Proceed through all partitions and set mount points as follows:</p>
+<ul>
+<li><p>Do not set mount points for the <code>Windows recovery partion</code>, or the <code>Microsoft reserved</code> partition.</p></li>
+<li><p>Set the <code>EFI System</code> partition filesystem to <code>vfat</code> and the mount point to <code>/boot/efi</code>.</p></li>
+<li><p>Set the 500GB <code>Microsoft basic data</code> partition to filesystem <code>ntfs</code> and mountpoint <code>/mnt/passthrough</code>.</p></li>
+<li><p>Set the ~1.3TB <code>Linux filesystem</code> partition to filesystem <code>ext4</code> and mountpoint <code>/</code>.</p></li>
+</ul></li>
 <li><p>Review settings and install. This will take a while.</p></li>
 <li><p>Reboot and select Void Linux at rEFInd prompt.</p></li>
 </ol>
@@ -183,193 +169,105 @@ beginning of the partition list for recovery ETC.</code></pre>
 <h3>Void Linux Configuration</h3>
 <ol type="1">
 <li><p>Login to newly installed Void Linux using root account and password found in password database. This is due to the fact that we haven’t configured sudo yet.</p></li>
-<li><p>Configure <code>sudo</code> to allow full access to members of <code>wheel</code> group. Run <code>visudo</code> and uncomment the line</p></li>
-</ol>
-<pre><code>```sudo
-#%wheel ALL=(ALL) ALL
-```</code></pre>
-<ol start="3" type="1">
-<li>Enable NTP and DHCP services</li>
-</ol>
-<pre><code>```bash
-ln -s /etc/sv/ntpd /var/service
-ln -s /etc/sv/dhcpcd /var/service
-```</code></pre>
-<ol start="4" type="1">
+<li><p>Configure <code>sudo</code> to allow full access to members of <code>wheel</code> group. Run <code>visudo</code> and uncomment the line</p>
+<pre class="sudo"><code>#%wheel ALL=(ALL) ALL</code></pre></li>
+<li><p>Enable NTP and DHCP services</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-s</span> /etc/sv/ntpd /var/service</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-s</span> /etc/sv/dhcpcd /var/service</span></code></pre></div></li>
 <li><p>Create <code>passthrough</code> folder under <code>/mnt/</code> to allow passthrough partition to mount correctly.</p></li>
 <li><p>Update system by running command <code>xbps-install -Svu</code> until it shows no updates.</p></li>
-<li><p>Install ntfs driver.</p></li>
-</ol>
-<pre><code>```bash
-xbps-install ntfs-3g
-```</code></pre>
-<ol start="7" type="1">
+<li><p>Install ntfs driver.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">xbps-install</span> ntfs-3g</span></code></pre></div></li>
 <li><p>Reboot system and login as normal user.</p></li>
 <li><p>Enable trim on SSD by editing <code>/etc/fstab</code> and adding <code>,discard</code> after the defaults line on the <code>/</code> and <code>/mnt/passthrough</code> mountpoints.</p></li>
-<li><p>Install and remove the following packages. Want to use simpler NTP implementation.</p></li>
-</ol>
-<pre><code>```bash
-sudo xbps-install nano openntpd rng-tools thefuck vim htop socklog
-sudo xbps-remove chrony
-```</code></pre>
-<ol start="10" type="1">
-<li>Install commonly used applications.</li>
-</ol>
-<pre><code>```bash
-sudo xbps-install firefox freecad git glow kicad lynx netcat p7zip powertop
-rsync tmux unzip wget zip
-```</code></pre>
-<ol start="11" type="1">
-<li>Setup system logging using socklog</li>
-</ol>
-<pre><code>```bash
-sudo xbps-install socklog-void
-# enable services
-sudo ln -s /etc/sv/socklog-unix/ /var/service
-sudo ln -s /etc/sv/nanoklogd/ /var/service
-# add user to log group
-sudo usermod -a -G socklog $USER
-# log out and log back in
-```</code></pre>
-<ol start="12" type="1">
-<li>Create projects directory tree in <code>~</code> as follows:</li>
-</ol>
-<pre><code>```bash
-mkdir -p ~/projects/src/github.com/sww1235
-```
-
-This mirrors the structure of how golang wants to set things up.</code></pre>
-<ol start="13" type="1">
+<li><p>Install and remove the following packages. Want to use simpler NTP implementation.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> xbps-install nano openntpd rng-tools thefuck vim htop socklog</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> xbps-remove chrony</span></code></pre></div></li>
+<li><p>Install commonly used applications.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> xbps-install firefox freecad git glow kicad lynx netcat p7zip powertop</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rsync</span> tmux unzip wget zip</span></code></pre></div></li>
+<li><p>Setup system logging using socklog</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> xbps-install socklog-void</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># enable services</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ln <span class="at">-s</span> /etc/sv/socklog-unix/ /var/service</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ln <span class="at">-s</span> /etc/sv/nanoklogd/ /var/service</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># add user to log group</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> usermod <span class="at">-a</span> <span class="at">-G</span> socklog <span class="va">$USER</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># log out and log back in</span></span></code></pre></div></li>
+<li><p>Create projects directory tree in <code>~</code> as follows:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/projects/src/github.com/sww1235</span></code></pre></div>
+<p>This mirrors the structure of how golang wants to set things up.</p></li>
 <li><p>Clone dotfiles repo from GitHub and install vim and bash files using <code>install.sh</code> script.</p></li>
-<li><p>Set up ssh-agent using user specific services. Instructions taken from <a href="https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/" class="uri">https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/</a></p></li>
-</ol>
-<pre><code>1.	Create user specific service directory:
-
-	```bash
-	sudo mkdir /etc/sv/runit-user-toxicsauce
-	```
-
-2.	Create run script for user specific service by adding the following
-	into `/etc/sv/runit-user-toxicsauce/run`
-
-	```bash
-	#!/bin/sh
-	exec 2&gt;&amp;1
-	exec chpst -u toxicsauce:toxicsauce runsvdir /home/toxicsauce/runit/service
-	```
-
-3.	Mark it as executable:
-
-	```bash
-	sudo chmod +x /etc/sv/runit-user-toxicsauce/run
-	```
-
-4.	Create necessary user specific service directories:
-
-	```bash
-	mkdir ~/runit
-	mkdir ~/runit/sv
-	mkdir ~/runit/service
-	```
-
-5.	Start this service of services with:
-
-	```bash
-	sudo ln -s /etc/sv/runit-user-toxicsauce /var/service
-	```
-
-6.	Now set up `ssh-agent` service:
-
-	```bash
-	mkdir ~/runit/sv/ssh-agent
-	```
-
-7.	Create run script for `ssh-agent` service by adding the following into `~/runit/sv/ssh-agent/run`.
-
-	```bash
-	#!/usr/bin/env bash
-	#
-	# Start ssh-agent from runit
-
-	file=~/.ssh/ssh-agent-env
-
-	exec &gt; &quot;$file&quot;
-
-	echo &quot;# started $(date)&quot;
-
-	# For some reason, this line doesn&#39;t get emitted by ssh-agent when it is run
-	# with -d or -D.  Since we are starting the program with exec we already know
-	# the pid ahead of time though so we can create this line manually
-	echo &quot;SSH_AGENT_PID=$$; export SSH_AGENT_PID&quot;
-
-	exec ssh-agent -D
-	```
-
-8.	Mark run file as executable with:
-
-	```bash
-	chmod +x ~/runit/sv/ssh-agent/run
-	```
-
-9.	Now start the service with:
-
-	```bash
-	ln -s ~/runit/sv/ssh-agent ~/runit/service
-	```</code></pre>
-<ol start="15" type="1">
+<li><p>Set up ssh-agent using user specific services. Instructions taken from <a href="https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/" class="uri">https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/</a></p>
+<ol type="1">
+<li><p>Create user specific service directory:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mkdir /etc/sv/runit-user-toxicsauce</span></code></pre></div></li>
+<li><p>Create run script for user specific service by adding the following into <code>/etc/sv/runit-user-toxicsauce/run</code></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">exec</span> <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">exec</span> chpst <span class="at">-u</span> toxicsauce:toxicsauce runsvdir /home/toxicsauce/runit/service</span></code></pre></div></li>
+<li><p>Mark it as executable:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> chmod +x /etc/sv/runit-user-toxicsauce/run</span></code></pre></div></li>
+<li><p>Create necessary user specific service directories:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> ~/runit</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> ~/runit/sv</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> ~/runit/service</span></code></pre></div></li>
+<li><p>Start this service of services with:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ln <span class="at">-s</span> /etc/sv/runit-user-toxicsauce /var/service</span></code></pre></div></li>
+<li><p>Now set up <code>ssh-agent</code> service:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> ~/runit/sv/ssh-agent</span></code></pre></div></li>
+<li><p>Create run script for <code>ssh-agent</code> service by adding the following into <code>~/runit/sv/ssh-agent/run</code>.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env bash</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Start ssh-agent from runit</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="va">file</span><span class="op">=</span>~/.ssh/ssh-agent-env</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="bu">exec</span> <span class="op">&gt;</span> <span class="st">&quot;</span><span class="va">$file</span><span class="st">&quot;</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;# started </span><span class="va">$(</span><span class="fu">date</span><span class="va">)</span><span class="st">&quot;</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co"># For some reason, this line doesn&#39;t get emitted by ssh-agent when it is run</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co"># with -d or -D.  Since we are starting the program with exec we already know</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co"># the pid ahead of time though so we can create this line manually</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;SSH_AGENT_PID=</span><span class="va">$$</span><span class="st">; export SSH_AGENT_PID&quot;</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="bu">exec</span> ssh-agent <span class="at">-D</span></span></code></pre></div></li>
+<li><p>Mark run file as executable with:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x ~/runit/sv/ssh-agent/run</span></code></pre></div></li>
+<li><p>Now start the service with:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-s</span> ~/runit/sv/ssh-agent ~/runit/service</span></code></pre></div></li>
+</ol></li>
 <li><p>Clone projects from github into Projects tree as desired.</p></li>
 <li><p>Set up void-packages per the <a href="void-packages-setup.html">instructions</a> in this wiki.</p></li>
-<li><p>Make sure <code>build-branch-the-machine</code> in my fork of <code>void-packages</code> is checked out, and up to date with desired patches. See the <a href="void-suckless-config.html">suckless page](void-s</a> for more info.</p></li>
-<li><p>Build binary packages of <code>dwm</code>, <code>dmenu</code>, <code>st</code> and <code>slstatus</code> as follows:</p></li>
+<li><p>Make sure <code>build-branch-the-machine</code> in my fork of <code>void-packages</code> is checked out, and up to date with desired patches. See the <a href="void-suckless-config.html">suckless page</a> for more info.</p></li>
+<li><p>Build binary packages of <code>dwm</code>, <code>dmenu</code>, <code>st</code> and <code>slstatus</code> as follows:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/Projects/src/github.com/sww1235/void-packages</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./xbps-src</span> pkg dwm</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./xbps-src</span> pkg dmenu</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="ex">./xbps-src</span> pkg st</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./xbps-src</span> pkg slstatus</span></code></pre></div></li>
+<li><p>Install <code>dwm</code>, <code>dmenu</code>, <code>st</code> and <code>slstatus</code> with the command:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> xbps-install <span class="at">--repository</span><span class="op">=</span>hostdir/binpkgs/build-branch-the-machine <span class="dt">\</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    dwm dmenu st slstatus</span></code></pre></div></li>
+<li><p>Modify ~/.xinitrc to contain the following:</p>
+<pre class="xinitrc"><code>slstatus &amp;
+exec dwm</code></pre></li>
+<li><p>Install <code>tlp</code> for power management:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> xbps-install tlp</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ln <span class="at">-s</span> /etc/sv/tlp /var/service</span></code></pre></div></li>
+<li><p>Setup CUPS for printing:</p>
+<ol type="1">
+<li><p>Install and enable the service:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> xbps-install cups</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ln <span class="at">-s</span> /etc/sv/cupsd/ /var/service</span></code></pre></div></li>
+<li><p>Edit /etc/cups/cupsd.conf, find line that starts with <code>&lt;Limit     CUPS-Add-Modify-Printer</code> and add <code>toxicsauce</code> after <code>@SYSTEM</code></p></li>
+<li><p>Restart <code>cupsd</code> service</p></li>
+<li><p>go to <a href="http://localhost:631/" class="uri">http://localhost:631/</a> to configure</p></li>
+</ol></li>
+<li><p>Need to set up bumblebee/optimus for graphics, set up dropbox and 1password cli client.</p>
+<p>install alsa-utils to get audio working</p></li>
 </ol>
-<pre><code>```bash
-cd ~/Projects/src/github.com/sww1235/void-packages
-./xbps-src pkg dwm
-./xbps-src pkg dmenu
-./xbps-src pkg st
-./xbps-src pkg slstatus
-```</code></pre>
-<ol start="19" type="1">
-<li>Install <code>dwm</code>, <code>dmenu</code>, <code>st</code> and <code>slstatus</code> with the command:</li>
-</ol>
-<pre><code>```bash
-sudo xbps-install --repository=hostdir/binpkgs/build-branch-the-machine \
-	dwm dmenu st slstatus
-```</code></pre>
-<ol start="20" type="1">
-<li>Modify ~/.xinitrc to contain the following:</li>
-</ol>
-<pre><code>```xinitrc
-slstatus &amp;
-exec dwm
-```</code></pre>
-<ol start="21" type="1">
-<li>Install <code>tlp</code> for power management:</li>
-</ol>
-<pre><code>```bash
-sudo xbps-install tlp
-sudo ln -s /etc/sv/tlp /var/service
-```</code></pre>
-<ol start="22" type="1">
-<li>Setup CUPS for printing:</li>
-</ol>
-<pre><code>1.	Install and enable the service:
-
-	```bash
-	sudo xbps-install cups
-	sudo ln -s /etc/sv/cupsd/ /var/service
-	```
-
-2.	Edit /etc/cups/cupsd.conf, find line that starts with `&lt;Limit
-	CUPS-Add-Modify-Printer` and add `toxicsauce` after `@SYSTEM`
-
-3.	Restart `cupsd` service
-
-4. go to &lt;http://localhost:631/&gt; to configure</code></pre>
-<ol start="23" type="1">
-<li>Need to set up bumblebee/optimus for graphics, set up dropbox and 1password cli client.</li>
-</ol>
-<pre><code>install alsa-utils to get audio working</code></pre>
 <pre class="tags"><code>build-script, void-linux,laptop, lenovo, notes</code></pre>
 </section>
 </section>
