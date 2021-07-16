@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>I2C</title>
+  <title>Camera Hacking</title>
   <link rel="stylesheet" href="/styles/main.css" />
 </head>
 <body>
@@ -59,24 +59,51 @@
   </ul>
 </nav>
 <header id="title-block-header">
-<h1 class="title">I<sup>2</sup>C</h1>
+<h1 class="title">Camera Hacking</h1>
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
+<li><a href="#flashes">Flashes</a>
+<ul>
+<li><a href="#hot-shoe">Hot Shoe Research</a></li>
+<li><a href="#ttl-protocol">TTL Protocol</a></li>
+<li><a href="#ext-flash-power">External Flash Power</a></li>
+</ul></li>
 <li><a href="#references">References</a></li>
 </ul>
 </nav>
-<p>I2S consists of serial data, the bit clock and the word clock. In addition there may be a master clock which is used by ADCs and DACs to sync their master clocks.</p>
-<p>I2S by spec represents data in 2s complement format. In any bit width conversion, truncation or zero fill is applied. Quoting from the I2S spec:</p>
-<blockquote>
-<p>When the system word length is greater than the transmitter word length, the word is truncated (least significant data bits are set to ‘0’) for data transmission. If the receiver is sent more bits than its word length, the bits after the LSB are ignored. On the other hand, if the receiver is sent fewer bits than its word length, the missing bits are set to zero internally. And so, the MSB has a fixed position, whereas the position of the LSB depends on the word length. The transmitter always sends the MSB of the next word one clock period after the WS changes.</p>
-</blockquote>
+<p>See the <a href="camera-info.html">Camera Information and Terminology</a> page for more general discussion and terminology around digital photography and flashes.</p>
+<p>Most of this info will be related to the cameras that I own and use, currently a Panasonic GH5, but other info may be included as well if I find it.</p>
+<p>A lot of this information will be duplicating information found other places on the ’net. It will be cited as best as possible. I want the information in a location that I control, to avoid the infomration getting lost when other websites and forums get shut down or go extinct.</p>
+<p>I am also trying to summarize and coorelate some of this info, as I have found different pieces of it on different sites, and it was a real pain digging through the Google search results for it all.</p>
+<section id="flashes" class="level1">
+<h1>Flashes</h1>
+<section id="hot-shoe" class="level2">
+<h2>Hot Shoe Research</h2>
+<p>Most hot and cold shoes have a standard set of dimensions specified in ISO 518:2006. In addition to the physical dimensions, the location of the center contact is also standardized.</p>
+<figure>
+<img src="hot_shoe_comparision.jpg" alt="Hotshoe Comparison" /><figcaption aria-hidden="true">Hotshoe Comparison</figcaption>
+</figure>
+<p>The center contact and the metal ‘U’ shape of the hot act as a N.O. dry contact that is closed when the camera tells the flash to fire. On older flashes, (and some modern ones), the voltage that directly fires the flash is passed through this contact which can be in excess of 300V. Some modern cameras use circuitry that cannot handle the high voltages of older flashes, and need adapters in order to not break.</p>
+<p>Other connectors are commonly present in the hotshoe, which provide communication to smart flashes and other accessories.</p>
+<p>Most modern Canon cameras have 4 contacts to the rear of the center contact which are wired as follows: TODO: Insert picture.</p>
+<p>Modern Panasonic cameras either use 3 or 4 contacts in an identical spacing to the Canon hotshoe layout, but with a different pinout. This means that flashes and accessories will fit physically but not electrically, so Canon flash extension cables will work on the new Panasonic 4 contact hotshoes.</p>
+<p>Panasonic uses one (which one) of the 4 contacts to provide accessory power to equipment like its XLR audio adapter.</p>
+</section>
+<section id="ttl-protocol" class="level2">
+<h2>TTL Protocol</h2>
+<p>At this point, all TTL (Through The Lens) protocols that manufacturers use to communicate with the flash units and set power, do red-eye reduction, pre-flash, etc are officially undocumented. Several people have invested a lot of time and effort into reverse engineering these protocols, especially the Canon eTTL protocol.</p>
+</section>
+<section id="ext-flash-power" class="level2">
+<h2>External Flash Power</h2>
+</section>
+</section>
 <section id="references" class="level1">
 <h1>References</h1>
 <ul>
-<li><a href="https://web.archive.org/web/20070102004400/http://www.nxp.com/acrobat_download/various/I2SBUS.pdf" class="uri">https://web.archive.org/web/20070102004400/http://www.nxp.com/acrobat_download/various/I2SBUS.pdf</a></li>
+<li><a href="https://photo.stackexchange.com/a/100154/99926">Hot Shoe Stack Exchange Answer - image source</a></li>
 </ul>
-<pre class="tags"><code>electronics, protocols, i2s, communication</code></pre>
+<pre class="tags"><code>Camera, Photography, hacking, flash</code></pre>
 </section>
 <footer>
   <address>
