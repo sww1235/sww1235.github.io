@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Void Setup</title>
+  <link rel="stylesheet" href="/styles/main.css" />
+</head>
+<body>
+<header>
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</header>
+<nav id="topnavbar">
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="https://github.com/sww1235">Github</a></li>
+    <li><a href="/projects/index.html">Projects</a>
+      <ul>
+        <li><a href="projects/custom-rack-enclosure.html">Custom Rack Enclosure</a></li>
+        <li><a href="projects/homelab.html">Homelab</a></li>
+      </ul>
+    </li>
+    <li><a href="/wiki/index.html">Wiki</a>
+      <ul>
+        <li><a href="wiki/build-script-notes-base-freebsd-image.html">Build Script Notes Base Freebsd Image</a></li>
+        <li><a href="wiki/build-script-notes-base-void-linux-image.html">Build Script Notes Base Void Linux Image</a></li>
+        <li><a href="wiki/build-script-notes-lenovo-t490-laptop.html">Build Script Notes Lenovo T490 Laptop</a></li>
+        <li><a href="wiki/build-script-notes-main-ws-host.html">Build Script Notes Main Ws Host</a></li>
+        <li><a href="wiki/build-script-notes-main-ws.html">Build Script Notes Main Ws</a></li>
+        <li><a href="wiki/build-script-notes-rack-monitor.html">Build Script Notes Rack Monitor</a></li>
+        <li><a href="wiki/build-script-notes-vault-mki.html">Build Script Notes Vault Mki</a></li>
+        <li><a href="wiki/build-script-notes-virt-cluster.html">Build Script Notes Virt Cluster</a></li>
+        <li><a href="wiki/build-script-notes-vm-void-builder.html">Build Script Notes Vm Void Builder</a></li>
+        <li><a href="wiki/build-script-notes-void-vm.html">Build Script Notes Void Vm</a></li>
+        <li><a href="wiki/build-script-notes-win10-vm.html">Build Script Notes Win10 Vm</a></li>
+        <li><a href="wiki/camera-hacking.html">Camera Hacking</a></li>
+        <li><a href="wiki/contributing.html">Contributing</a></li>
+        <li><a href="wiki/fpga-notes.html">Fpga Notes</a></li>
+        <li><a href="wiki/gnupg-config.html">Gnupg Config</a></li>
+        <li><a href="wiki/i2c.html">I2c</a></li>
+        <li><a href="wiki/i2s.html">I2s</a></li>
+        <li><a href="wiki/kicad.html">Kicad</a></li>
+        <li><a href="wiki/networking-notes.html">Networking Notes</a></li>
+        <li><a href="wiki/openbsd-notes.html">Openbsd Notes</a></li>
+        <li><a href="wiki/openldap-notes.html">Openldap Notes</a></li>
+        <li><a href="wiki/opnsense-notes.html">Opnsense Notes</a></li>
+        <li><a href="wiki/pcb-design.html">Pcb Design</a></li>
+        <li><a href="wiki/pcb-reverse-engineering.html">Pcb Reverse Engineering</a></li>
+        <li><a href="wiki/revit-notes.html">Revit Notes</a></li>
+        <li><a href="wiki/serial.html">Serial</a></li>
+        <li><a href="wiki/void-linux-latex-notes.html">Void Linux Latex Notes</a></li>
+        <li><a href="wiki/void-linux-notes.html">Void Linux Notes</a></li>
+        <li><a href="wiki/void-packages-setup.html">Void Packages Setup</a></li>
+        <li><a href="wiki/void-setup.html">Void Setup</a></li>
+        <li><a href="wiki/void-suckless-config.html">Void Suckless Config</a></li>
+        <li><a href="wiki/void-vfio-config.html">Void Vfio Config</a></li>
+      </ul>
+    </li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+<header id="title-block-header">
+<h1 class="title">Void Setup</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#install-dwm">Install DWM</a></li>
+<li><a href="#qemu-install">QEMU Install</a></li>
+<li><a href="#other-tools">Other Tools</a></li>
+<li><a href="#nfs-server">nfs-server</a></li>
+</ul>
+</nav>
+<section id="install-dwm" class="level1">
+<h1>Install DWM</h1>
+<p>install from xbps:</p>
+<p>wget gz xrandr make thefuck clang libX11-devel xtools libxft libXft-devel libXinerama-devel xorg-minimal xorg-fonts xterm</p>
+<p>change x11 path in config.mk to /usr/include/X11</p>
+</section>
+<section id="qemu-install" class="level1">
+<h1>QEMU Install</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ln <span class="at">-s</span> /etc/sv/libvirtd/ /var/service</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ln <span class="at">-s</span> /etc/sv/virtlogd/ /var/service/</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ln <span class="at">-s</span> /etc/sv/virtlockd/ /var/service/</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> usermod <span class="at">-a</span> <span class="at">-G</span> libvirt toxic</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sv start libvirtd</span></code></pre></div>
+<p>install from xbps: xz rpmextract</p>
+</section>
+<section id="other-tools" class="level1">
+<h1>Other Tools</h1>
+<p>smartmontools nano firefox</p>
+<p>start sshd sudo ln -s /etc/sv/sshd/ /var/service</p>
+</section>
+<section id="nfs-server" class="level1">
+<h1>nfs-server</h1>
+<p>install nfs-utils</p>
+<p>start nfs-server, rpcbind, statd services</p>
+<p>edit /etc/exports</p>
+<pre class="tags"><code>void, linux, setup</code></pre>
+</section>
+<footer>
+  <address>
+  sww1235.net<br/>
+  write to: website &lt;at-sign&gt; sww1235.net
+  </address>
+
+&copy; 2021 - Stephen Walker-Weinshenker
+
+</footer>
+</body>
+</html>

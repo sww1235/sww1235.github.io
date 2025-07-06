@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Void Linux Notes</title>
+  <link rel="stylesheet" href="/styles/main.css" />
+</head>
+<body>
+<header>
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</header>
+<nav id="topnavbar">
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="https://github.com/sww1235">Github</a></li>
+    <li><a href="/projects/index.html">Projects</a>
+      <ul>
+        <li><a href="projects/custom-rack-enclosure.html">Custom Rack Enclosure</a></li>
+        <li><a href="projects/homelab.html">Homelab</a></li>
+      </ul>
+    </li>
+    <li><a href="/wiki/index.html">Wiki</a>
+      <ul>
+        <li><a href="wiki/build-script-notes-base-freebsd-image.html">Build Script Notes Base Freebsd Image</a></li>
+        <li><a href="wiki/build-script-notes-base-void-linux-image.html">Build Script Notes Base Void Linux Image</a></li>
+        <li><a href="wiki/build-script-notes-lenovo-t490-laptop.html">Build Script Notes Lenovo T490 Laptop</a></li>
+        <li><a href="wiki/build-script-notes-main-ws-host.html">Build Script Notes Main Ws Host</a></li>
+        <li><a href="wiki/build-script-notes-main-ws.html">Build Script Notes Main Ws</a></li>
+        <li><a href="wiki/build-script-notes-rack-monitor.html">Build Script Notes Rack Monitor</a></li>
+        <li><a href="wiki/build-script-notes-vault-mki.html">Build Script Notes Vault Mki</a></li>
+        <li><a href="wiki/build-script-notes-virt-cluster.html">Build Script Notes Virt Cluster</a></li>
+        <li><a href="wiki/build-script-notes-vm-void-builder.html">Build Script Notes Vm Void Builder</a></li>
+        <li><a href="wiki/build-script-notes-void-vm.html">Build Script Notes Void Vm</a></li>
+        <li><a href="wiki/build-script-notes-win10-vm.html">Build Script Notes Win10 Vm</a></li>
+        <li><a href="wiki/camera-hacking.html">Camera Hacking</a></li>
+        <li><a href="wiki/contributing.html">Contributing</a></li>
+        <li><a href="wiki/fpga-notes.html">Fpga Notes</a></li>
+        <li><a href="wiki/gnupg-config.html">Gnupg Config</a></li>
+        <li><a href="wiki/i2c.html">I2c</a></li>
+        <li><a href="wiki/i2s.html">I2s</a></li>
+        <li><a href="wiki/kicad.html">Kicad</a></li>
+        <li><a href="wiki/networking-notes.html">Networking Notes</a></li>
+        <li><a href="wiki/openbsd-notes.html">Openbsd Notes</a></li>
+        <li><a href="wiki/openldap-notes.html">Openldap Notes</a></li>
+        <li><a href="wiki/opnsense-notes.html">Opnsense Notes</a></li>
+        <li><a href="wiki/pcb-design.html">Pcb Design</a></li>
+        <li><a href="wiki/pcb-reverse-engineering.html">Pcb Reverse Engineering</a></li>
+        <li><a href="wiki/revit-notes.html">Revit Notes</a></li>
+        <li><a href="wiki/serial.html">Serial</a></li>
+        <li><a href="wiki/void-linux-latex-notes.html">Void Linux Latex Notes</a></li>
+        <li><a href="wiki/void-linux-notes.html">Void Linux Notes</a></li>
+        <li><a href="wiki/void-packages-setup.html">Void Packages Setup</a></li>
+        <li><a href="wiki/void-setup.html">Void Setup</a></li>
+        <li><a href="wiki/void-suckless-config.html">Void Suckless Config</a></li>
+        <li><a href="wiki/void-vfio-config.html">Void Vfio Config</a></li>
+      </ul>
+    </li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+<header id="title-block-header">
+<h1 class="title">Void Linux Notes</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#after-install">After Installation Configuration</a>
+<ul>
+<li><a href="#timezone-clock">Timezone and Clock Configuration</a></li>
+<li><a href="#network">Network Configuration</a>
+<ul>
+<li><a href="#network-static">Static Networking</a></li>
+<li><a href="#network-dhcp">DHCP</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+<section id="after-install" class="level1">
+<h1>After Installation Configuration</h1>
+<p>check contents of /var/service and remove uncessary ones. If running with static IP (<a href="#network-static">Static Networking</a>) then remove dhcpcd.</p>
+<p>uncomment wheel line in <code>/etc/sudoers</code> using <code>visudo</code> to enable</p>
+<p><strong>NOTE:</strong> Locale does not exist on Musl libc editions of void.</p>
+<section id="timezone-clock" class="level2">
+<h2>Timezone and Clock Configuration</h2>
+<p>edit <code>/etc/rc.conf</code> as root (sudo doesn’t work) and change the following lines:</p>
+<pre class="conf"><code>HARDWARECLOCK=&quot;UTC&quot;
+TIMEZONE=&quot;America/Denver&quot; # or appropriate timezone
+KEYMAP=&quot;us&quot;</code></pre>
+<p>enable NTP:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ln <span class="at">-s</span> /etc/sv/ntpd /var/service/</span></code></pre></div>
+</section>
+<section id="network" class="level2">
+<h2>Network Configuration</h2>
+<section id="network-static" class="level3">
+<h3>Static Networking</h3>
+<p>edit <code>/etc/rc.local</code> and add following commands. Verify interface names are correct from ip link.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> link set dev eth0 up</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> addr add 10.0.1.12/24 brd + dev eth0</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> route add default via 10.0.1.1</span></code></pre></div>
+</section>
+<section id="network-dhcp" class="level3">
+<h3>DHCP</h3>
+<p>enable <code>dhcpcd</code> with</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ln <span class="at">-s</span> /etc/sv/dhcpcd /var/service/</span></code></pre></div>
+<pre class="tags"><code>Void, Linux, Homelab, Setup</code></pre>
+</section>
+</section>
+</section>
+<footer>
+  <address>
+  sww1235.net<br/>
+  write to: website &lt;at-sign&gt; sww1235.net
+  </address>
+
+&copy; 2021 - Stephen Walker-Weinshenker
+
+</footer>
+</body>
+</html>

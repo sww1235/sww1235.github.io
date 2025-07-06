@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Base FreeBSD Machine Configuration</title>
+  <link rel="stylesheet" href="/styles/main.css" />
+</head>
+<body>
+<header>
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</header>
+<nav id="topnavbar">
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="https://github.com/sww1235">Github</a></li>
+    <li><a href="/projects/index.html">Projects</a>
+      <ul>
+        <li><a href="projects/custom-rack-enclosure.html">Custom Rack Enclosure</a></li>
+        <li><a href="projects/homelab.html">Homelab</a></li>
+      </ul>
+    </li>
+    <li><a href="/wiki/index.html">Wiki</a>
+      <ul>
+        <li><a href="wiki/build-script-notes-base-freebsd-image.html">Build Script Notes Base Freebsd Image</a></li>
+        <li><a href="wiki/build-script-notes-base-void-linux-image.html">Build Script Notes Base Void Linux Image</a></li>
+        <li><a href="wiki/build-script-notes-lenovo-t490-laptop.html">Build Script Notes Lenovo T490 Laptop</a></li>
+        <li><a href="wiki/build-script-notes-main-ws-host.html">Build Script Notes Main Ws Host</a></li>
+        <li><a href="wiki/build-script-notes-main-ws.html">Build Script Notes Main Ws</a></li>
+        <li><a href="wiki/build-script-notes-rack-monitor.html">Build Script Notes Rack Monitor</a></li>
+        <li><a href="wiki/build-script-notes-vault-mki.html">Build Script Notes Vault Mki</a></li>
+        <li><a href="wiki/build-script-notes-virt-cluster.html">Build Script Notes Virt Cluster</a></li>
+        <li><a href="wiki/build-script-notes-vm-void-builder.html">Build Script Notes Vm Void Builder</a></li>
+        <li><a href="wiki/build-script-notes-void-vm.html">Build Script Notes Void Vm</a></li>
+        <li><a href="wiki/build-script-notes-win10-vm.html">Build Script Notes Win10 Vm</a></li>
+        <li><a href="wiki/camera-hacking.html">Camera Hacking</a></li>
+        <li><a href="wiki/contributing.html">Contributing</a></li>
+        <li><a href="wiki/fpga-notes.html">Fpga Notes</a></li>
+        <li><a href="wiki/gnupg-config.html">Gnupg Config</a></li>
+        <li><a href="wiki/i2c.html">I2c</a></li>
+        <li><a href="wiki/i2s.html">I2s</a></li>
+        <li><a href="wiki/kicad.html">Kicad</a></li>
+        <li><a href="wiki/networking-notes.html">Networking Notes</a></li>
+        <li><a href="wiki/openbsd-notes.html">Openbsd Notes</a></li>
+        <li><a href="wiki/openldap-notes.html">Openldap Notes</a></li>
+        <li><a href="wiki/opnsense-notes.html">Opnsense Notes</a></li>
+        <li><a href="wiki/pcb-design.html">Pcb Design</a></li>
+        <li><a href="wiki/pcb-reverse-engineering.html">Pcb Reverse Engineering</a></li>
+        <li><a href="wiki/revit-notes.html">Revit Notes</a></li>
+        <li><a href="wiki/serial.html">Serial</a></li>
+        <li><a href="wiki/void-linux-latex-notes.html">Void Linux Latex Notes</a></li>
+        <li><a href="wiki/void-linux-notes.html">Void Linux Notes</a></li>
+        <li><a href="wiki/void-packages-setup.html">Void Packages Setup</a></li>
+        <li><a href="wiki/void-setup.html">Void Setup</a></li>
+        <li><a href="wiki/void-suckless-config.html">Void Suckless Config</a></li>
+        <li><a href="wiki/void-vfio-config.html">Void Vfio Config</a></li>
+      </ul>
+    </li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+<header id="title-block-header">
+<h1 class="title">Base FreeBSD Machine Configuration</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#initial-installation">Initial Installation</a></li>
+<li><a href="#networking">Configure Networking</a>
+<ul>
+<li><a href="#static-networking-configuration">Static Networking Configuration</a></li>
+</ul></li>
+<li><a href="#update-system">Update System</a></li>
+<li><a href="#fix-term">Fix $TERM</a></li>
+<li><a href="#install-base-packages">Install Basic Packages</a></li>
+<li><a href="#configure-sudo">Configure Sudo</a></li>
+<li><a href="#configure-logging-sendmail">Setup system logging and disable sendmail</a></li>
+<li><a href="#ssh-agent">Set up ssh-agent</a></li>
+</ul>
+</nav>
+<p>These steps should be followed roughly in order but may not be applicable on all installs.</p>
+<section id="initial-installation" class="level1">
+<h1>Initial Installation</h1>
+<p>Proceed through installation wizard. Press space to select options.</p>
+<ol type="1">
+<li><p>Keymap = US. This should be default. Space will not work here, just scroll down and hit enter.</p></li>
+<li><p>Enter hostname. (this is a FQDN)</p></li>
+<li><p>Remove all optional system components unless specified in other build script.</p></li>
+<li><p>Select Auto (ZFS) and use defaults unless specified in other build script.</p></li>
+<li><p>Wait for download, verification and extraction of distribution files</p></li>
+<li><p>Enter root password from password manager.</p></li>
+<li><p>Select main network interface.</p></li>
+<li><p>Configure Networking as <a href="#networking">below</a></p></li>
+<li><p>Choose yes at CMOS clock prompt. Make sure this gets set in BIOS properly.</p></li>
+<li><p>Choose timezone.</p></li>
+<li><p>Skip time and date setup if it is correct.</p></li>
+<li><p>Enable <code>sshd</code>, <code>ntpdate</code>, <code>ntpd</code>, <code>powerd</code> and <code>dumpdev</code> services to be started at boot</p></li>
+<li><p>Enable all security options except <code>clear_temp</code>, <code>disable_syslogd</code>, and <code>secure_console</code>.</p></li>
+<li><p>Install fw packages if prompted</p></li>
+<li><p>Add new admin user.</p></li>
+</ol>
+<pre><code>1.	Username = `toxicsauce`
+
+2.	Full Name = `toxicsauce`
+
+3.	UID = (hit enter to accept default)
+
+4.	Login group = (hit enter to accept default)
+
+5.	Invite User to other groups = wheel
+
+6.	Login class = (hit enter to accept default)
+
+7.	Shell = sh (default)
+
+8.	home directory = (hit enter to accept default)
+
+9.	home directory permissions = (hit enter to accept defaults)
+
+10.	enable ZFS encryption = no (default)
+
+11.	password auth = yes
+
+12.	empty password = no
+
+13.	random password = no
+
+14.	Enter password from password manager
+
+15.	lock account = no
+
+16.	check options and type in yes to confirm.
+
+17.	add additional users = no.</code></pre>
+<ol start="16" type="1">
+<li><p>hit exit, and no to exit installer.</p></li>
+<li><p>Hit reboot.</p></li>
+</ol>
+</section>
+<section id="networking" class="level1">
+<h1>Configure Networking</h1>
+<section id="static-networking-configuration" class="level2">
+<h2>Static Networking Configuration</h2>
+<p>This should already be set up during initial configuration. Included as a reference</p>
+<p>Set following variables in <code>/etc/rc.conf</code></p>
+<pre class="conf"><code># This is a FQDN
+hostname = &quot;hostname&quot;
+# this may change based on what the interface is called. Run ipconfig to determine what interface is needed
+ifconfig_re0 = &quot;inet XXX.XXX.XXX.XXX netmask YYY.YYY.YYY.YYY&quot;
+defaultrouter = &quot;ZZZ.ZZZ.ZZZ.ZZZ&quot;</code></pre>
+<p>Set following variables in <code>/etc/resolv.conf</code></p>
+<pre class="conf"><code>nameserver QQQ.QQQ.QQQ.QQQ</code></pre>
+</section>
+</section>
+<section id="update-system" class="level1">
+<h1>Update System</h1>
+<ol type="1">
+<li><p>Login as the new user you created.</p></li>
+<li><p>Become root with <code>su -</code>. You will need root’s password.</p></li>
+<li><p>Run the following commands.</p></li>
+</ol>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">freebsd-update</span> fetch</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">freebsd-update</span> install</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pkg</span> update</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># answer yes to install pkg</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">pkg</span> upgrade</span></code></pre></div>
+</section>
+<section id="fix-term" class="level1">
+<h1>Fix $TERM</h1>
+<p>This is a problem caused by using <code>st</code> as my main terminal emulator on my laptop and workstation which has a different <code>$TERM</code> entry with associated <code>terminfo</code> file that is not available on systems without <code>st</code> installed on it. This is the fix for systems that are never going to have graphical terminals installed on them or FreeBSD systems.</p>
+<ol type="1">
+<li><p>Edit <code>/etc/ssh/sshd_config</code> on the remote machine and change the line <code>#PermitRootLogin prohibit-password</code> to: <code>PermitRootLogin yes</code>. This can be quickly accomplished with the command: <code>$ sudo sed -i 's/#PermitRootLogin 	prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config</code>. This. This temporarily enables root ssh login with a password.</p></li>
+<li><p>Restart the <code>sshd</code> service on the remote machine.</p></li>
+<li><p>On a machine with <code>st</code> installed on it, run the following command, replacing <code>remote-host</code> with the correct hostname. <code>infocmp | ssh 	root@remote-host "tic -"</code></p></li>
+<li><p>Re-ssh into remote machine and revert back the changes to <code>/etc/ssh/sshd_config</code> made in step 1.</p></li>
+<li><p>Restart the <code>sshd</code> service on the remote machine.</p></li>
+</ol>
+</section>
+<section id="install-base-packages" class="level1">
+<h1>Install Basic Packages</h1>
+<ol type="1">
+<li><p>Login as the new user you created.</p></li>
+<li><p>Become root with <code>su -</code>. You will need root’s password.</p></li>
+<li><p>Run the following commands.</p></li>
+</ol>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pkg</span> install sudo nano</span></code></pre></div>
+</section>
+<section id="configure-sudo" class="level1">
+<h1>Configure Sudo</h1>
+<ol type="1">
+<li><p>Login as the new user you created.</p></li>
+<li><p>Become root with <code>su -</code>. You will need root’s password.</p></li>
+<li><p>Configure sudo. <code>visudo</code> and uncomment line <code>%wheel ALL=(ALL) ALL</code></p></li>
+<li><p>check if admin user is in <code>wheel</code> group. <code>id username</code>. - If not, add them to the group with the command: <code>pw group mod wheel -m username</code></p></li>
+</ol>
+</section>
+<section id="configure-logging-sendmail" class="level1">
+<h1>Setup system logging and disable sendmail</h1>
+<ol type="1">
+<li>Edit <code>/etc/rc.conf</code> and add the following lines to disable sendmail and enable syslog.</li>
+</ol>
+<pre><code>```conf
+# disable sendmail and enable syslog
+syslogd_enable=&quot;YES&quot;
+sendmail_enable=&quot;NO&quot;
+sendmail_submit_enable=&quot;NO&quot;
+sendmail_outbound_enable=&quot;NO&quot;
+sendmail_msp_queue_enable=&quot;NO&quot;
+newsyslog_enable=&quot;YES&quot; # make sure this doesn&#39;t break in future defaults
+# fix cron trying to send mail
+cron_flags=&quot;-m &#39;&#39;&quot;
+```</code></pre>
+<ol start="2" type="1">
+<li>Create log files needed for next step:</li>
+</ol>
+<pre><code>```sh
+sudo touch /var/log/console.log
+sudo chmod 600 /var/log/console.log
+sudo touch /var/log/all.log
+sudo chmod 600 /var/log/all.log
+```</code></pre>
+<ol start="3" type="1">
+<li><p>Edit <code>/etc/syslog.conf</code> and uncomment the lines for <code>console.log</code> and <code>all.log</code>. TODO: setup remote logging.</p></li>
+<li><p>Check <code>/etc/newsyslog.conf</code> to confirm log rotation is setup correctly.</p></li>
+<li><p>Edit <code>/etc/periodic.conf</code> and add the following to the beginning of the file to disable sending root email and instead log to syslog. (This will override the defaults in <code>/etc/defaults/periodic.conf</code>). File may need to be created first.</p></li>
+</ol>
+<pre><code>```conf
+# redirect periodic output to syslog files
+daily_output=&quot;/var/log/daily.log&quot; # user or /file
+weekly_output=&quot;/var/log/weekly.log&quot; # user or /file
+monthly_output=&quot;/var/log/monthly.log&quot; # user or /file
+# turn off sendmail periodic functions
+daily_clean_hoststat_enable=&quot;NO&quot;
+daily_status_mail_rejects_enable=&quot;NO&quot;
+daily_status_include_submit_mailq=&quot;NO&quot;
+daily_submit_queuerun=&quot;NO&quot;
+```</code></pre>
+<ol start="6" type="1">
+<li>Fix crontab logging by editing <code>/etc/crontab</code> and appending <code>2&gt;&amp;1 | 	/usr/bin/logger -t cron_xxx</code> and re and replacing xxx with whatever the cron command was doing. Do not need to do this for periodic and periodic snapshot sections.</li>
+</ol>
+</section>
+<section id="ssh-agent" class="level1">
+<h1>Set up ssh-agent</h1>
+</section>
+<footer>
+  <address>
+  sww1235.net<br/>
+  write to: website &lt;at-sign&gt; sww1235.net
+  </address>
+
+&copy; 2021 - Stephen Walker-Weinshenker
+
+</footer>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Camera Hacking</title>
+  <link rel="stylesheet" href="/styles/main.css" />
+</head>
+<body>
+<header>
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</header>
+<nav id="topnavbar">
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="https://github.com/sww1235">Github</a></li>
+    <li><a href="/projects/index.html">Projects</a>
+      <ul>
+        <li><a href="projects/custom-rack-enclosure.html">Custom Rack Enclosure</a></li>
+        <li><a href="projects/homelab.html">Homelab</a></li>
+      </ul>
+    </li>
+    <li><a href="/wiki/index.html">Wiki</a>
+      <ul>
+        <li><a href="wiki/build-script-notes-base-freebsd-image.html">Build Script Notes Base Freebsd Image</a></li>
+        <li><a href="wiki/build-script-notes-base-void-linux-image.html">Build Script Notes Base Void Linux Image</a></li>
+        <li><a href="wiki/build-script-notes-lenovo-t490-laptop.html">Build Script Notes Lenovo T490 Laptop</a></li>
+        <li><a href="wiki/build-script-notes-main-ws-host.html">Build Script Notes Main Ws Host</a></li>
+        <li><a href="wiki/build-script-notes-main-ws.html">Build Script Notes Main Ws</a></li>
+        <li><a href="wiki/build-script-notes-rack-monitor.html">Build Script Notes Rack Monitor</a></li>
+        <li><a href="wiki/build-script-notes-vault-mki.html">Build Script Notes Vault Mki</a></li>
+        <li><a href="wiki/build-script-notes-virt-cluster.html">Build Script Notes Virt Cluster</a></li>
+        <li><a href="wiki/build-script-notes-vm-void-builder.html">Build Script Notes Vm Void Builder</a></li>
+        <li><a href="wiki/build-script-notes-void-vm.html">Build Script Notes Void Vm</a></li>
+        <li><a href="wiki/build-script-notes-win10-vm.html">Build Script Notes Win10 Vm</a></li>
+        <li><a href="wiki/camera-hacking.html">Camera Hacking</a></li>
+        <li><a href="wiki/contributing.html">Contributing</a></li>
+        <li><a href="wiki/fpga-notes.html">Fpga Notes</a></li>
+        <li><a href="wiki/gnupg-config.html">Gnupg Config</a></li>
+        <li><a href="wiki/i2c.html">I2c</a></li>
+        <li><a href="wiki/i2s.html">I2s</a></li>
+        <li><a href="wiki/kicad.html">Kicad</a></li>
+        <li><a href="wiki/networking-notes.html">Networking Notes</a></li>
+        <li><a href="wiki/openbsd-notes.html">Openbsd Notes</a></li>
+        <li><a href="wiki/openldap-notes.html">Openldap Notes</a></li>
+        <li><a href="wiki/opnsense-notes.html">Opnsense Notes</a></li>
+        <li><a href="wiki/pcb-design.html">Pcb Design</a></li>
+        <li><a href="wiki/pcb-reverse-engineering.html">Pcb Reverse Engineering</a></li>
+        <li><a href="wiki/revit-notes.html">Revit Notes</a></li>
+        <li><a href="wiki/serial.html">Serial</a></li>
+        <li><a href="wiki/void-linux-latex-notes.html">Void Linux Latex Notes</a></li>
+        <li><a href="wiki/void-linux-notes.html">Void Linux Notes</a></li>
+        <li><a href="wiki/void-packages-setup.html">Void Packages Setup</a></li>
+        <li><a href="wiki/void-setup.html">Void Setup</a></li>
+        <li><a href="wiki/void-suckless-config.html">Void Suckless Config</a></li>
+        <li><a href="wiki/void-vfio-config.html">Void Vfio Config</a></li>
+      </ul>
+    </li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+<header id="title-block-header">
+<h1 class="title">Camera Hacking</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#flashes">Flashes</a>
+<ul>
+<li><a href="#hot-shoe">Hot Shoe Research</a></li>
+<li><a href="#ttl-protocol">TTL Protocol</a></li>
+<li><a href="#ext-flash-power">External Flash Power</a></li>
+</ul></li>
+<li><a href="#the-goal-the-goal">The Goal (#the-goal}</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</nav>
+<p>See the <a href="camera-info.html">Camera Information and Terminology</a> page for more general discussion and terminology around digital photography and flashes.</p>
+<p>Most of this info will be related to the cameras that I own and use, currently a Panasonic GH5, but other info may be included as well if I find it.</p>
+<p>A lot of this information will be duplicating information found other places on the ’net. It will be cited as best as possible. I want the information in a location that I control, to avoid the infomration getting lost when other websites and forums get shut down or go extinct.</p>
+<p>I am also trying to summarize and coorelate some of this info, as I have found different pieces of it on different sites, and it was a real pain digging through the Google search results for it all.</p>
+<section id="flashes" class="level1">
+<h1>Flashes</h1>
+<section id="hot-shoe" class="level2">
+<h2>Hot Shoe Research</h2>
+<p>Most hot and cold shoes have a standard set of dimensions specified in ISO 518:2006. In addition to the physical dimensions, the location of the center contact is also standardized.</p>
+<figure>
+<img src="hot_shoe_comparision.jpg" alt="Hotshoe Comparison" /><figcaption aria-hidden="true">Hotshoe Comparison</figcaption>
+</figure>
+<p>The center contact and the metal ‘U’ shape of the hot act as a N.O. dry contact that is closed when the camera tells the flash to fire. On older flashes, (and some modern ones), the voltage that directly fires the flash is passed through this contact which can be in excess of 300V. Some modern cameras use circuitry that cannot handle the high voltages of older flashes, and need adapters in order to not break.</p>
+<p>Other connectors are commonly present in the hotshoe, which provide communication to smart flashes and other accessories.</p>
+<p>Most modern Canon cameras have 4 contacts to the rear of the center contact which are wired as follows: TODO: Insert picture.</p>
+<p>Modern Panasonic cameras either use 3 or 4 contacts in an identical spacing to the Canon hotshoe layout, but with a different pinout. This means that flashes and accessories will fit physically but not electrically, so Canon flash extension cables will work on the new Panasonic 4 contact hotshoes.</p>
+<p>Panasonic uses one (which one) of the 4 contacts to provide accessory power to equipment like their XLR audio adapter.</p>
+</section>
+<section id="ttl-protocol" class="level2">
+<h2>TTL Protocol</h2>
+<p>At this point, all TTL (Through The Lens) protocols that manufacturers use to communicate with the flash units and set power, do red-eye reduction, pre-flash, etc are officially undocumented. Several people have invested a lot of time and effort into reverse engineering these protocols, especially the Canon eTTL protocol.</p>
+</section>
+<section id="ext-flash-power" class="level2">
+<h2>External Flash Power</h2>
+<p>Most Speedlites (external on-camera flashes) use AA batteries for power. This provides power to the electronics and the flash mechanism. The flash mechanism itself needs anywhere between 200VDC-500VDC to actually power the xenon tube. This high voltage is typically upconverted from the ~12VDC of the AA batteries and stored in a capacitor. This capacitor takes time (between 1 to 5 seconds) to recharge between shots, thus limiting the rate at which you can take photos.</p>
+<p>The AA batteries work well, but regularly require replacement and cause slow recharge times, especially as they are depleted. Using NIMH rechargable AAs can help reduce these issues, but not eliminate them. Some newer flashes are using Li-Ion batteries similar (but not identical) to the batteries used by camera bodies, but they are also propriatary and not compatible with the camera batteries.</p>
+<p>Some flashes have an external power connection to help reduce the usage of batteries. In some cases, this is a LVDC input that replaces the batteries completely. In other cases, the power connection is a HVDC input that directly interfaces with the capacitor charging circuitry. These HVDC connections allow for much faster capacitor recharging.</p>
+</section>
+</section>
+<section id="the-goal-the-goal" class="level1">
+<h1>The Goal (#the-goal}</h1>
+<p>My ultimate goal is to be able to standardize on one style of battery pack (like Anton Bauer Vmount/Gold mount) to power all my equipment, including camera body and flash.</p>
+</section>
+<section id="references" class="level1">
+<h1>References</h1>
+<ul>
+<li><a href="https://photo.stackexchange.com/a/100154/99926">Hot Shoe Stack Exchange Answer - image source</a></li>
+</ul>
+<pre class="tags"><code>Camera, Photography, hacking, flash</code></pre>
+</section>
+<footer>
+  <address>
+  sww1235.net<br/>
+  write to: website &lt;at-sign&gt; sww1235.net
+  </address>
+
+&copy; 2021 - Stephen Walker-Weinshenker
+
+</footer>
+</body>
+</html>

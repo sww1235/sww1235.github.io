@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Main Workstation Build Script and Notes</title>
+  <link rel="stylesheet" href="/styles/main.css" />
+</head>
+<body>
+<header>
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</header>
+<nav id="topnavbar">
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="https://github.com/sww1235">Github</a></li>
+    <li><a href="/projects/index.html">Projects</a>
+      <ul>
+        <li><a href="projects/custom-rack-enclosure.html">Custom Rack Enclosure</a></li>
+        <li><a href="projects/homelab.html">Homelab</a></li>
+      </ul>
+    </li>
+    <li><a href="/wiki/index.html">Wiki</a>
+      <ul>
+        <li><a href="wiki/build-script-notes-base-freebsd-image.html">Build Script Notes Base Freebsd Image</a></li>
+        <li><a href="wiki/build-script-notes-base-void-linux-image.html">Build Script Notes Base Void Linux Image</a></li>
+        <li><a href="wiki/build-script-notes-lenovo-t490-laptop.html">Build Script Notes Lenovo T490 Laptop</a></li>
+        <li><a href="wiki/build-script-notes-main-ws-host.html">Build Script Notes Main Ws Host</a></li>
+        <li><a href="wiki/build-script-notes-main-ws.html">Build Script Notes Main Ws</a></li>
+        <li><a href="wiki/build-script-notes-rack-monitor.html">Build Script Notes Rack Monitor</a></li>
+        <li><a href="wiki/build-script-notes-vault-mki.html">Build Script Notes Vault Mki</a></li>
+        <li><a href="wiki/build-script-notes-virt-cluster.html">Build Script Notes Virt Cluster</a></li>
+        <li><a href="wiki/build-script-notes-vm-void-builder.html">Build Script Notes Vm Void Builder</a></li>
+        <li><a href="wiki/build-script-notes-void-vm.html">Build Script Notes Void Vm</a></li>
+        <li><a href="wiki/build-script-notes-win10-vm.html">Build Script Notes Win10 Vm</a></li>
+        <li><a href="wiki/camera-hacking.html">Camera Hacking</a></li>
+        <li><a href="wiki/contributing.html">Contributing</a></li>
+        <li><a href="wiki/fpga-notes.html">Fpga Notes</a></li>
+        <li><a href="wiki/gnupg-config.html">Gnupg Config</a></li>
+        <li><a href="wiki/i2c.html">I2c</a></li>
+        <li><a href="wiki/i2s.html">I2s</a></li>
+        <li><a href="wiki/kicad.html">Kicad</a></li>
+        <li><a href="wiki/networking-notes.html">Networking Notes</a></li>
+        <li><a href="wiki/openbsd-notes.html">Openbsd Notes</a></li>
+        <li><a href="wiki/openldap-notes.html">Openldap Notes</a></li>
+        <li><a href="wiki/opnsense-notes.html">Opnsense Notes</a></li>
+        <li><a href="wiki/pcb-design.html">Pcb Design</a></li>
+        <li><a href="wiki/pcb-reverse-engineering.html">Pcb Reverse Engineering</a></li>
+        <li><a href="wiki/revit-notes.html">Revit Notes</a></li>
+        <li><a href="wiki/serial.html">Serial</a></li>
+        <li><a href="wiki/void-linux-latex-notes.html">Void Linux Latex Notes</a></li>
+        <li><a href="wiki/void-linux-notes.html">Void Linux Notes</a></li>
+        <li><a href="wiki/void-packages-setup.html">Void Packages Setup</a></li>
+        <li><a href="wiki/void-setup.html">Void Setup</a></li>
+        <li><a href="wiki/void-suckless-config.html">Void Suckless Config</a></li>
+        <li><a href="wiki/void-vfio-config.html">Void Vfio Config</a></li>
+      </ul>
+    </li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+<header id="title-block-header">
+<h1 class="title">Main Workstation Build Script and Notes</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#notes">Notes</a></li>
+<li><a href="#build-script">Build Script</a>
+<ul>
+<li><a href="#initial-config">Initial Configuration</a></li>
+</ul></li>
+<li><a href="#resources">Resources</a></li>
+</ul>
+</nav>
+<p>This is the build script for my main void linux virtual machine that I use as my main workstation.</p>
+<section id="notes" class="level1">
+<h1>Notes</h1>
+</section>
+<section id="build-script" class="level1">
+<h1>Build Script</h1>
+<section id="initial-config" class="level2">
+<h2>Initial Configuration</h2>
+<ol type="1">
+<li><p>Download the <code>void-live-x86_64.iso</code> of void linux from reputable sources, currently <a href="https://alpha.de.repo.voidlinux.org/live/current/">here</a></p></li>
+<li><p>Mount iso vm using <code>vm-manager.sh</code></p></li>
+<li><p>Login as root with default password of <code>void-linux</code> to live image.</p></li>
+<li><p>Make sure you are booted using UEFI by validating presence of <code>/sys/firmware/efi</code> directory</p></li>
+<li><p>run <code>void-installer</code></p></li>
+<li><p>Proceed through installation wizard</p></li>
+</ol>
+<pre><code>1.	Keyboard=us
+
+2.	Select DHCP
+
+3.	Source=network
+
+4.	Hostname=void-vm
+
+5.	System Locale=en\_US.UTF-8
+
+6.	Timezone=America/Denver or appropriate
+
+7.	Root password from password manager - generated
+
+8.	User account from password manager
+
+9.	Select sda1, and no for graphical terminal.
+
+10.	Partition main SSD using GPT scheme
+
+	1.	Create a 500MiB partition of type `EFI system`
+
+	2.	Create a second partition with the remaining space of type
+		`linux-filesystem`
+
+	3.	Select write to write partitions to disk
+
+11.	Set filesystem
+
+	1.	Set 500MiB partition `vfat` filesystem and mount it at `/boot/efi`
+
+	2.	Set second partition to `ext4` and mount it at `/`
+
+12.	Review settings
+
+13.	Install
+
+14.	Wait
+
+15.	Exit installer
+
+16.	Shutdown system with `shutdown -h now`
+
+17.	Comment out cdrom directives in vm-manager script
+
+18. Start up VM again</code></pre>
+<ol start="7" type="1">
+<li><p>Log in as the new user you created.</p></li>
+<li><p>Update the system by running the following command until there is no output.</p></li>
+</ol>
+<pre><code>```bash
+sudo xbps-install -Svu
+```</code></pre>
+<ol start="9" type="1">
+<li>Install the following packages. The st-terminfo install fixes <code>st-256color 	unknown terminal type</code> issues issues as well as backspace and tab issues when sshing in from other computers using the <code>st</code> terminal emulator.</li>
+</ol>
+<pre><code>```bash
+sudo xbps-install nano thefuck vim st-terminfo git
+```</code></pre>
+<ol start="10" type="1">
+<li>Setup system logging using socklog</li>
+</ol>
+<pre><code>```bash
+sudo xbps-install socklog-void
+# enable services
+sudo ln -s /etc/sv/socklog-unix/ /var/service
+sudo ln -s /etc/sv/nanoklogd/ /var/service
+# add user to log group
+sudo usermod -a -G socklog $USER
+# log out and log back in
+```</code></pre>
+<ol start="11" type="1">
+<li><p>Start ssh service <code>sudo ln -s /etc/sv/sshd/ /var/service</code> so you can log in remotely.</p></li>
+<li><p>Generate ssh-keys <code>ssh-keygen -t ed25519</code> and enter passphrase from password manager</p></li>
+<li><p>Add public key to github.</p></li>
+<li><p>Set up git.</p></li>
+</ol>
+<pre><code>```bash
+git config --global user.email &quot;github@sww1235.net&quot;
+git config --global user.name &quot;Stephen Walker-Weinshenker&quot;
+```</code></pre>
+<ol start="15" type="1">
+<li>Set up ssh-agent using user specific services. Instructions taken from <a href="https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/" class="uri">https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/</a></li>
+</ol>
+<pre><code>1.	Create user specific service directory:
+
+	```bash
+	sudo mkdir /etc/sv/runit-user-toxicsauce
+	```
+
+2.	Create run script for user specific service by adding the following
+	into `/etc/sv/runit-user-toxicsauce/run`
+
+	```bash
+	#!/bin/sh
+	exec 2&gt;&amp;1
+	exec chpst -u toxicsauce:toxicsauce runsvdir /home/toxicsauce/runit/service
+	```
+
+3.	Mark it as executable:
+
+	```bash
+	sudo chmod +x /etc/sv/runit-user-toxicsauce/run
+	```
+
+4.	Create necessary user specific service directories:
+
+	```bash
+	mkdir ~/runit
+	mkdir ~/runit/sv
+	mkdir ~/runit/service
+	```
+
+5.	Start this service of services with:
+
+	```bash
+	sudo ln -s /etc/sv/runit-user-toxicsauce /var/service
+	```
+
+6.	Now set up `ssh-agent` service:
+
+	```bash
+	mkdir ~/runit/sv/ssh-agent
+	```
+
+7.	Create run script for `ssh-agent` service by adding the following into `~/runit/sv/ssh-agent/run`.
+
+	```bash
+	#!/usr/bin/env bash
+	#
+	# Start ssh-agent from runit
+
+	file=~/.ssh/ssh-agent-env
+
+	exec &gt; &quot;$file&quot;
+
+	echo &quot;# started $(date)&quot;
+
+	# For some reason, this line doesn&#39;t get emitted by ssh-agent when it is run
+	# with -d or -D.  Since we are starting the program with exec we already know
+	# the pid ahead of time though so we can create this line manually
+	echo &quot;SSH_AGENT_PID=$$; export SSH_AGENT_PID&quot;
+
+	exec ssh-agent -D
+	```
+
+8.	Mark run file as executable with:
+
+	```bash
+	chmod +x ~/runit/sv/ssh-agent/run
+	```
+
+9.	Now start the service with:
+
+	```bash
+	ln -s ~/runit/sv/ssh-agent ~/runit/service
+	```
+
+	**NOTE**: you need the following line in bashrc in order to get it working
+	in new shells. This is already in my dotfiles bashrc
+
+	```bash
+	# source ssh-agent file
+
+	[ -f $HOME/.ssh/ssh-agent-env ] &amp;&amp; source $HOME/.ssh/ssh-agent-env
+	```</code></pre>
+<ol start="16" type="1">
+<li>Create Projects directory tree in <code>~</code> as follows:</li>
+</ol>
+<pre><code>```bash
+mkdir -p ~/projects/src/github.com/sww1235
+```
+
+This mirrors the structure of how golang wants to set things up.</code></pre>
+<ol start="17" type="1">
+<li>Make symlink in <code>~</code> as follows:</li>
+</ol>
+<pre><code>```bash
+ln -s ~/projects/src/github.com/sww1235 myprojects
+```</code></pre>
+<ol start="18" type="1">
+<li><p>Clone dotfiles repo from GitHub using ssh and install vim and bash files using <code>install.sh</code> script.</p></li>
+<li><p>Clone projects from github into Projects tree as desired.</p></li>
+<li><p>Set up void-packages per the <a href="void-packages-setup.html">instructions</a> in this wiki.</p></li>
+<li><p>Make sure <code>build-branch-void-vm</code> in my fork of <code>void-packages</code> is checked out, and up to date with desired patches. See the <a href="void-suckless-config.html">suckless page](void-s</a> for more info.</p></li>
+<li><p>Build binary packages of <code>dwm</code>, <code>dmenu</code>, and <code>st</code> as follows:</p></li>
+</ol>
+<pre><code>```bash
+cd ~/Projects/src/github.com/sww1235/void-packages
+./xbps-src pkg dwm
+./xbps-src pkg dmenu
+./xbps-src pkg st
+```</code></pre>
+<ol start="23" type="1">
+<li>Install <code>dwm</code>, <code>dmenu</code>, and <code>st</code> with the command:</li>
+</ol>
+<pre><code>```bash
+sudo xbps-install --repository=hostdir/binpkgs/build-branch-void-vm dwm dmenu st
+```</code></pre>
+<ol start="24" type="1">
+<li><p>Install <code>xorg</code> and <code>xorg-fonts</code> to get graphics working</p></li>
+<li><p>Install and run <code>arandr</code> to generate a <code>xrandr</code> command to fix the monitor rotation. Save the script as <code>~/.screenlayout/main.sh</code></p></li>
+<li><p>Install <code>xscreensaver</code>, then run <code>xscreensaver-demo</code> and unselect the screensavers that you don’t want to run.</p></li>
+<li><p>Modify ~/.xinitrc to contain the following:</p></li>
+</ol>
+<pre><code>```xinitrc
+~/.screenlayout/main.sh
+xscreensaver &amp;
+exec dwm
+```</code></pre>
+<ol start="28" type="1">
+<li>Setup CUPS for printing:</li>
+</ol>
+<pre><code>1.	Install and enable the service:
+
+	```bash
+	sudo xbps-install cups
+	sudo ln -s /etc/sv/cupsd/ /var/service
+	```
+
+2.	Edit /etc/cups/cupsd.conf, find line that starts with `&lt;Limit
+	CUPS-Add-Modify-Printer` and add `toxicsauce` after `@SYSTEM`
+
+3.	Restart `cupsd` service
+
+4. go to &lt;http://localhost:631/&gt; to configure</code></pre>
+<ol start="29" type="1">
+<li><p>Install alas-utils to get audio working FIXME:</p></li>
+<li><p>FIXME: Install NVIDIA drivers</p></li>
+</ol>
+<pre><code>1.	Take snapshot of VM before installing drivers.
+
+2.	Install the `nonfree-repository`.
+
+	```sh
+	sudo xbps-install void-repo-nonfree
+	```
+
+3.	Upgrade the system
+
+4.	Install the `nvidia` package.
+
+5.	Reboot. It should just work.</code></pre>
+</section>
+</section>
+<section id="resources" class="level1">
+<h1>Resources</h1>
+<pre class="tags"><code>build-script, main-ws-host, workstation, notes, QEMU, KVM, VFIO, Passthrough</code></pre>
+</section>
+<footer>
+  <address>
+  sww1235.net<br/>
+  write to: website &lt;at-sign&gt; sww1235.net
+  </address>
+
+&copy; 2021 - Stephen Walker-Weinshenker
+
+</footer>
+</body>
+</html>

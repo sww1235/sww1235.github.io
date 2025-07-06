@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Rack Monitor Build Script and Notes</title>
+  <link rel="stylesheet" href="/styles/main.css" />
+</head>
+<body>
+<header>
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</header>
+<nav id="topnavbar">
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="https://github.com/sww1235">Github</a></li>
+    <li><a href="/projects/index.html">Projects</a>
+      <ul>
+        <li><a href="projects/custom-rack-enclosure.html">Custom Rack Enclosure</a></li>
+        <li><a href="projects/homelab.html">Homelab</a></li>
+      </ul>
+    </li>
+    <li><a href="/wiki/index.html">Wiki</a>
+      <ul>
+        <li><a href="wiki/build-script-notes-base-freebsd-image.html">Build Script Notes Base Freebsd Image</a></li>
+        <li><a href="wiki/build-script-notes-base-void-linux-image.html">Build Script Notes Base Void Linux Image</a></li>
+        <li><a href="wiki/build-script-notes-lenovo-t490-laptop.html">Build Script Notes Lenovo T490 Laptop</a></li>
+        <li><a href="wiki/build-script-notes-main-ws-host.html">Build Script Notes Main Ws Host</a></li>
+        <li><a href="wiki/build-script-notes-main-ws.html">Build Script Notes Main Ws</a></li>
+        <li><a href="wiki/build-script-notes-rack-monitor.html">Build Script Notes Rack Monitor</a></li>
+        <li><a href="wiki/build-script-notes-vault-mki.html">Build Script Notes Vault Mki</a></li>
+        <li><a href="wiki/build-script-notes-virt-cluster.html">Build Script Notes Virt Cluster</a></li>
+        <li><a href="wiki/build-script-notes-vm-void-builder.html">Build Script Notes Vm Void Builder</a></li>
+        <li><a href="wiki/build-script-notes-void-vm.html">Build Script Notes Void Vm</a></li>
+        <li><a href="wiki/build-script-notes-win10-vm.html">Build Script Notes Win10 Vm</a></li>
+        <li><a href="wiki/camera-hacking.html">Camera Hacking</a></li>
+        <li><a href="wiki/contributing.html">Contributing</a></li>
+        <li><a href="wiki/fpga-notes.html">Fpga Notes</a></li>
+        <li><a href="wiki/gnupg-config.html">Gnupg Config</a></li>
+        <li><a href="wiki/i2c.html">I2c</a></li>
+        <li><a href="wiki/i2s.html">I2s</a></li>
+        <li><a href="wiki/kicad.html">Kicad</a></li>
+        <li><a href="wiki/networking-notes.html">Networking Notes</a></li>
+        <li><a href="wiki/openbsd-notes.html">Openbsd Notes</a></li>
+        <li><a href="wiki/openldap-notes.html">Openldap Notes</a></li>
+        <li><a href="wiki/opnsense-notes.html">Opnsense Notes</a></li>
+        <li><a href="wiki/pcb-design.html">Pcb Design</a></li>
+        <li><a href="wiki/pcb-reverse-engineering.html">Pcb Reverse Engineering</a></li>
+        <li><a href="wiki/revit-notes.html">Revit Notes</a></li>
+        <li><a href="wiki/serial.html">Serial</a></li>
+        <li><a href="wiki/void-linux-latex-notes.html">Void Linux Latex Notes</a></li>
+        <li><a href="wiki/void-linux-notes.html">Void Linux Notes</a></li>
+        <li><a href="wiki/void-packages-setup.html">Void Packages Setup</a></li>
+        <li><a href="wiki/void-setup.html">Void Setup</a></li>
+        <li><a href="wiki/void-suckless-config.html">Void Suckless Config</a></li>
+        <li><a href="wiki/void-vfio-config.html">Void Vfio Config</a></li>
+      </ul>
+    </li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+<header id="title-block-header">
+<h1 class="title">Rack Monitor Build Script and Notes</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#notes">Notes</a></li>
+<li><a href="#build-script">Build Script</a>
+<ul>
+<li><a href="#initial-config">Initial Configuration</a></li>
+<li><a href="#basic-config">Basic configuration</a></li>
+<li><a href="#nut-config">NUT Configuration</a></li>
+</ul></li>
+</ul>
+</nav>
+<p>This is the build script and notes for the Dell Wyse 5070 that monitors my Rack and UPS.</p>
+<section id="notes" class="level1">
+<h1>Notes</h1>
+</section>
+<section id="build-script" class="level1">
+<h1>Build Script</h1>
+<section id="initial-config" class="level2">
+<h2>Initial Configuration</h2>
+<ol type="1">
+<li><p>Download the most recent memstick version of FreeBSD from reputable sources, currently <a href="https://download.freebsd.org/releases/ISO-IMAGES/">here</a></p></li>
+<li><p>Burn image to MicroSD card using either <code>dd</code> or whatever windows tool is the popular thing and preferably doesn’t use electron.</p></li>
+<li><p>Boot to USB stick using <code>F12</code> key.</p></li>
+<li><p>Follow installer instructions. A Few notes: - Remember that hostname needs to be a FQDN - Only install base system, no optional components - Guided Root on ZFS - Can usually use GPT and default partition configuration</p></li>
+<li><p>Set root password at prompt</p></li>
+<li><p>Configure Networking 1. Select correct interface 2. Select <code>Use IPv4</code> 3. Select <code>No</code> to not use DHCP 4. Enter networking information when prompted 5. For now, select <code>No</code> to not configure IPv6. This may change in future TODO 6. Enter DNS info in the DNS configuration</p></li>
+<li><p>Proceed through remainder of installer until service enablement</p></li>
+<li><p>Enable the following services: - <code>sshd</code> - <code>ntpd</code> - <code>ntpd_sync_on_start</code> - <code>powerd</code> - <code>dumpdev</code></p></li>
+<li><p>Enable the following hardening options - <code>hide_uids</code> - <code>hide_gids</code> - <code>hide_jail</code> - <code>read_mesgbuf</code> - <code>proc_debug</code> - <code>random_pid</code></p></li>
+<li><p>Create new non-root user when prompted. Make sure to invite into <code>wheel</code> group. Most options can be left default.</p></li>
+<li><p>Select <code>no</code> when prompted, as we don’t want to add more users after the main admin non-root user.</p></li>
+<li><p>If you need to fix anything do so now, else select <code>EXIT</code> to apply the configuration.</p></li>
+<li><p>No need to make any manual changes so selecte <code>No</code>.</p></li>
+<li><p>Reboot the system when prompted.</p></li>
+</ol>
+</section>
+<section id="basic-config" class="level2">
+<h2>Basic configuration</h2>
+<ol type="1">
+<li>Log in as the new user you created during inital configuration.</li>
+<li>Follow the steps included in <a href="./build-script-notes-base-freebsd-image">base-freebsd-config</a> to establish baseline</li>
+<li>Install the following additional packages:</li>
+</ol>
+<pre><code>```sh
+pkg install nut
+```</code></pre>
+</section>
+<section id="nut-config" class="level2">
+<h2>NUT Configuration</h2>
+<p>Always check the installation and configuration instructions online if anything new has changed during updates to NUT.</p>
+<p>Thanks to <a href="https://vermaden.wordpress.com/2025/03/06/ups-on-freebsd/">this blog</a> for help setting up the new 2.8.X version of NUT on FreeBSD, including the fact that you need to enable and start a service.</p>
+<p>Config files for Network UPS Tool (NUT) are found at <code>/usr/local/etc/nut/</code></p>
+<p><code>nut.conf</code> has a few global config options.</p>
+<p><code>ups.conf</code> is where you configure what UPSes the system will be interacting with</p>
+<p><code>upsd.conf</code> is the configuration for the UPS data server</p>
+<p>Configuration steps as follows:</p>
+<ol type="1">
+<li><p>Edit <code>/etc/ups/nut.conf</code> and set <code>MODE=netserver</code>.</p></li>
+<li><p>Run <code>nut-scanner</code> to generate config options for attached UPSes</p></li>
+<li><p>Edit <code>ups.conf</code> and add the results of <code>nut-scanner</code> to the begining of the file, except the vendor line. Add <code>[cyberpower-ups1]</code> before. See syntax examples in config file.</p></li>
+<li><p>Edit <code>upsd.conf</code> and update listen directive to the IP address of the local system with standard port.</p></li>
+<li><p>Edit <code>upsd.users</code> and add an <code>admin</code> user, <code>upsmonLocal</code> and <code>upsmonRemote</code> users with passwords from password safe.</p></li>
+</ol>
+<pre><code>-	`admin` user has set actions and all instcmds.
+
+	```conf
+	[admin]
+		password = $password
+		actions = SET
+		instcmds = ALL
+	```
+
+-	`upsmonLocal` user is set up  with primary attributes for local monitoring.
+
+	```conf
+	[upsmonLocal]
+		password = $password
+		upsmon primary
+	```
+
+-	`upsmonRemote` user is set up  with secondary attributes for remote monitoring by other clients.
+
+	```conf
+	[upsmonRemote]
+		password = $password
+		upsmon secondary
+	```</code></pre>
+<ol start="6" type="1">
+<li>Edit <code>upsmon.conf</code> to set up local UPS monitoring. Add the following lines to the config file.</li>
+</ol>
+<pre><code>```conf
+# local system has 1 power supply connected to this UPS. It is primary
+# because it is the monitoring system for the ups.
+# other systems will be listed as secondary
+MONITOR cyberpower-ups1@localhost 1 upsmonLocal $password primary
+# all other values can be left as defaults for now
+```</code></pre>
+<ol start="7" type="1">
+<li><p>Restart <code>devd</code> so automatically generated rules are applied. <code>service devd restart</code></p></li>
+<li><p>Make sure the correct USB device is owned by group <code>nut</code> when running <code>ls -l /dev/usb</code></p></li>
+<li><p>Enable <code>nut</code> service with <code>service nut enable</code> and then start it: <code>/usr/local/etc/rc.d/nut start</code></p></li>
+</ol>
+<p>check status of ups with the following command to make sure it is detected properly</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">upsc</span> cyberpower-ups1</span></code></pre></div>
+<pre class="tags"><code>build-script, rack-monitor, notes, ups</code></pre>
+</section>
+</section>
+<footer>
+  <address>
+  sww1235.net<br/>
+  write to: website &lt;at-sign&gt; sww1235.net
+  </address>
+
+&copy; 2021 - Stephen Walker-Weinshenker
+
+</footer>
+</body>
+</html>

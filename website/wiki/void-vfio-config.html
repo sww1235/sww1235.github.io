@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Void Linux VFIO Config</title>
+  <link rel="stylesheet" href="/styles/main.css" />
+</head>
+<body>
+<header>
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</header>
+<nav id="topnavbar">
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="https://github.com/sww1235">Github</a></li>
+    <li><a href="/projects/index.html">Projects</a>
+      <ul>
+        <li><a href="projects/custom-rack-enclosure.html">Custom Rack Enclosure</a></li>
+        <li><a href="projects/homelab.html">Homelab</a></li>
+      </ul>
+    </li>
+    <li><a href="/wiki/index.html">Wiki</a>
+      <ul>
+        <li><a href="wiki/build-script-notes-base-freebsd-image.html">Build Script Notes Base Freebsd Image</a></li>
+        <li><a href="wiki/build-script-notes-base-void-linux-image.html">Build Script Notes Base Void Linux Image</a></li>
+        <li><a href="wiki/build-script-notes-lenovo-t490-laptop.html">Build Script Notes Lenovo T490 Laptop</a></li>
+        <li><a href="wiki/build-script-notes-main-ws-host.html">Build Script Notes Main Ws Host</a></li>
+        <li><a href="wiki/build-script-notes-main-ws.html">Build Script Notes Main Ws</a></li>
+        <li><a href="wiki/build-script-notes-rack-monitor.html">Build Script Notes Rack Monitor</a></li>
+        <li><a href="wiki/build-script-notes-vault-mki.html">Build Script Notes Vault Mki</a></li>
+        <li><a href="wiki/build-script-notes-virt-cluster.html">Build Script Notes Virt Cluster</a></li>
+        <li><a href="wiki/build-script-notes-vm-void-builder.html">Build Script Notes Vm Void Builder</a></li>
+        <li><a href="wiki/build-script-notes-void-vm.html">Build Script Notes Void Vm</a></li>
+        <li><a href="wiki/build-script-notes-win10-vm.html">Build Script Notes Win10 Vm</a></li>
+        <li><a href="wiki/camera-hacking.html">Camera Hacking</a></li>
+        <li><a href="wiki/contributing.html">Contributing</a></li>
+        <li><a href="wiki/fpga-notes.html">Fpga Notes</a></li>
+        <li><a href="wiki/gnupg-config.html">Gnupg Config</a></li>
+        <li><a href="wiki/i2c.html">I2c</a></li>
+        <li><a href="wiki/i2s.html">I2s</a></li>
+        <li><a href="wiki/kicad.html">Kicad</a></li>
+        <li><a href="wiki/networking-notes.html">Networking Notes</a></li>
+        <li><a href="wiki/openbsd-notes.html">Openbsd Notes</a></li>
+        <li><a href="wiki/openldap-notes.html">Openldap Notes</a></li>
+        <li><a href="wiki/opnsense-notes.html">Opnsense Notes</a></li>
+        <li><a href="wiki/pcb-design.html">Pcb Design</a></li>
+        <li><a href="wiki/pcb-reverse-engineering.html">Pcb Reverse Engineering</a></li>
+        <li><a href="wiki/revit-notes.html">Revit Notes</a></li>
+        <li><a href="wiki/serial.html">Serial</a></li>
+        <li><a href="wiki/void-linux-latex-notes.html">Void Linux Latex Notes</a></li>
+        <li><a href="wiki/void-linux-notes.html">Void Linux Notes</a></li>
+        <li><a href="wiki/void-packages-setup.html">Void Packages Setup</a></li>
+        <li><a href="wiki/void-setup.html">Void Setup</a></li>
+        <li><a href="wiki/void-suckless-config.html">Void Suckless Config</a></li>
+        <li><a href="wiki/void-vfio-config.html">Void Vfio Config</a></li>
+      </ul>
+    </li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+<header id="title-block-header">
+<h1 class="title">Void Linux VFIO Config</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#iommu-group-check">iommu group check</a></li>
+<li><a href="#configure-vfio-pci">configure vfio-pci</a></li>
+<li><a href="#getting-ovmf">getting OVMF</a></li>
+</ul>
+</nav>
+<p>install DBUS from xbps</p>
+<p>Add iommu=pt and either:</p>
+<ul>
+<li>For Intel CPUs (VT-d) set <code>intel_iommu=on</code></li>
+<li>For AMD CPUs (AMD-Vi) set <code>amd_iommu=on</code></li>
+</ul>
+<p>to <code>GRUB_CMDLINE_LINUX_DEFAULT</code> line in <code>/etc/default/grub</code></p>
+<p>confirm that iommu is on:</p>
+<p><code>dmesg | grep -e DMAR -e IOMMU</code></p>
+<section id="iommu-group-check" class="level1">
+<h1>iommu group check</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">shopt</span> <span class="at">-s</span> nullglob</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> d <span class="kw">in</span> /sys/kernel/iommu_groups/<span class="pp">*</span>/devices/<span class="pp">*</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="va">n</span><span class="op">=</span><span class="va">${d</span><span class="op">#</span><span class="pp">*</span>/iommu_groups/<span class="pp">*</span><span class="va">}</span><span class="kw">;</span> <span class="va">n</span><span class="op">=</span><span class="va">${n</span><span class="op">%%</span>/<span class="pp">*</span><span class="va">}</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">printf</span> <span class="st">&#39;IOMMU Group %s &#39;</span> <span class="st">&quot;</span><span class="va">$n</span><span class="st">&quot;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">lspci</span> <span class="at">-nns</span> <span class="st">&quot;</span><span class="va">${d</span><span class="op">##</span><span class="pp">*</span>/<span class="va">}</span><span class="st">&quot;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span><span class="kw">;</span></span></code></pre></div>
+<p>make sure only to add pci ids of graphics card and associated audio device, not the root if in the same group.</p>
+</section>
+<section id="configure-vfio-pci" class="level1">
+<h1>configure vfio-pci</h1>
+<p>change IDs to match those found through lspci for your specific card</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">/etc/modprobe.d/vfio.conf</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">options</span> vfio-pci ids=10de:13c2,10de:0fbb</span></code></pre></div>
+<p>to load kernel modules:</p>
+<p>make file in <code>/etc/modules-load.d/</code> (may need to make directory first)</p>
+<p>file can be called anything with a .conf after it. modules are listed one per line. I loaded</p>
+<ul>
+<li><code>vfio</code></li>
+<li><code>vfio-pci</code></li>
+<li><code>vfio-virqfd</code></li>
+</ul>
+<p><code>dracut</code> is used to make initramfs</p>
+<p>its config is <code>/etc/dracut.conf.d/dracut.conf</code></p>
+<p>need to add kernel modules to initramfs</p>
+<p>use <code>add_drivers+="vfio-pci vfio vfio_iommu_type1 vfio_virqfd"</code> as an example</p>
+<p>also need to <code>add_dracutmodules+="kernel-modules"</code> in order for dracut to look at <code>modprobe/modules-load</code></p>
+<p>I also needed to blacklist nouvaeu on the host using a config file in <code>/etc/modprobe.d/</code> containing <code>blacklist nouveau</code> and in dracut.conf using `omit_drivers+=“nouveau”</p>
+<p>regen initramfs using <code>dracut --force</code> to overwrite the existing one</p>
+</section>
+<section id="getting-ovmf" class="level1">
+<h1>getting OVMF</h1>
+<p>it is not in xbps so need to manually download from <a href="https://www.kraxel.org/repos/jenkins/edk2/" class="uri">https://www.kraxel.org/repos/jenkins/edk2/</a> as of the writing of this document. download the ovmf appropriate either 32 or 64 bit version then use</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">rpm2cpio</span> <span class="op">&lt;</span>file<span class="op">&gt;</span>.rpm <span class="kw">|</span> <span class="fu">xz</span> <span class="at">-d</span> <span class="kw">|</span> <span class="fu">cpio</span> <span class="at">-idmv</span></span></code></pre></div>
+<p>otherwise you could try:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">rpm2cpio</span> <span class="op">&lt;</span>file<span class="op">&gt;</span>.rpm <span class="kw">|</span> <span class="fu">lzma</span> <span class="at">-d</span> <span class="kw">|</span> <span class="fu">cpio</span> <span class="at">-idmv</span></span></code></pre></div>
+<p>to extract the files needed.</p>
+<p>install rpmextract package xbps</p>
+<p>copy files in <code>./usr/share/edk2.git/ovmf-x64</code> to <code>/usr/share/ovmf</code></p>
+<p>and then set the config option in <code>/etc/libvirt/qemu.conf</code></p>
+<p><code>nvram</code> to the appropriate files. smm varients include secure boot code, csm varients include legacy compat modules. code and vars are separate files taht are both contained in OVMF base.</p>
+<p>need to add user to kvm and libvirt groups</p>
+</section>
+<footer>
+  <address>
+  sww1235.net<br/>
+  write to: website &lt;at-sign&gt; sww1235.net
+  </address>
+
+&copy; 2021 - Stephen Walker-Weinshenker
+
+</footer>
+</body>
+</html>

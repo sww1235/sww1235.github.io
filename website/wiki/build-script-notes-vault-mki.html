@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Vault File Server Build Script</title>
+  <link rel="stylesheet" href="/styles/main.css" />
+</head>
+<body>
+<header>
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</header>
+<nav id="topnavbar">
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="https://github.com/sww1235">Github</a></li>
+    <li><a href="/projects/index.html">Projects</a>
+      <ul>
+        <li><a href="projects/custom-rack-enclosure.html">Custom Rack Enclosure</a></li>
+        <li><a href="projects/homelab.html">Homelab</a></li>
+      </ul>
+    </li>
+    <li><a href="/wiki/index.html">Wiki</a>
+      <ul>
+        <li><a href="wiki/build-script-notes-base-freebsd-image.html">Build Script Notes Base Freebsd Image</a></li>
+        <li><a href="wiki/build-script-notes-base-void-linux-image.html">Build Script Notes Base Void Linux Image</a></li>
+        <li><a href="wiki/build-script-notes-lenovo-t490-laptop.html">Build Script Notes Lenovo T490 Laptop</a></li>
+        <li><a href="wiki/build-script-notes-main-ws-host.html">Build Script Notes Main Ws Host</a></li>
+        <li><a href="wiki/build-script-notes-main-ws.html">Build Script Notes Main Ws</a></li>
+        <li><a href="wiki/build-script-notes-rack-monitor.html">Build Script Notes Rack Monitor</a></li>
+        <li><a href="wiki/build-script-notes-vault-mki.html">Build Script Notes Vault Mki</a></li>
+        <li><a href="wiki/build-script-notes-virt-cluster.html">Build Script Notes Virt Cluster</a></li>
+        <li><a href="wiki/build-script-notes-vm-void-builder.html">Build Script Notes Vm Void Builder</a></li>
+        <li><a href="wiki/build-script-notes-void-vm.html">Build Script Notes Void Vm</a></li>
+        <li><a href="wiki/build-script-notes-win10-vm.html">Build Script Notes Win10 Vm</a></li>
+        <li><a href="wiki/camera-hacking.html">Camera Hacking</a></li>
+        <li><a href="wiki/contributing.html">Contributing</a></li>
+        <li><a href="wiki/fpga-notes.html">Fpga Notes</a></li>
+        <li><a href="wiki/gnupg-config.html">Gnupg Config</a></li>
+        <li><a href="wiki/i2c.html">I2c</a></li>
+        <li><a href="wiki/i2s.html">I2s</a></li>
+        <li><a href="wiki/kicad.html">Kicad</a></li>
+        <li><a href="wiki/networking-notes.html">Networking Notes</a></li>
+        <li><a href="wiki/openbsd-notes.html">Openbsd Notes</a></li>
+        <li><a href="wiki/openldap-notes.html">Openldap Notes</a></li>
+        <li><a href="wiki/opnsense-notes.html">Opnsense Notes</a></li>
+        <li><a href="wiki/pcb-design.html">Pcb Design</a></li>
+        <li><a href="wiki/pcb-reverse-engineering.html">Pcb Reverse Engineering</a></li>
+        <li><a href="wiki/revit-notes.html">Revit Notes</a></li>
+        <li><a href="wiki/serial.html">Serial</a></li>
+        <li><a href="wiki/void-linux-latex-notes.html">Void Linux Latex Notes</a></li>
+        <li><a href="wiki/void-linux-notes.html">Void Linux Notes</a></li>
+        <li><a href="wiki/void-packages-setup.html">Void Packages Setup</a></li>
+        <li><a href="wiki/void-setup.html">Void Setup</a></li>
+        <li><a href="wiki/void-suckless-config.html">Void Suckless Config</a></li>
+        <li><a href="wiki/void-vfio-config.html">Void Vfio Config</a></li>
+      </ul>
+    </li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+<header id="title-block-header">
+<h1 class="title">Vault File Server Build Script</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#notes">Notes</a></li>
+<li><a href="#build-script">Build Script</a>
+<ul>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#initial-config">Initial Configuration</a></li>
+<li><a href="#ups-config">UPS Configuration</a></li>
+<li><a href="#zfs-config">ZFS Configuration</a></li>
+<li><a href="#backups-config">Backups Configuration</a></li>
+<li><a href="#filesharing-config">Fileshare Configuration</a>
+<ul>
+<li><a href="#nfs">NFS</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#resources">Resources</a></li>
+</ul>
+</nav>
+<p>This is the build script for my main file server <strong>The Vault</strong>.</p>
+<section id="notes" class="level1">
+<h1>Notes</h1>
+<p>F2 or Enter for BIOS, F11 for boot menu</p>
+</section>
+<section id="build-script" class="level1">
+<h1>Build Script</h1>
+<section id="prerequisites" class="level2">
+<h2>Prerequisites</h2>
+<ol type="1">
+<li>Connect to IPMI interface of the server by going to $ip in a web browser.</li>
+</ol>
+<pre><code>-	If this is first startup of system, then configure static IP for IPMI,
+	and admin user and password.</code></pre>
+</section>
+<section id="initial-config" class="level2">
+<h2>Initial Configuration</h2>
+<ol type="1">
+<li><p>Download the bootonly ISO of the current release of FreeBSD from reputable sources. (12.2 as of 11/07/2020)</p></li>
+<li><p>Enable cd/dvd instance in IPMI under Settings -&gt; Media Redirection Settings -&gt; VMedia Instance Settings</p></li>
+<li><p>Open up HTML5 viewer for IPMI, and attach ISO to virtual CD rom.</p></li>
+<li><p>Start server, and boot to UEFI CD rom.</p></li>
+<li><p>Let FreeBSD boot to the install menu. Don’t exit out of the autoboot menu.</p></li>
+<li><p>Press enter to start the installation process.</p></li>
+<li><p>Proceed through installation wizard. Press space to select options.</p></li>
+</ol>
+<pre><code>1.	Keymap = United States of America. Space will not work here, just
+	scroll down and hit enter.
+
+2.	Hostname = `the-vault`
+
+3.	Disable kernel-dbg system component, and add the ports tree.
+
+4.	Hit Ok to configure network for installation.
+
+5.	Select gigabit interface 0, or whatever is actually connected.
+
+6.	Configure IPv4 and use DHCP for now. We will configure static
+	networking later.
+
+7.	Confirm resolver config. (Defaults picked up from DHCP should be good
+	to go.)
+
+8.	Select mirror
+
+9.	Select Auto (UFS) and then Entire Disk.
+
+10.	Select GPT for partition scheme
+
+11.	Review autogen partition layout, which should be good for our usages
+	then hit finish and Commit.
+
+12.	Wait for download, verification and extraction.
+
+13.	Enter root password from password manager.
+
+14.	Choose no at CMOS clock prompt. TODO: fix this.
+
+15.	Choose timezone.
+
+16.	Skip time and date setup if it is correct.
+
+17.	Enable `local_unbound`, `sshd`, `ntpdate`, `ntpd`, `powerd` and `dumpdev` services
+	to be started at boot
+
+18.	Enable all security options except `disable_syslogd`, and `secure_console`.
+
+19.	Add new admin user.
+
+	1.	Username = `toxicsauce`
+	2.	Full Name = `toxicsauce`
+	3.	UID = (hit enter to accept default)
+	4.	Login group = (hit enter to accept default)
+	5.	Invite User to other groups = wheel
+	6.	Login class = (hit enter to accept default)
+	7.	Shell = sh (default)
+	8.	home directory = (hit enter to accept default)
+	9.	home directory permissions = (hit enter to accept defaults)
+	10.	password auth = yes
+	11.	empty password = no
+	12.	random password = no
+	13.	Enter password from password manager
+	14.	lock account = no
+	15.	check options and type in yes to confirm.
+	16.	add additional users = no.
+
+20.	hit exit, and no to exit installer.
+
+21. Hit reboot.
+
+22.	Stop CD media after system has rebooted.</code></pre>
+<ol start="8" type="1">
+<li><p>Log in as the new user you created</p></li>
+<li><p>Become root with <code>su -</code>. You will need root’s password.</p></li>
+<li><p>Set up system as described in <a href="./build-script-notes-base-freebsd-image.html">base-freebsd-image-script</a></p></li>
+<li><p>Random sysadmin tweaks:</p></li>
+</ol>
+<pre><code>1.	Edit `/etc/periodic.conf` and include the following lines:
+
+	```conf
+	# never going to use locate on a fileserver
+	weekly_locate_enable=&quot;NO&quot;	#Disable weekly locate run.
+	```</code></pre>
+<ol start="12" type="1">
+<li><p>Set up ssh-agent</p></li>
+<li><p>Create Projects directory tree in <code>~</code> as follows:</p></li>
+</ol>
+<pre><code>```bash
+mkdir -p ~/projects/src/github.com/sww1235
+```
+
+This mirrors the structure of how golang wants to set things up.</code></pre>
+<ol start="14" type="1">
+<li>Make symlink in <code>~</code> as follows:</li>
+</ol>
+<pre><code>```bash
+ln -s ~/projects/src/github.com/sww1235 myprojects
+```</code></pre>
+<ol start="15" type="1">
+<li><p>Clone dotfiles repo from GitHub using ssh and install vim and bash files using <code>install.sh</code> script.</p></li>
+<li><p>Clone projects from github into Projects tree as desired.</p></li>
+</ol>
+</section>
+<section id="ups-config" class="level2">
+<h2>UPS Configuration</h2>
+<ol type="1">
+<li><p>Install Network UPS Tools from packages. <code>sudo pkg install nut</code></p></li>
+<li><p>Edit <code>/usr/local/etc/nut/upsmon.conf</code> and add in the following lines:</p></li>
+</ol>
+<pre><code>```conf
+MONITOR cyberpower-ups1@$ipaddress 1 upsmonRemote $password secondary
+```</code></pre>
+<ol start="3" type="1">
+<li>Edit <code>/etc/rc.conf</code> and add the following line:</li>
+</ol>
+<pre><code>```conf
+nut_upsmon_enable=&quot;YES&quot;
+```</code></pre>
+<ol start="4" type="1">
+<li><p>Start <code>nut_upsmon</code> service with <code>sudo service nut_upsmon start</code> and make sure it doesn’t error out.</p></li>
+<li><p>Reboot system to make sure everything comes up normally.</p></li>
+<li><p>Run a shutdown test to make sure nut is working properly.</p></li>
+</ol>
+<pre><code>1.	Login to `rack-monitor` system and run `upsdrvctl -t shutdown`. This
+	will show you what will happen during a shutdown without actually
+	shutting the systems down.
+
+2.	Now run the command `upsmon -c fsd`. This will simulate a power failure
+	and send the shutdown signal to all connected machines before shutting
+	down itself.
+
+3.	This should have worked, so now you need to manually remove power and
+	apply power from all machines connected to the UPS to get them to come
+	back up.</code></pre>
+</section>
+<section id="zfs-config" class="level2">
+<h2>ZFS Configuration</h2>
+<p>Also see the <a href="https://www.freebsd.org/doc/handbook/zfs.html">ZFS chapter of the FreeBSD handbook</a></p>
+<p>The current vdev design is 6 identical disks running in a RAIDZ2 configuration. When the storage is expanded, a new group of 6 disks will be added to a new vdev and added to the zpool.</p>
+<p>vdev = group of drives. You cannot add more drives to a vdev once it is created.</p>
+<p>zpool = group of vdevs. Redundancy is given by vdev configuration, not by multiple vdevs. if 1 vdev fails completely, <strong>all</strong> data in zpool is lost.</p>
+<ol type="1">
+<li><p>Install <code>smartmontools</code> and <code>e2fsprogs</code> packages.</p></li>
+<li><p>If the hard drives are new, Test hard drives with <code>sudo badblocks -b 4096 	-wsv /dev/da* &gt; da*.log</code>, repla, replacing * with the number for each HDD. This will take a while depending on the size of the hard drives. TODO: add in instructions to import an existing pool.</p></li>
+<li><p>Add the following line to <code>/etc/rc.conf</code>, then start the service manually <code>sudo service zfs start</code> so you don’t have to reboot.</p></li>
+</ol>
+<pre><code>```conf
+zfs_enable=&quot;YES&quot;
+```</code></pre>
+<ol start="4" type="1">
+<li>Add the following lines to <code>/boot/loader.conf</code> if they are not already there and reboot. This enables unique and static labels per disk, similar to <code>/dev/disk/by-id/</code> on linux.</li>
+</ol>
+<pre><code>```conf
+geom_label_load=&quot;YES&quot;
+kern.geom.label.disk_ident.enable=&quot;1&quot;
+```</code></pre>
+<ol start="5" type="1">
+<li>Now create and configure the zpool and vdevs as follows:</li>
+</ol>
+<pre><code>```sh
+# replace /dev/diskid/... with the names of the disks you are using in the zpool
+sudo zpool create the-vault raidz2 /dev/diskid/...
+# add any additional 6 disk sets
+sudo zpool add the-vault raidz2 /dev/diskid/...
+```</code></pre>
+<ol start="6" type="1">
+<li>Now create ZFS datasets as follows:</li>
+</ol>
+<pre><code>```tags
+sudo zfs create -o compress=lz4 the-vault/backups
+sudo zfs create -o compress=lz4 the-vault/storage
+sudo zfs create -o compress=lz4 the-vault/media
+sudo zfs create -o compress=lz4 the-vault/archive
+sudo zfs create -o compress=lz4 the-vault/vm-store
+```</code></pre>
+<ol start="7" type="1">
+<li><p>Install <code>freebsd-snapshot</code> from pkg.</p></li>
+<li><p>Edit <code>/etc/periodic.conf</code> and add the following lines:</p></li>
+</ol>
+<pre><code>```conf
+daily_status_zfs
+```</code></pre>
+<ol start="9" type="1">
+<li>Edit <code>/etc/crontab</code> and include the following:</li>
+</ol>
+<pre><code>```crontab
+
+# Perform hourly/daily/weekly maintenance (FreeBSD UFS2/ZFS snapshots only).
+0       *       *       *       *       root    /usr/local/sbin/periodic-snapshot hourly
+0       0       *       *       *       root    /usr/local/sbin/periodic-snapshot daily
+0       0       *       *       0       root    /usr/local/sbin/periodic-snapshot weekly
+```</code></pre>
+<ol start="10" type="1">
+<li>Edit <code>/etc/periodic.conf</code> and configure according to the datasets. Current config as below.</li>
+</ol>
+<pre><code>```conf
+daily_scrub_zfs_enable=&quot;YES&quot;
+snapshot_enable=&quot;YES&quot;
+# :4:7:0 = 4 weekly snapshots (1 per week, and storing the last 4,
+# 1 per day and storing the last 7, and 0 per hour, storing the last 0.
+snapshot_schedule=&quot;/the-vault/backups:4:7:0 /the-vault/storage:4:7:0 /the-vault/media:2:3:0 /the-vault/archive:2:3:0 /the-vault/vm-store:4:7:0&quot;
+```</code></pre>
+</section>
+<section id="backups-config" class="level2">
+<h2>Backups Configuration</h2>
+<p>Heavily borrowed from <a href="https://blog.alt255.com/post/restic/" class="uri">https://blog.alt255.com/post/restic/</a></p>
+<ol type="1">
+<li><p>Install <code>restic</code> from pkgs.</p></li>
+<li><p>Create <code>/root/.restic/restic-password.sh</code> which exports <code>RESTIC_PASSWORD</code> set to the password of your repository. This is in password manager</p></li>
+<li><p>Create <code>/root/.restic/b2-credentials.sh</code> which exports <code>B2_ACCOUNT_ID</code> and <code>B2_ACCOUNT_KEY</code>. These are set up on backblaze’s website.</p></li>
+<li><p><code>su</code> to root and then run the following commands to initialize the repository.</p></li>
+</ol>
+<pre><code>```sh
+. /root/.restic/b2-credentials.sh
+. /root/.restic/restic-password.sh
+# multiple repos can be in one bucket.
+# need to set up each repo individually
+# RESTIC_REPOSITORY=b2:bucketname:path/to/repo
+# path/to/repo is the path under the root of the bucket.
+# it does not affect which files will actually be backed up.
+
+export RESTIC_REPOSITORY=b2:the-vault-remote:archive
+restic init
+
+export RESTIC_REPOSITORY=b2:the-vault-remote:backups
+restic init
+
+export RESTIC_REPOSITORY=b2:the-vault-remote:media
+restic init
+
+export RESTIC_REPOSITORY=b2:the-vault-remote:storage
+restic init
+
+export RESTIC_REPOSITORY=b2:the-vault-remote:vm-store
+restic init
+```</code></pre>
+<ol start="5" type="1">
+<li>Initialize the first backups of the repositories. If you do not do this now, make sure to exit your root shell session to purge the environment variables.</li>
+</ol>
+<pre><code>```sh
+# make sure to only run initial backups when we have enough bandwidth left
+export RESTIC_REPOSITORY=b2:the-vault-remote:archive
+restic backup --exclude-caches --exclude-if-present &#39;.nobackup&#39; /the-vault/archive
+
+export RESTIC_REPOSITORY=b2:the-vault-remote:backups
+restic backup --exclude-caches --exclude-if-present &#39;.nobackup&#39; /the-vault/backups
+
+export RESTIC_REPOSITORY=b2:the-vault-remote:media
+restic backup --exclude-caches --exclude-if-present &#39;.nobackup&#39; /the-vault/media
+
+export RESTIC_REPOSITORY=b2:the-vault-remote:storage
+restic backup --exclude-caches --exclude-if-present &#39;.nobackup&#39; /the-vault/storage
+
+export RESTIC_REPOSITORY=b2:the-vault-remote:vm-store
+restic backup --exclude-caches --exclude-if-present &#39;.nobackup&#39; /the-vault/vm-store
+```</code></pre>
+<ol start="6" type="1">
+<li>Create <code>/etc/periodic/daily/601.restic-backblaze-backups</code> with the following contents, and chmod it to 710, so only root can read and wheel can execute if need be.</li>
+</ol>
+<pre><code>```sh
+#!/bin/sh
+
+# modified from script at &lt;https://blog.alt255.com/post/restic/&gt;
+
+# i18n, some files have non ASCII characters
+export LC_ALL=en_US.UTF-8
+
+# load credentials
+. /root/.restic/b2-credentials.sh
+. /root/.restic/restic-password.sh
+
+QUIET=&quot;--quiet&quot;
+if [ -n &quot;${NOQUIET}&quot; ] || [ -n &quot;${VERBOSE}&quot; ]; then
+	QUIET=&quot;&quot;
+fi
+
+[ -z &quot;${QUIET}&quot; ] &amp;&amp; echo &quot;Starting backup set: archive&quot;
+export RESTIC_REPOSITORY=b2:the-vault-remote:archive
+restic backup ${QUIET} \
+	--exclude-caches \
+	--exclude-if-present &#39;.no-backup&#39; \
+	/the-vault/archive
+
+[ -z &quot;${QUIET}&quot; ] &amp;&amp; echo &quot;Starting backup set: backups&quot;
+export RESTIC_REPOSITORY=b2:the-vault-remote:backups
+restic backup ${QUIET} \
+	--exclude-caches \
+	--exclude-if-present &#39;.no-backup&#39; \
+	/the-vault/backups
+
+[ -z &quot;${QUIET}&quot; ] &amp;&amp; echo &quot;Starting backup set: media&quot;
+export RESTIC_REPOSITORY=b2:the-vault-remote:media
+restic backup ${QUIET} \
+	--exclude-caches \
+	--exclude-if-present &#39;.no-backup&#39; \
+	/the-vault/media
+
+[ -z &quot;${QUIET}&quot; ] &amp;&amp; echo &quot;Starting backup set: storage&quot;
+export RESTIC_REPOSITORY=b2:the-vault-remote:storage
+restic backup ${QUIET} \
+	--exclude-caches \
+	--exclude-if-present &#39;.no-backup&#39; \
+	/the-vault/storage
+
+[ -z &quot;${QUIET}&quot; ] &amp;&amp; echo &quot;Starting backup set: vm-store&quot;
+export RESTIC_REPOSITORY=b2:the-vault-remote:vm-store
+restic backup ${QUIET} \
+	--exclude-caches \
+	--exclude-if-present &#39;.no-backup&#39; \
+	/the-vault/vm-store
+```</code></pre>
+<ol start="7" type="1">
+<li>Create <code>/etc/periodic/daily/600.restic-check</code> with the following contents, and chmod it to 710, so only root can read and wheel cna execute if need be.</li>
+</ol>
+<pre><code>```sh
+#!/bin/sh
+
+# i18n, some files have non ASCII characters
+export LC_ALL=en_US.UTF-8
+
+# load credentials
+. /root/.restic/b2-credentials.sh
+. /root/.restic/restic-password.sh
+
+export RESTIC_REPOSITORY=b2:the-vault-remote:archive
+restic check
+
+export RESTIC_REPOSITORY=b2:the-vault-remote:backups
+restic check
+
+export RESTIC_REPOSITORY=b2:the-vault-remote:media
+restic check
+
+export RESTIC_REPOSITORY=b2:the-vault-remote:storage
+restic check
+```</code></pre>
+<ol start="8" type="1">
+<li>Configure snapshot policies and pruning. TODO</li>
+</ol>
+</section>
+<section id="filesharing-config" class="level2">
+<h2>Fileshare Configuration</h2>
+<section id="nfs" class="level3">
+<h3>NFS</h3>
+<ol type="1">
+<li>Run the following commands to enable the services required by the NFS server. The <code>mountd_enable</code> line is not technically required since it is forced by nfsd per <a href="https://muc.lists.freebsd.fs.narkive.com/9AJT6yVQ/bug-284262-nfsd-fails-to-start-with-nfsv4-server-only-but-without-rpcbind-mountd">this link](https:</a> but it doesn’t hurt anything. You do not need <code>rpcbind</code> for nfsv4 only servers and clients.</li>
+</ol>
+<pre><code>```sh
+sysrc nfs_server_enable=&quot;YES&quot;
+sysrc mountd_enable=&quot;YES&quot;
+sysrc nfsv4_server_enable=&quot;YES&quot;
+sysrc nfsv4_server_only=&quot;YES&quot;
+sysrc nfs_server_flags=&quot;-t&quot;
+sysrc nfsuserd_enable=&quot;YES&quot;
+sysrc hostid_enable=&quot;YES&quot;
+```</code></pre>
+<ol start="2" type="1">
+<li>Add <code>V4: /the-vault/</code> to <code>/etc/exports/</code>. This is the root directory of all zfs shares per <a href="https://kaeru.my/notes/nfsv4-and-zfs-on-freebsd">this link</a></li>
+<li>Reboot after to launch services</li>
+<li>run the following commands to set up the actual nfs shares:</li>
+</ol>
+<pre><code>```sh
+# sharing the vm-store to the management network only
+zfs set sharenfs=&quot;-maproot=root,-network=10.4.0.0/20&quot; the-vault/vm-store
+```</code></pre>
+<ol start="5" type="1">
+<li>Start the share without rebooting by running <code>sudo zfs share -a</code></li>
+</ol>
+</section>
+</section>
+</section>
+<section id="resources" class="level1">
+<h1>Resources</h1>
+<ul>
+<li><a href="https://people.freebsd.org/~thierry/nut_FreeBSD_HowTo.txt" class="uri">https://people.freebsd.org/~thierry/nut_FreeBSD_HowTo.txt</a></li>
+</ul>
+<pre class="tags"><code>build-script, main-ws-host, workstation, notes, QEMU, KVM, VFIO, Passthrough</code></pre>
+</section>
+<footer>
+  <address>
+  sww1235.net<br/>
+  write to: website &lt;at-sign&gt; sww1235.net
+  </address>
+
+&copy; 2021 - Stephen Walker-Weinshenker
+
+</footer>
+</body>
+</html>

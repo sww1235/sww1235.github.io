@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Main Workstation Build Script and Notes</title>
+  <link rel="stylesheet" href="/styles/main.css" />
+</head>
+<body>
+<header>
+    <a href="index.html">
+        <img src="images/logo.png" alt="Home" width="280" height="32">
+    </a>
+
+</header>
+<nav id="topnavbar">
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="https://github.com/sww1235">Github</a></li>
+    <li><a href="/projects/index.html">Projects</a>
+      <ul>
+        <li><a href="projects/custom-rack-enclosure.html">Custom Rack Enclosure</a></li>
+        <li><a href="projects/homelab.html">Homelab</a></li>
+      </ul>
+    </li>
+    <li><a href="/wiki/index.html">Wiki</a>
+      <ul>
+        <li><a href="wiki/build-script-notes-base-freebsd-image.html">Build Script Notes Base Freebsd Image</a></li>
+        <li><a href="wiki/build-script-notes-base-void-linux-image.html">Build Script Notes Base Void Linux Image</a></li>
+        <li><a href="wiki/build-script-notes-lenovo-t490-laptop.html">Build Script Notes Lenovo T490 Laptop</a></li>
+        <li><a href="wiki/build-script-notes-main-ws-host.html">Build Script Notes Main Ws Host</a></li>
+        <li><a href="wiki/build-script-notes-main-ws.html">Build Script Notes Main Ws</a></li>
+        <li><a href="wiki/build-script-notes-rack-monitor.html">Build Script Notes Rack Monitor</a></li>
+        <li><a href="wiki/build-script-notes-vault-mki.html">Build Script Notes Vault Mki</a></li>
+        <li><a href="wiki/build-script-notes-virt-cluster.html">Build Script Notes Virt Cluster</a></li>
+        <li><a href="wiki/build-script-notes-vm-void-builder.html">Build Script Notes Vm Void Builder</a></li>
+        <li><a href="wiki/build-script-notes-void-vm.html">Build Script Notes Void Vm</a></li>
+        <li><a href="wiki/build-script-notes-win10-vm.html">Build Script Notes Win10 Vm</a></li>
+        <li><a href="wiki/camera-hacking.html">Camera Hacking</a></li>
+        <li><a href="wiki/contributing.html">Contributing</a></li>
+        <li><a href="wiki/fpga-notes.html">Fpga Notes</a></li>
+        <li><a href="wiki/gnupg-config.html">Gnupg Config</a></li>
+        <li><a href="wiki/i2c.html">I2c</a></li>
+        <li><a href="wiki/i2s.html">I2s</a></li>
+        <li><a href="wiki/kicad.html">Kicad</a></li>
+        <li><a href="wiki/networking-notes.html">Networking Notes</a></li>
+        <li><a href="wiki/openbsd-notes.html">Openbsd Notes</a></li>
+        <li><a href="wiki/openldap-notes.html">Openldap Notes</a></li>
+        <li><a href="wiki/opnsense-notes.html">Opnsense Notes</a></li>
+        <li><a href="wiki/pcb-design.html">Pcb Design</a></li>
+        <li><a href="wiki/pcb-reverse-engineering.html">Pcb Reverse Engineering</a></li>
+        <li><a href="wiki/revit-notes.html">Revit Notes</a></li>
+        <li><a href="wiki/serial.html">Serial</a></li>
+        <li><a href="wiki/void-linux-latex-notes.html">Void Linux Latex Notes</a></li>
+        <li><a href="wiki/void-linux-notes.html">Void Linux Notes</a></li>
+        <li><a href="wiki/void-packages-setup.html">Void Packages Setup</a></li>
+        <li><a href="wiki/void-setup.html">Void Setup</a></li>
+        <li><a href="wiki/void-suckless-config.html">Void Suckless Config</a></li>
+        <li><a href="wiki/void-vfio-config.html">Void Vfio Config</a></li>
+      </ul>
+    </li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+<header id="title-block-header">
+<h1 class="title">Main Workstation Build Script and Notes</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#notes">Notes</a></li>
+<li><a href="#build-script">Build Script</a>
+<ul>
+<li><a href="#initial-config">Initial Configuration</a></li>
+<li><a href="#vfio-kvm-qemu-config">VFIO/KVM/QEMU Configuration</a></li>
+<li><a href="#extra-host-configuration-extra-host-config">Extra Host Configuration [#extra-host-config}</a></li>
+<li><a href="#vm-specifics">VM Specific Setup</a></li>
+</ul></li>
+<li><a href="#Resources">Resources</a></li>
+</ul>
+</nav>
+<p>This is the build script for my main workstation PC and associated VMs.</p>
+<section id="notes" class="level1">
+<h1>Notes</h1>
+<p>VM specific buildscripts are in their own files and are linked at the bottom of the page</p>
+</section>
+<section id="build-script" class="level1">
+<h1>Build Script</h1>
+<section id="initial-config" class="level2">
+<h2>Initial Configuration</h2>
+<ol type="1">
+<li><p>Download the void-live-musl_x86-64 .iso of void linux from reputable sources, currently <a href="https://alpha.de.repo.voidlinux.org/live/current/">here</a></p></li>
+<li><p>Burn image to USB thumbdrive using either <code>dd</code> or whatever windows tool is the popular thing and preferably doesn’t use electron.</p></li>
+<li><p>Login as root with default password of <code>void-linux</code> to live image.</p></li>
+<li><p>Make sure you are booted using UEFI by validating presence of <code>/sys/firmware/efi</code> directory</p></li>
+<li><p>run <code>void-installer</code></p></li>
+<li><p>Proceed through installation wizard</p></li>
+</ol>
+<pre><code>1.	Keyboard=us
+2.	Either interface is fine, along with DHCP. This will get changed when we set up the VMs
+3.	Source=network
+4.	Hostname=main-ws-host
+5.	Timezone=America/Denver or appropriate
+6.	Root password from password manager - generated
+7.	User account from password manager
+8.	Select grub to autoinstall GRUB2 bootloader. TODO: change to rEFInd instead
+9.	Partition main SSD using GPT scheme
+10.	Set filesystems
+11.	Review settings
+12.	Install
+13.	Wait
+14.	Reboot</code></pre>
+<ol start="7" type="1">
+<li><p>Log in as the new user you created</p></li>
+<li><p>Static IP address setup. Add the following to <code>/etc/dhcpcd.conf</code> and restart dhcpcd service <code>sudo sv restart dhcpcd</code>.</p></li>
+</ol>
+<pre><code>```conf
+interface eno1
+inform ip_address=$ipaddress
+static ip_address=$ipaddress/subnet
+static routers=$gateway
+static domain_name_servers=$gateway
+```</code></pre>
+<ol start="9" type="1">
+<li>Update the system by running the following command until there is no output.</li>
+</ol>
+<pre><code>```bash
+sudo xbps-install -Svu
+```</code></pre>
+<ol start="10" type="1">
+<li>Install the following packages. The st-terminfo install fixes <code>st-256color 	unknown terminal type</code> issues issues as well as backspace and tab issues when sshing in from other computers using the <code>st</code> terminal emulator.</li>
+</ol>
+<pre><code>```bash
+sudo xbps-install nano thefuck vim st-terminfo
+```</code></pre>
+<ol start="11" type="1">
+<li>Setup system logging using socklog</li>
+</ol>
+<pre><code>```bash
+sudo xbps-install socklog-void
+# enable services
+sudo ln -s /etc/sv/socklog-unix/ /var/service
+sudo ln -s /etc/sv/nanoklogd/ /var/service
+# add user to log group
+sudo usermod -a -G socklog $USER
+# log out and log back in
+```</code></pre>
+<ol start="12" type="1">
+<li>Set up ssh-agent using user specific services. Instructions taken from <a href="https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/" class="uri">https://www.daveeddy.com/2018/09/15/using-void-linux-as-my-daily-driver/</a></li>
+</ol>
+<pre><code>1.	Create user specific service directory:
+
+	```bash
+	sudo mkdir /etc/sv/runit-user-toxicsauce
+	```
+
+2.	Create run script for user specific service by adding the following
+	into `/etc/sv/runit-user-toxicsauce/run`
+
+	```bash
+	#!/bin/sh
+	exec 2&gt;&amp;1
+	exec chpst -u toxicsauce:toxicsauce runsvdir /home/toxicsauce/runit/service
+	```
+
+3.	Mark it as executable:
+
+	```bash
+	sudo chmod +x /etc/sv/runit-user-toxicsauce/run
+	```
+
+4.	Create necessary user specific service directories:
+
+	```bash
+	mkdir ~/runit
+	mkdir ~/runit/sv
+	mkdir ~/runit/service
+	```
+
+5.	Start this service of services with:
+
+	```bash
+	sudo ln -s /etc/sv/runit-user-toxicsauce /var/service
+	```
+
+6.	Now set up `ssh-agent` service:
+
+	```bash
+	mkdir ~/runit/sv/ssh-agent
+	```
+
+7.	Create run script for `ssh-agent` service by adding the following into `~/runit/sv/ssh-agent/run`.
+
+	```bash
+	#!/usr/bin/env bash
+	#
+	# Start ssh-agent from runit
+
+	file=~/.ssh/ssh-agent-env
+
+	exec &gt; &quot;$file&quot;
+
+	echo &quot;# started $(date)&quot;
+
+	# For some reason, this line doesn&#39;t get emitted by ssh-agent when it is run
+	# with -d or -D.  Since we are starting the program with exec we already know
+	# the pid ahead of time though so we can create this line manually
+	echo &quot;SSH_AGENT_PID=$$; export SSH_AGENT_PID&quot;
+
+	exec ssh-agent -D
+	```
+
+8.	Mark run file as executable with:
+
+	```bash
+	chmod +x ~/runit/sv/ssh-agent/run
+	```
+
+9.	Now start the service with:
+
+	```bash
+	ln -s ~/runit/sv/ssh-agent ~/runit/service
+	```
+
+	**NOTE**: you need the following line in bashrc in order to get it working
+	in new shells. This is already in my dotfiles bashrc
+
+	```bash
+	# source ssh-agent file
+
+	[ -f $HOME/.ssh/ssh-agent-env ] &amp;&amp; source $HOME/.ssh/ssh-agent-env
+	```
+
+	TODO: add in instructions around btrfs and mounting separate file systems</code></pre>
+<ol start="13" type="1">
+<li>Create Projects directory tree in <code>~</code> as follows:</li>
+</ol>
+<pre><code>```bash
+mkdir -p ~/projects/src/github.com/sww1235
+```
+
+This mirrors the structure of how golang wants to set things up.</code></pre>
+<ol start="14" type="1">
+<li>Make symlink in <code>~</code> as follows:</li>
+</ol>
+<pre><code>```bash
+ln -s ~/projects/src/github.com/sww1235 myprojects
+```</code></pre>
+<ol start="15" type="1">
+<li><p>Clone dotfiles repo from GitHub using ssh and install vim and bash files using <code>install.sh</code> script.</p></li>
+<li><p>Clone projects from github into Projects tree as desired.</p></li>
+<li><p>Set up void-packages per the <a href="void-packages-setup.html">instructions</a> in this wiki.</p></li>
+</ol>
+</section>
+<section id="vfio-kvm-qemu-config" class="level2">
+<h2>VFIO/KVM/QEMU Configuration</h2>
+<ol type="1">
+<li>install qemu and socat</li>
+</ol>
+<pre><code>```bash
+sudo xbps-install qemu socat
+```</code></pre>
+<ol start="2" type="1">
+<li>Create QEMU directory</li>
+</ol>
+<pre><code>```bash
+sudo mkdir /etc/qemu
+```</code></pre>
+<ol start="3" type="1">
+<li><p>download ovmf. It is not in xbps so need to manually download from <a href="https://www.kraxel.org/repos/jenkins/edk2/" class="uri">https://www.kraxel.org/repos/jenkins/edk2/</a> as of the writing of this build. Download the ovmf appropriate either 32 or 64 bit version. This will be in RPM format, so need to:</p></li>
+<li><p>Install rpmextract.</p></li>
+</ol>
+<pre><code>```bash
+sudo xbps-install rpmextract
+```</code></pre>
+<ol start="5" type="1">
+<li>Then run either:</li>
+</ol>
+<pre><code>```bash
+rpm2cpio &lt;file&gt;.rpm | xz -d | cpio -idmv
+```
+
+or
+
+```bash
+rpm2cpio &lt;file&gt;.rpm | lzma -d | cpio -idmv
+```
+
+to extract the files needed.</code></pre>
+<ol start="6" type="1">
+<li>Copy the files inside the <code>./usr/share/edk2.git/ovmf-x64</code> directory inside the extracted files, to <code>/usr/share/ovmf/</code>. This path is hardcoded in the <code>vm-manager.sh</code> script and will need to be changed if ovmf is installed in another location.</li>
+</ol>
+<pre><code>smm varients include secure boot code, csm varients include legacy compat modules.
+code and vars are separate files that are both contained in OVMF base.</code></pre>
+<ol start="7" type="1">
+<li><p>Create kvm:kvm user/group as system group</p></li>
+<li><p>Clone vm-manager repo into projects directory, and symlink to good location for executable scripts in path</p></li>
+<li><p>since we are running as -user kvm, need to edit <code>/etc/security/limits.conf</code> and increase them for user kvm, as well as root and main user. This allows us to grant large amounts of memory to the guest.</p></li>
+</ol>
+<pre><code>Add the following lines to the file.
+
+```conf
+@kvm		soft	memlock	unlimited
+@kvm		hard	memlock	unlimited
+toxicsauce	soft	memlock	unlimited
+toxicsauce	hard	memlock	unlimited
+root		soft	memlock	unlimited
+root		hard	memlock	unlimited
+```
+
+From: &lt;https://stackoverflow.com/questions/39187619/vfio-dma-map-error-when-passthrough-gpu-using-libvirt&gt;</code></pre>
+<ol start="10" type="1">
+<li>Set up kernel drivers for PCIe passthrough.</li>
+</ol>
+<pre><code>1.	Create file `blacklist.conf` in `/etc/modprobe.d/ and add the following
+	to the contents. This prevents the nouveau driver from loading and
+	taking over the nvidia card before the vfio-pci driver can load.
+
+	```bash
+	blacklist nouveau
+	```
+
+2.	Create file `vfio.conf` in `/etc/modprobe.d/` and then set contents to
+	the following, changing pcie ids as needed to those found via `lspci`
+
+	```bash
+	# 10de:1c03
+	# 10de:10f1
+	# 1912:0014 - usb3 pcie card
+	# 8086:15b8 - 219V ethernet card
+	# 8086:1539 - I211 ethernet card
+	options vfio-pci ids=10de:1c03,10de:10f1,1912:0014,8086:1539
+
+	# load vfio-pci before xhci-hcd and igb else the usb3 pcie card
+	# and intel nic are claimed by xhci_hcd
+	softdep xhci_hcd pre: vfio_pci
+	softdep igb pre: vfio_pci
+	```
+
+	This tells `vfio-pci` to attach to the specified PCIe devices. It also
+	creates a soft dependancy of `vfio-pci` on `xhci_hcd` so `vfio-pci`
+	will in theory load before `xhci_hcd` and attach to the usb controller
+	before `xhci_hcd` does.
+
+3.	Create file `vfio.conf` in /etc/modules-load.d` with the contents:
+
+	```bash
+	vfio
+	vfio-pci
+	vfio-virqfd
+	```
+
+	This loads the specified kernel drivers for VFIO use.
+
+4.	Create file `dracut.conf` in `/etc/dracut.conf.d/` with the contents:
+
+	```bash
+	add_drivers+=&quot; vfio vfio-pci vfio_iommu_type1 vfio_virqfd &quot;
+	add_dracutmodules+=&quot; kernel-modules &quot;
+	omit_drivers+=&quot; nouveau &quot;
+	hostonly=yes
+	```
+
+	This adds the correct drivers into the initramfs and prevents the
+	nouveau driver from being loaded.
+
+5.	Now run regenerate initramfs and DKMS modules with:
+
+	```bash
+	sudo xbps-reconfigure --force $linux-kernel-package
+	```
+
+6.	Reboot</code></pre>
+<ol start="11" type="1">
+<li><p>Check lscpi -v to make sure that <code>vfio-pci</code> has correctly bound to the graphics card, usb card and nic.</p></li>
+<li><p>start VM to test using script in vm-manager repo.</p></li>
+</ol>
+</section>
+<section id="extra-host-configuration-extra-host-config" class="level2">
+<h2>Extra Host Configuration [#extra-host-config}</h2>
+<ol type="1">
+<li>Install network-ups-tools.</li>
+</ol>
+<pre><code>```sh
+sudo xbps-install network-ups-tools
+```</code></pre>
+<ol start="2" type="1">
+<li>Edit <code>/etc/ups/upsmon.conf</code> and add the following lines:</li>
+</ol>
+<pre><code>```conf
+MONITOR cyberpower@$rackmonitorIP 1 upsmonSlave $password slave
+```</code></pre>
+<ol start="3" type="1">
+<li>Start <code>upsmon</code> service <code>ln -s /etc/sv/upsmon/ /var/service</code></li>
+</ol>
+</section>
+<section id="vm-specifics" class="level2">
+<h2>VM Specific Setup</h2>
+<ul>
+<li><a href="build-script-notes-void-vm.html">Void VM</a></li>
+<li><a href="build-script-notes-win10-vm.html">Win10 VM</a></li>
+</ul>
+</section>
+</section>
+<section id="Resources" class="level1">
+<h1>Resources</h1>
+<p><a href="https://www.reddit.com/r/voidlinux/comments/ghwvv5/guide_how_to_setup_qemukvm_emulation_on_void_linux/" class="uri">https://www.reddit.com/r/voidlinux/comments/ghwvv5/guide_how_to_setup_qemukvm_emulation_on_void_linux/</a></p>
+<pre class="tags"><code>build-script, main-ws-host, workstation, notes, QEMU, KVM, VFIO, Passthrough</code></pre>
+</section>
+<footer>
+  <address>
+  sww1235.net<br/>
+  write to: website &lt;at-sign&gt; sww1235.net
+  </address>
+
+&copy; 2021 - Stephen Walker-Weinshenker
+
+</footer>
+</body>
+</html>
